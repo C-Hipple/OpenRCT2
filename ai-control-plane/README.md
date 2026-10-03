@@ -168,8 +168,9 @@ The route finder is an A* search over footpath pieces, using the game's own rule
   tracked so it can make every climb, turns are only taken at speeds that keep lateral G sensible, and the
   ride type's rating requirements (drop height, number of drops, airtime, length) are aimed for. Styles:
   `gentle` (family coaster), `moderate`, `intense`. The same `seed` gives the same design; `previewOnly`
-  returns the piece list without building. In testing, every generated coaster completed its test run, with
-  excitement around 4–5.5 for moderate and intense designs.
+  returns the piece list without building. It works for 27 of the 31 roller coaster types (not the ones
+  without a chain lift or without turns). In testing, every generated coaster completed its test run, with
+  excitement around 4–6.
 * **Your own layouts** (`list_track_pieces`, `check_track_layout`, `build_custom_track`): give pieces in order
   from the station; the layout must have a station, its pieces must join, and it must return to its start.
 * New tracked rides start **testing**, so the game measures their ratings; look at `get_ride` and open them

@@ -35,7 +35,8 @@
     const TILE_SIZE = 32;
     const LAND_STEP = 16;
     const PATH_CLEARANCE = 32;
-    const ENTRANCE_CLEARANCE = 56;
+    const ENTRANCE_CLEARANCE = 56; // RideEntranceHeight
+    const EXIT_CLEARANCE = 40; // RideExitHeight
     const FOOTPATH_MIN_Z = 2 * 8;
     const FOOTPATH_MAX_Z = 248 * 8;
     const DIR_DX = [-1, 0, 1, 0];
@@ -2369,11 +2370,11 @@
     }
 
     /** Scores usable entrance/exit spots (at station height z) by how cheaply their front tile reaches the paths. */
-    function rankAttachments(tc, points, networkField, z) {
+    function rankAttachments(tc, points, networkField, z, height) {
         return points
             .map(p => {
                 const front = tc.get(p.front.x, p.front.y);
-                const ok = portalSpotOk(tc, p.x, p.y, z, p.front.x, p.front.y);
+                const ok = portalSpotOk(tc, p.x, p.y, z, p.front.x, p.front.y, height);
                 const d = networkField ? networkField(p.front.x, p.front.y) : 0;
                 const frontHasPath = !!(front && front.paths.some(q => !q.ghost));
                 return Object.assign({ ok: ok, distance: d < 0 ? 999 : d, frontHasPath: frontHasPath }, p);
@@ -2401,7 +2402,8 @@
 
     function chooseEntranceAndExit(ranked) {
         // The entrance needs a free tile in front for its queue line; an exit may open straight onto a path.
-        const entrance = ranked.find(p => !p.frontHasPath && p.distance >= 2) || ranked.find(p => !p.frontHasPath);
+        const usable = p => !p.frontHasPath && p.canBeEntrance !== false;
+        const entrance = ranked.find(p => usable(p) && p.distance >= 2) || ranked.find(usable);
         if (!entrance) return null;
         const apart = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
         // Keep the exit away from the entrance so the queue and the exit path do not merge.
@@ -2650,21 +2652,27 @@
     /** Places the entrances/exits a design specifies; returns problems instead of throwing. */
     function designEntrancePlacements(layout, rideId, ox, oy, baseZ, direction) {
         const out = [];
+        const stations = rideStations(map.getRide(rideId));
         for (const e of layout.entrances || []) {
             const r = rotate(e.x, e.y, direction);
             const x = ox + Math.floor(r.x / TILE_SIZE);
             const y = oy + Math.floor(r.y / TILE_SIZE);
             const dir = (direction + e.direction) & 3;
             const z = e.z === null || e.z === undefined ? null : e.z * 8 + baseZ;
-            // The station is whatever station the track beside the entrance belongs to.
-            let station = 0;
+            // The station is whatever station the track beside the entrance belongs to. Like the game
+            // (TrackDesignPlaceEntrances), skip entrances with no track of the ride at their height beside them.
+            // The API only reads the station index of station pieces, so match the ride's stations by height
+            // (tower rides have a station at the bottom and the top).
+            let station = null;
             const tile = map.getTile(x + DIR_DX[dir], y + DIR_DY[dir]);
             for (const el of tile.elements) {
                 if (el.type === 'track' && el.ride === rideId && (z === null || el.baseZ === z)) {
-                    station = el.station === null || el.station === undefined ? 0 : el.station;
+                    const match = stations.find(s => s.station.start && s.station.start.z === el.baseZ);
+                    station = match ? match.index : 0;
                     break;
                 }
             }
+            if (station === null) continue;
             const away = dir ^ 2;
             out.push({
                 x: x, y: y, direction: dir, station: station, isExit: !!e.isExit, z: z,
@@ -2675,7 +2683,7 @@
     }
 
     /** Can an entrance/exit stand on (x, y) at height z, with a path possible on the tile in front of it? */
-    function portalSpotOk(tc, x, y, z, frontX, frontY) {
+    function portalSpotOk(tc, x, y, z, frontX, frontY, height) {
         const spot = tc.get(x, y);
         const front = tc.get(frontX, frontY);
         if (!spot || !spot.surface || !front || !front.surface) return false;
@@ -2683,7 +2691,7 @@
         if (!sandbox && !spot.surface.owned) return false;
         if (!sandbox && !front.surface.owned && !front.surface.rights) return false;
         if (spot.paths.length || spot.entrances.length || spot.largeScenery) return false;
-        if (spot.tracks.some(t => t.z < z + ENTRANCE_CLEARANCE && t.clearanceZ > z)) return false;
+        if (spot.tracks.some(t => t.z < z + (height || ENTRANCE_CLEARANCE) && t.clearanceZ > z)) return false;
         if (spot.surface.water > z || surfaceTop(spot) > z) return false;
         if (front.surface.water > z) return false;
         if (front.entrances.length || front.largeScenery) return false;
@@ -2759,23 +2767,26 @@
         // Space the layout's own track will take once built: an entrance needs its tile clear for its height and
         // the path in front of it needs headroom (track passing high overhead is fine).
         const own = layoutOccupancy(cand.walked, cand.ox, cand.oy, z, rideClearance);
-        const clear = (x, y, ez, fx, fy) => !spanOccupied(own, x, y, ez, ez + ENTRANCE_CLEARANCE)
-            && !spanOccupied(own, fx, fy, ez, ez + PATH_CLEARANCE) && portalSpotOk(tc, x, y, ez, fx, fy);
+        const clear = (x, y, ez, fx, fy, isExit) => {
+            const height = isExit ? EXIT_CLEARANCE : ENTRANCE_CLEARANCE;
+            return !spanOccupied(own, x, y, ez, ez + height) && !spanOccupied(own, fx, fy, ez, ez + PATH_CLEARANCE)
+                && portalSpotOk(tc, x, y, ez, fx, fy, height);
+        };
         const ents = (layout.entrances || []).map(e => {
             const r = rotate(e.x, e.y, cand.direction);
             const x = cand.ox + Math.floor(r.x / TILE_SIZE);
             const y = cand.oy + Math.floor(r.y / TILE_SIZE);
             const dir = (cand.direction + e.direction) & 3;
             const ez = e.z === null || e.z === undefined ? z : e.z * 8 + z;
-            return { ok: clear(x, y, ez, x + DIR_DX[dir ^ 2], y + DIR_DY[dir ^ 2]), isExit: !!e.isExit };
+            return { ok: clear(x, y, ez, x + DIR_DX[dir ^ 2], y + DIR_DY[dir ^ 2], !!e.isExit), isExit: !!e.isExit };
         });
         if (ents.some(e => e.ok && !e.isExit) && ents.some(e => e.ok && e.isExit)) return true;
         const stations = portalPieces(cand.walked);
         if (stations.length === 0) return ents.length === 0 || ents.every(e => e.ok);
         const stationZ = z + Math.min(...stations.map(p => p.z));
         const spots = stationAttachmentPoints(cand.walked, cand.ox, cand.oy)
-            .filter(a => clear(a.x, a.y, stationZ, a.front.x, a.front.y));
-        return spots.length >= 2;
+            .filter(a => clear(a.x, a.y, stationZ, a.front.x, a.front.y, true));
+        return spots.length >= 2 && spots.some(a => clear(a.x, a.y, stationZ, a.front.x, a.front.y, false));
     }
 
     /** Origins for rides that must run on water: every track block over water, near the requested spot. */
@@ -2977,7 +2988,8 @@
             const tcNow = new TileCache();
             if ((layout.entrances || []).length > 0) {
                 portals = designEntrancePlacements(layout, rideId, chosen.ox, chosen.oy, chosen.z, chosen.direction)
-                    .filter(p => portalSpotOk(tcNow, p.x, p.y, p.z === null ? chosen.z : p.z, p.front.x, p.front.y));
+                    .filter(p => portalSpotOk(tcNow, p.x, p.y, p.z === null ? chosen.z : p.z, p.front.x, p.front.y,
+                        p.isExit ? EXIT_CLEARANCE : ENTRANCE_CLEARANCE));
             }
             if (!portals.some(p => !p.isExit) || !portals.some(p => p.isExit)) {
                 const keep = portals;
@@ -2991,7 +3003,12 @@
                 const stationZ = chosen.z + Math.min(...portalPieces(chosen.walked).map(p => p.z));
                 const taken = new Set(keep.map(p => tileKey(p.x, p.y)));
                 let spots = stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy)
-                    .filter(a => !taken.has(tileKey(a.x, a.y)) && portalSpotOk(tcNow, a.x, a.y, stationZ, a.front.x, a.front.y));
+                    .filter(a => !taken.has(tileKey(a.x, a.y))
+                        && portalSpotOk(tcNow, a.x, a.y, stationZ, a.front.x, a.front.y, EXIT_CLEARANCE));
+                // Exits are lower than entrances, so some spots under the ride's own track only suit an exit.
+                spots.forEach(a => {
+                    a.canBeEntrance = portalSpotOk(tcNow, a.x, a.y, stationZ, a.front.x, a.front.y, ENTRANCE_CLEARANCE);
+                });
                 // Prefer the open side of the station: a path in front of a spot hemmed in by the ride's own track
                 // has nowhere to go once the queue takes the only way out.
                 for (const need of [3, 2]) {
@@ -3001,7 +3018,7 @@
                         break;
                     }
                 }
-                const ranked = rankAttachments(tcNow, spots, field, stationZ);
+                const ranked = rankAttachments(tcNow, spots, field, stationZ, EXIT_CLEARANCE);
                 const pair = chooseEntranceAndExit(ranked);
                 if (!pair) fail('No room beside the station for an entrance and exit.');
                 portals = keep.slice();
@@ -3992,7 +4009,8 @@
                         trackType: el.trackType,
                         sequence: el.sequence,
                         direction: el.direction,
-                        station: el.station,
+                        // Only station pieces have a readable station index (others log a warning).
+                        station: STATION_TRACK_TYPES.includes(el.trackType) ? el.station : undefined,
                     });
                     break;
                 case 'entrance': {
