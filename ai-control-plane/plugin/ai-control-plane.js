@@ -74,6 +74,262 @@
     const HEURISTIC_WEIGHT = 1.4;
     const LOG_SIZE = 50;
 
+    // <generated-ride-data> (tools/gen_ride_data.py; do not edit by hand)
+    const RIDE_CATEGORIES = ["transport", "gentle", "rollercoaster", "thrill", "water", "shop"];
+    const RTD_FLAGS = {
+        hasTrackColourMain: 0,
+        hasTrackColourAdditional: 1,
+        hasTrackColourSupports: 2,
+        hasSinglePieceStation: 3,
+        hasLeaveWhenAnotherVehicleArrivesAtStation: 4,
+        canSynchroniseWithAdjacentStations: 5,
+        trackMustBeOnWater: 6,
+        hasGForces: 7,
+        cannotHaveGaps: 8,
+        hasDataLogging: 9,
+        hasDrops: 10,
+        noTestMode: 11,
+        hasCoveredPieces: 12,
+        noVehicles: 13,
+        hasLoadOptions: 14,
+        hasLsmBehaviourOnFlat: 15,
+        vehicleIsIntegral: 16,
+        isShopOrFacility: 17,
+        noWallsAroundTrack: 18,
+        isFlatRide: 19,
+        guestsWillRideAgain: 20,
+        guestsShouldGoInsideFacility: 21,
+        describeAsInside: 22,
+        sellsFood: 23,
+        sellsDrinks: 24,
+        hasVehicleColours: 25,
+        checkForStalling: 26,
+        hasTrack: 27,
+        allowExtraTowerBases: 28,
+        layeredVehiclePreview: 29,
+        supportsMultipleColourSchemes: 30,
+        allowDoorsOnTrack: 31,
+        hasMusicByDefault: 32,
+        allowMusic: 33,
+        hasInvertedVariant: 34,
+        checkGForces: 35,
+        hasEntranceAndExit: 36,
+        allowMoreVehiclesThanStationFits: 37,
+        hasAirTime: 38,
+        singleSession: 39,
+        allowMultipleCircuits: 40,
+        allowCableLiftHill: 41,
+        showInTrackDesigner: 42,
+        isTransportRide: 43,
+        interestingToLookAt: 44,
+        slightlyInterestingToLookAt: 45,
+        startConstructionInverted: 46,
+        listVehiclesSeparately: 47,
+        supportsLevelCrossings: 48,
+        isSuspended: 49,
+        hasLandscapeDoors: 50,
+        upInclineRequiresLift: 51,
+        guestsCanUseUmbrella: 52,
+        hasOneStation: 53,
+        hasSeatRotation: 54,
+        allowReversedTrains: 55,
+        requireExplicitListingInMusicObjects: 56,
+        hasRoofOverWholeRide: 57,
+        runningSpeedAffectsReliability: 58,
+        poweredLaunchAffectsReliability: 59,
+        reverseInclineLaunchAffectsReliability: 60,
+        isDummyType: 61,
+    };
+    const TRACK_GROUPS = [
+        "flat", "straight", "stationEnd", "liftHill", "liftHillSteep", "liftHillCurve",
+        "flatRollBanking", "verticalLoop", "slope", "slopeSteepDown", "flatToSteepSlope", "slopeCurve",
+        "slopeCurveSteep", "sBend", "curveVerySmall", "curveSmall", "curve", "curveLarge",
+        "twist", "halfLoop", "corkscrew", "tower", "helixUpBankedHalf", "helixDownBankedHalf",
+        "helixUpBankedQuarter", "helixDownBankedQuarter", "helixUpUnbankedQuarter", "helixDownUnbankedQuarter", "brakes", "onridePhoto",
+        "waterSplash", "slopeVertical", "barrelRoll", "poweredLift", "halfLoopLarge", "slopeCurveBanked",
+        "logFlumeReverser", "heartlineRoll", "reverser", "reverseFreefall", "slopeToFlat", "blockBrakes",
+        "slopeRollBanking", "slopeSteepLong", "curveVertical", "liftHillCable", "liftHillCurved", "quarterLoop",
+        "spinningTunnel", "booster", "inlineTwistUninverted", "inlineTwistInverted", "quarterLoopUninvertedUp", "quarterLoopUninvertedDown",
+        "quarterLoopInvertedUp", "quarterLoopInvertedDown", "rapids", "flyingHalfLoopUninvertedUp", "flyingHalfLoopInvertedDown", "flatRideBase",
+        "waterfall", "whirlpool", "brakeForDrop", "corkscrewUninverted", "corkscrewInverted", "heartlineTransfer",
+        "miniGolfHole", "rotationControlToggle", "slopeSteepUp", "corkscrewLarge", "halfLoopMedium", "zeroGRoll",
+        "zeroGRollLarge", "flyingLargeHalfLoopUninvertedUp", "flyingLargeHalfLoopInvertedDown", "flyingLargeHalfLoopUninvertedDown", "flyingLargeHalfLoopInvertedUp", "flyingHalfLoopUninvertedDown",
+        "flyingHalfLoopInvertedUp", "slopeCurveLarge", "slopeCurveLargeBanked", "diagBrakes", "diagBlockBrakes", "inclinedBrakes",
+        "diagBooster", "diagSlopeSteepLong", "diveLoop", "diagSlope", "diagSlopeSteepUp", "diagSlopeSteepDown",
+    ];
+    // Index = ride type id: [name, category, startPiece, flagsLow, flagsHigh, trackGroups, extraTrackGroups,
+    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType]
+    const RIDE_TYPE_DATA = [
+        ["spiral_rc",2,1,1309689527,5466,[1,2,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,46,68,87,88,89],[3,49],19,7,7,0],
+        ["stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],25,4,6,0],
+        ["suspended_swinging_rc",2,1,1309689527,136282,[1,2,3,8,9,11,13,15,16,17,26,27,28,41,68,87,88,89],[],24,4,6,0],
+        ["inverted_rc",2,1,1309689527,8525146,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,26,27,28,29,31,34,35,41,42,43,44,47,68,69,70,79,80,81,82,85,86,87,88,89],[10,32,49,71,72],42,5,7,0],
+        ["junior_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,10,11,13,15,16,17,22,23,28,41,49,81,82,87],[9,29,68,88,89],12,4,6,0],
+        ["miniature_railway",0,1,1241530932,68914,[1,2,8,13,15,16,17,87],[],7,5,5,0],
+        ["monorail",0,1,1241530935,3378,[1,2,8,13,15,16,17,87],[],8,5,5,0],
+        ["mini_suspended_rc",2,1,1309689525,136282,[1,2,3,8,13,15,16,17,87],[],10,4,5,0],
+        ["boat_hire",4,1,1308641349,18,[1,2,13,14,15,16,17],[],255,5,5,10],
+        ["wooden_wild_mouse",2,1,3457173173,5210,[1,2,3,4,8,9,10,14,15,68],[],14,4,5,0],
+        ["steeplechase",2,1,1309689527,5210,[1,2,3,8,13,15,16,17,26,27,28,41,81,82,87],[],14,4,5,0],
+        ["car_ride",1,1,3390063143,9266,[1,2,8,14,15,48],[9,56,68],6,5,5,0],
+        ["launched_freefall",3,66,1242841871,5138,[21],[],255,5,5,0],
+        ["bobsleigh_rc",2,1,1309689527,5466,[1,2,3,6,8,13,15,16,22,23,28,29,41],[],19,4,5,0],
+        ["observation_tower",1,66,1241792783,9234,[21],[],255,5,5,0],
+        ["looping_rc",2,1,1309689527,142611802,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,49,68,81,82,87,88,89],[10,18,19,20,31,32,34,44,47,69,70,71,72],35,4,6,0],
+        ["dinghy_slide",4,1,1309693623,5202,[1,2,3,8,9,13,15,16,68],[],15,4,5,0],
+        ["mine_train_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,43,68,81,82,87,88,89],[],21,4,6,0],
+        ["chairlift",0,1,1241530405,67251250,[1,2,8,14],[],40,5,5,0],
+        ["corkscrew_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,49,68,69,70,79,81,82,85,87,88,89],[10,18,31,32,44,47,71,72,86],28,4,6,0],
+        ["maze",1,101,138684428,1048592,[],[],6,5,5,1],
+        ["spiral_slide",1,258,796943,36882,[],[],15,5,5,3],
+        ["go_karts",3,1,1242826757,2101266,[1,2,8,11,13,14,15,16,17,79,87],[9,43,68,88,89],8,5,5,0],
+        ["log_flume",4,1,1242580535,5234,[1,2,8,9,13,15,29,36],[],10,5,5,0],
+        ["river_rapids",4,1,1242842677,5234,[1,2,8,14,29,56,60,61],[],9,5,5,0],
+        ["dodgems",1,259,34343183,33562643,[],[],9,5,5,0],
+        ["swinging_ship",3,261,34423053,37010,[],[],12,5,5,0],
+        ["swinging_inverter_ship",3,263,34423055,37010,[],[],15,5,5,0],
+        ["food_stall",5,262,9316617,32768,[],[],12,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["drink_stall",5,262,17705225,32768,[],[],12,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["shop",5,262,928009,32768,[],[],12,5,5,0],
+        ["merry_go_round",1,266,34423048,16814227,[],[],12,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["information_kiosk",5,264,928009,32768,[],[],12,5,5,0],
+        ["toilets",5,262,7219464,32768,[],[],12,5,5,4],
+        ["ferris_wheel",1,265,34406665,41106,[],[],16,5,5,0],
+        ["motion_simulator",3,258,34423048,41106,[],[],12,5,5,8],
+        ["3d_cinema",3,266,38617352,32914,[],[],12,5,5,0],
+        ["top_spin",3,266,34423055,37010,[],[],16,5,5,0],
+        ["space_rings",1,266,34343176,41106,[],[],16,5,5,9],
+        ["reverse_freefall_rc",2,1,1309722279,8393810,[1,2,4,29,39],[],255,5,5,0],
+        ["lift",0,66,1510228237,3090,[21],[],255,5,5,0],
+        ["vertical_drop_rc",2,1,1309689527,5210,[0,1,2,3,4,6,7,8,9,10,11,12,13,15,16,17,20,22,23,24,25,26,27,28,29,31,34,35,41,42,44,62,68,69,70,71,72,79,81,82,86,87,88,89],[18,19,32,33,34,43,47,49,85],55,4,5,0],
+        ["cash_machine",5,262,928008,32768,[],[],12,5,5,5],
+        ["twist",3,266,34423048,37010,[],[],12,5,5,0],
+        ["haunted_house",1,266,5062920,32914,[],[],16,5,5,0],
+        ["first_aid",5,262,7219464,32768,[],[],12,5,5,6],
+        ["circus",1,266,38617352,32913,[],[],12,5,5,0],
+        ["ghost_train",1,1,3390064295,267378,[1,2,8,14,15,28,48],[],8,5,5,0],
+        ["twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,81,82,85,86,87,88,89],[4,10,62],40,5,8,0],
+        ["wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,28,29,30,34,35,41,42,43,68,70,81,82,87,88,89],[49],41,5,7,0],
+        ["side_friction_rc",2,1,1309689527,8394074,[1,2,3,8,9,13,15,16,17,28,68,87,88,89],[],18,3,5,0],
+        ["steel_wild_mouse",2,1,3457173175,5210,[1,2,3,4,8,9,10,11,14,15,28,41,68],[67],16,4,6,0],
+        ["multi_dimension_rc",2,1,1309689527,12588382,[1,2,3,6,8,9,13,15,16,17,22,23,24,25,26,27,28,29,31,41,50,52,53,68,81,82,87,88,89],[],40,4,6,0],
+        ["multi_dimension_rc_alt",255,1,1309689527,541069314,[],[],40,4,6,0],
+        ["flying_rc",2,1,1309689527,21854,[1,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,50,52,57,68,73,79,81,82,87,88,89],[2,7,10,33,43,49,75,77,85],30,4,6,0],
+        ["flying_rc_alt",255,1,1309689527,536891394,[],[],30,4,6,0],
+        ["virginia_reel",2,1,1309689527,5210,[1,2,3,8,14,15],[],14,3,5,0],
+        ["splash_boats",4,1,1242580535,9330,[1,2,8,9,13,16,29],[],16,5,5,0],
+        ["mini_helicopters",1,1,3390063143,9266,[1,2,8,14,15],[48],7,5,5,0],
+        ["lay_down_rc",2,1,1309689527,5470,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,50,57,63,68,79,81,82,85,87,88,89],[10,49,77],26,4,6,0],
+        ["suspended_monorail",0,1,1241530935,134450,[1,2,8,13,15,16,17,87],[],12,5,5,0],
+        ["lay_down_rc_alt",255,1,1309689527,536875010,[],[],26,4,6,0],
+        ["reverser_rc",2,1,1846560439,5210,[1,2,3,8,13,15,16,28,38],[],18,3,5,0],
+        ["heartline_twister_rc",2,1,1309689527,8393818,[1,2,3,4,8,9,37,65,68],[],22,4,6,0],
+        ["mini_golf",1,1,1207961607,2105362,[1,2,8,14,66],[],7,5,5,2],
+        ["giga_rc",2,1,1309689527,8394586,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,45,68,79,81,82,85,87,88,89],[7,10,19,20,32,33,34,47,49,69,70,71,72,84,86],86,5,8,0],
+        ["roto_drop",3,66,1242841871,5266,[21],[],255,5,5,0],
+        ["flying_saucers",1,259,34343179,4243,[],[],9,5,5,0],
+        ["crooked_house",1,266,5062920,32914,[],[],16,5,5,0],
+        ["monorail_cycles",1,1,1242581543,8210,[1,2,13,15,16],[],5,5,5,0],
+        ["compact_inverted_rc",2,1,1309689527,268571994,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,28,29,31,41,68,81,82,87,88,89],[],27,4,6,0],
+        ["water_coaster",2,1,1309693623,5210,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,49,68,81,82,87,88,89],[10],18,4,6,0],
+        ["air_powered_vertical_rc",2,1,1309689511,5210,[1,2,4,5,6,16,28,29,39,40],[49],255,5,5,0],
+        ["inverted_hairpin_rc",2,1,1309689527,136282,[1,2,3,4,8,9,10,11,14,15,28,41,68],[],16,4,6,0],
+        ["magic_carpet",3,257,34423055,37010,[],[],15,5,5,0],
+        ["submarine_ride",4,1,1242579031,58,[1,2,14,15],[],255,5,5,0],
+        ["river_rafts",4,1,1242579511,9266,[1,2,13,16],[8,9,29],12,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["enterprise",3,259,35471624,37010,[],[],16,5,5,7],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["inverted_impulse_rc",2,1,1309689527,8525146,[1,2,8,9,31,44,68],[],45,4,7,0],
+        ["mini_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,68,87,88,89],[46,49],16,4,6,0],
+        ["mine_ride",2,1,1309689527,8394074,[1,2,6,8,13,15,16,17,22,23,24,25,26,27,29,87],[],13,5,5,0],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
+        ["lim_launched_rc",2,1,1309689527,8394074,[1,2,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,43,44,47,68,69,70,71,72,87,88,89],[10],35,4,6,0],
+        ["hypercoaster",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,68,79,81,82,85,87,88,89],[7,10,18,19,20,31,32,34,44,47,49,69,70,71,72,86],55,4,6,0],
+        ["hyper_twister",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,68,79,81,82,85,87,88,89],[4,7,10,18,19,20,32,33,34,47,49,62,69,70,71,72,86],61,5,8,0],
+        ["monster_trucks",1,1,1242579495,9266,[1,2,8,9,14,15,56,68],[48],18,5,5,0],
+        ["spinning_wild_mouse",2,1,1309689527,5210,[1,2,3,8,10,14,15,28,41,67],[4,9,11,68],16,4,6,0],
+        ["classic_mini_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,9,10,11,13,15,16,17,22,23,28,41,49,68,81,82,87,88,89],[29],15,4,6,0],
+        ["hybrid_rc",2,1,1309689525,8394074,[0,1,2,3,4,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,32,33,35,41,42,43,44,47,68,71,72,79,81,82,83,87,88,89],[49],43,5,11,0],
+        ["single_rail_rc",2,1,1309689527,8394074,[0,1,2,3,4,6,8,9,10,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,44,47,68,69,70,71,72,79,81,82,83,86,87,88,89],[43,85],28,5,8,0],
+        ["alpine_rc",2,1,1309691429,528434,[0,1,2,3,6,8,10,11,13,15,16,17,23,25,27,87],[22,24,26],18,4,5,0],
+        ["classic_wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,13,15,16,17,28,29,30,34,41,43,68,70,81,82,87,88,89],[12,49],24,3,5,0],
+        ["classic_stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,26,27,28,29,34,41,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],30,4,6,0],
+        ["lsm_rc",2,1,1309689527,8394586,[1,2,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,80,81,82,84,85,86,87,88,89],[3,10,45],33,5,5,0],
+        ["classic_wooden_twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,28,29,35,41,43,68,81,82,87,88,89],[7,30,34,49,70],24,3,5,0],
+    ];
+    // Index = track type (TrackElemType) id
+    const TRACK_TYPE_NAMES = [
+        "flat", "endStation", "beginStation", "middleStation", "up25", "up60",
+        "flatToUp25", "up25ToUp60", "up60ToUp25", "up25ToFlat", "down25", "down60",
+        "flatToDown25", "down25ToDown60", "down60ToDown25", "down25ToFlat", "leftQuarterTurn5Tiles", "rightQuarterTurn5Tiles",
+        "flatToLeftBank", "flatToRightBank", "leftBankToFlat", "rightBankToFlat", "bankedLeftQuarterTurn5Tiles", "bankedRightQuarterTurn5Tiles",
+        "leftBankToUp25", "rightBankToUp25", "up25ToLeftBank", "up25ToRightBank", "leftBankToDown25", "rightBankToDown25",
+        "down25ToLeftBank", "down25ToRightBank", "leftBank", "rightBank", "leftQuarterTurn5TilesUp25", "rightQuarterTurn5TilesUp25",
+        "leftQuarterTurn5TilesDown25", "rightQuarterTurn5TilesDown25", "sBendLeft", "sBendRight", "leftVerticalLoop", "rightVerticalLoop",
+        "leftQuarterTurn3Tiles", "rightQuarterTurn3Tiles", "leftBankedQuarterTurn3Tiles", "rightBankedQuarterTurn3Tiles", "leftQuarterTurn3TilesUp25", "rightQuarterTurn3TilesUp25",
+        "leftQuarterTurn3TilesDown25", "rightQuarterTurn3TilesDown25", "leftQuarterTurn1Tile", "rightQuarterTurn1Tile", "leftTwistDownToUp", "rightTwistDownToUp",
+        "leftTwistUpToDown", "rightTwistUpToDown", "halfLoopUp", "halfLoopDown", "leftCorkscrewUp", "rightCorkscrewUp",
+        "leftCorkscrewDown", "rightCorkscrewDown", "flatToUp60", "up60ToFlat", "flatToDown60", "down60ToFlat",
+        "towerBase", "towerSection", "flatCovered", "up25Covered", "up60Covered", "flatToUp25Covered",
+        "up25ToUp60Covered", "up60ToUp25Covered", "up25ToFlatCovered", "down25Covered", "down60Covered", "flatToDown25Covered",
+        "down25ToDown60Covered", "down60ToDown25Covered", "down25ToFlatCovered", "leftQuarterTurn5TilesCovered", "rightQuarterTurn5TilesCovered", "sBendLeftCovered",
+        "sBendRightCovered", "leftQuarterTurn3TilesCovered", "rightQuarterTurn3TilesCovered", "leftHalfBankedHelixUpSmall", "rightHalfBankedHelixUpSmall", "leftHalfBankedHelixDownSmall",
+        "rightHalfBankedHelixDownSmall", "leftHalfBankedHelixUpLarge", "rightHalfBankedHelixUpLarge", "leftHalfBankedHelixDownLarge", "rightHalfBankedHelixDownLarge", "leftQuarterTurn1TileUp60",
+        "rightQuarterTurn1TileUp60", "leftQuarterTurn1TileDown60", "rightQuarterTurn1TileDown60", "brakes", "booster", "maze",
+        "leftQuarterBankedHelixLargeUp", "rightQuarterBankedHelixLargeUp", "leftQuarterBankedHelixLargeDown", "rightQuarterBankedHelixLargeDown", "leftQuarterHelixLargeUp", "rightQuarterHelixLargeUp",
+        "leftQuarterHelixLargeDown", "rightQuarterHelixLargeDown", "up25LeftBanked", "up25RightBanked", "waterfall", "rapids",
+        "onRidePhoto", "down25LeftBanked", "down25RightBanked", "waterSplash", "flatToUp60LongBase", "up60ToFlatLongBase",
+        "whirlpool", "down60ToFlatLongBase", "flatToDown60LongBase", "cableLiftHill", "reverseFreefallSlope", "reverseFreefallVertical",
+        "up90", "down90", "up60ToUp90", "down90ToDown60", "up90ToUp60", "down60ToDown90",
+        "brakeForDrop", "leftEighthToDiag", "rightEighthToDiag", "leftEighthToOrthogonal", "rightEighthToOrthogonal", "leftEighthBankToDiag",
+        "rightEighthBankToDiag", "leftEighthBankToOrthogonal", "rightEighthBankToOrthogonal", "diagFlat", "diagUp25", "diagUp60",
+        "diagFlatToUp25", "diagUp25ToUp60", "diagUp60ToUp25", "diagUp25ToFlat", "diagDown25", "diagDown60",
+        "diagFlatToDown25", "diagDown25ToDown60", "diagDown60ToDown25", "diagDown25ToFlat", "diagFlatToUp60", "diagUp60ToFlat",
+        "diagFlatToDown60", "diagDown60ToFlat", "diagFlatToLeftBank", "diagFlatToRightBank", "diagLeftBankToFlat", "diagRightBankToFlat",
+        "diagLeftBankToUp25", "diagRightBankToUp25", "diagUp25ToLeftBank", "diagUp25ToRightBank", "diagLeftBankToDown25", "diagRightBankToDown25",
+        "diagDown25ToLeftBank", "diagDown25ToRightBank", "diagLeftBank", "diagRightBank", "logFlumeReverser", "spinningTunnel",
+        "leftBarrelRollUpToDown", "rightBarrelRollUpToDown", "leftBarrelRollDownToUp", "rightBarrelRollDownToUp", "leftBankToLeftQuarterTurn3TilesUp25", "rightBankToRightQuarterTurn3TilesUp25",
+        "leftQuarterTurn3TilesDown25ToLeftBank", "rightQuarterTurn3TilesDown25ToRightBank", "poweredLift", "leftLargeHalfLoopUp", "rightLargeHalfLoopUp", "leftLargeHalfLoopDown",
+        "rightLargeHalfLoopDown", "leftFlyerTwistUp", "rightFlyerTwistUp", "leftFlyerTwistDown", "rightFlyerTwistDown", "flyerHalfLoopUninvertedUp",
+        "flyerHalfLoopInvertedDown", "leftFlyerCorkscrewUp", "rightFlyerCorkscrewUp", "leftFlyerCorkscrewDown", "rightFlyerCorkscrewDown", "heartLineTransferUp",
+        "heartLineTransferDown", "leftHeartLineRoll", "rightHeartLineRoll", "minigolfHoleA", "minigolfHoleB", "minigolfHoleC",
+        "minigolfHoleD", "minigolfHoleE", "multiDimInvertedFlatToDown90QuarterLoop", "up90ToInvertedFlatQuarterLoop", "invertedFlatToDown90QuarterLoop", "leftCurvedLiftHill",
+        "rightCurvedLiftHill", "leftReverser", "rightReverser", "airThrustTopCap", "airThrustVerticalDown", "airThrustVerticalDownToLevel",
+        "blockBrakes", "leftBankedQuarterTurn3TileUp25", "rightBankedQuarterTurn3TileUp25", "leftBankedQuarterTurn3TileDown25", "rightBankedQuarterTurn3TileDown25", "leftBankedQuarterTurn5TileUp25",
+        "rightBankedQuarterTurn5TileUp25", "leftBankedQuarterTurn5TileDown25", "rightBankedQuarterTurn5TileDown25", "up25ToLeftBankedUp25", "up25ToRightBankedUp25", "leftBankedUp25ToUp25",
+        "rightBankedUp25ToUp25", "down25ToLeftBankedDown25", "down25ToRightBankedDown25", "leftBankedDown25ToDown25", "rightBankedDown25ToDown25", "leftBankedFlatToLeftBankedUp25",
+        "rightBankedFlatToRightBankedUp25", "leftBankedUp25ToLeftBankedFlat", "rightBankedUp25ToRightBankedFlat", "leftBankedFlatToLeftBankedDown25", "rightBankedFlatToRightBankedDown25", "leftBankedDown25ToLeftBankedFlat",
+        "rightBankedDown25ToRightBankedFlat", "flatToLeftBankedUp25", "flatToRightBankedUp25", "leftBankedUp25ToFlat", "rightBankedUp25ToFlat", "flatToLeftBankedDown25",
+        "flatToRightBankedDown25", "leftBankedDown25ToFlat", "rightBankedDown25ToFlat", "leftQuarterTurn1TileUp90", "rightQuarterTurn1TileUp90", "leftQuarterTurn1TileDown90",
+        "rightQuarterTurn1TileDown90", "multiDimUp90ToInvertedFlatQuarterLoop", "multiDimFlatToDown90QuarterLoop", "multiDimInvertedUp90ToFlatQuarterLoop", "rotationControlToggle", "flatTrack1x4A",
+        "flatTrack2x2", "flatTrack4x4", "flatTrack2x4", "flatTrack1x5", "flatTrack1x1A", "flatTrack1x4B",
+        "flatTrack1x1B", "flatTrack1x4C", "flatTrack3x3", "leftLargeCorkscrewUp", "rightLargeCorkscrewUp", "leftLargeCorkscrewDown",
+        "rightLargeCorkscrewDown", "leftMediumHalfLoopUp", "rightMediumHalfLoopUp", "leftMediumHalfLoopDown", "rightMediumHalfLoopDown", "leftZeroGRollUp",
+        "rightZeroGRollUp", "leftZeroGRollDown", "rightZeroGRollDown", "leftLargeZeroGRollUp", "rightLargeZeroGRollUp", "leftLargeZeroGRollDown",
+        "rightLargeZeroGRollDown", "leftFlyerLargeHalfLoopUninvertedUp", "rightFlyerLargeHalfLoopUninvertedUp", "leftFlyerLargeHalfLoopInvertedDown", "rightFlyerLargeHalfLoopInvertedDown", "leftFlyerLargeHalfLoopInvertedUp",
+        "rightFlyerLargeHalfLoopInvertedUp", "leftFlyerLargeHalfLoopUninvertedDown", "rightFlyerLargeHalfLoopUninvertedDown", "flyerHalfLoopInvertedUp", "flyerHalfLoopUninvertedDown", "leftEighthToDiagUp25",
+        "rightEighthToDiagUp25", "leftEighthToDiagDown25", "rightEighthToDiagDown25", "leftEighthToOrthogonalUp25", "rightEighthToOrthogonalUp25", "leftEighthToOrthogonalDown25",
+        "rightEighthToOrthogonalDown25", "diagUp25ToLeftBankedUp25", "diagUp25ToRightBankedUp25", "diagLeftBankedUp25ToUp25", "diagRightBankedUp25ToUp25", "diagDown25ToLeftBankedDown25",
+        "diagDown25ToRightBankedDown25", "diagLeftBankedDown25ToDown25", "diagRightBankedDown25ToDown25", "diagLeftBankedFlatToLeftBankedUp25", "diagRightBankedFlatToRightBankedUp25", "diagLeftBankedUp25ToLeftBankedFlat",
+        "diagRightBankedUp25ToRightBankedFlat", "diagLeftBankedFlatToLeftBankedDown25", "diagRightBankedFlatToRightBankedDown25", "diagLeftBankedDown25ToLeftBankedFlat", "diagRightBankedDown25ToRightBankedFlat", "diagFlatToLeftBankedUp25",
+        "diagFlatToRightBankedUp25", "diagLeftBankedUp25ToFlat", "diagRightBankedUp25ToFlat", "diagFlatToLeftBankedDown25", "diagFlatToRightBankedDown25", "diagLeftBankedDown25ToFlat",
+        "diagRightBankedDown25ToFlat", "diagUp25LeftBanked", "diagUp25RightBanked", "diagDown25LeftBanked", "diagDown25RightBanked", "leftEighthBankToDiagUp25",
+        "rightEighthBankToDiagUp25", "leftEighthBankToDiagDown25", "rightEighthBankToDiagDown25", "leftEighthBankToOrthogonalUp25", "rightEighthBankToOrthogonalUp25", "leftEighthBankToOrthogonalDown25",
+        "rightEighthBankToOrthogonalDown25", "diagBrakes", "diagBlockBrakes", "down25Brakes", "diagBooster", "diagFlatToUp60LongBase",
+        "diagUp60ToFlatLongBase", "diagFlatToDown60LongBase", "diagDown60ToFlatLongBase", "leftEighthDiveLoopUpToOrthogonal", "rightEighthDiveLoopUpToOrthogonal", "leftEighthDiveLoopDownToDiag",
+        "rightEighthDiveLoopDownToDiag", "diagDown25Brakes",
+    ];
+    // Track type -> per-sequence flags (bits 0-3: entrance connection sides, bit 4: origin, bit 5: connects to path)
+    const TRACK_SEQUENCE_FLAGS = {1:[218],2:[218],3:[218],66:[16,137,1,131,8,2,140,134,4],101:[31],257:[154,0,138,0],258:[153,131,140,134],259:[153,1,1,131,8,0,0,2,8,0,0,2,140,4,4,134],260:[153,1,1,131,140,4,4,134],261:[26,0,138,138,0],262:[177],263:[146,0,130,0],264:[191],265:[26,139,10,142],266:[16,137,1,131,8,2,140,134,4]};
+    // </generated-ride-data>
+
     // ------------------------------------------------------------------
     // Settings, logging
     // ------------------------------------------------------------------
@@ -946,19 +1202,27 @@
             return res.ok ? res : null;
         }
 
-        /** Would a piece here connect to an entrance/exit we do not want to touch? */
-        function touchesForeignPortal(x, y, z, s) {
+        /**
+         * Is (x, y) the tile in front of an entrance/exit other than the one being connected? Returns null, or
+         * 'joins' when a piece at (z, s) would connect to it, or 'blocks' when it would sit there without
+         * connecting (e.g. a slope across it) and so stop that entrance/exit ever getting a path.
+         */
+        function foreignPortalAt(x, y, z, s) {
+            let result = null;
             for (let k = 0; k < 4; k++) {
                 const m = tc.get(x + DIR_DX[k], y + DIR_DY[k]);
                 if (!m) continue;
                 for (const e of m.entrances) {
                     if (e.type === ENTRANCE_PARK || e.dir !== k) continue;
-                    if (edgeZ(z, s, k) !== e.z) continue;
                     if (opts.allowedPortal && opts.allowedPortal.x === m.x && opts.allowedPortal.y === m.y) continue;
-                    return true;
+                    if (edgeZ(z, s, k) === e.z) {
+                        result = e.type === ENTRANCE_RIDE_EXIT ? (result || 'joins') : 'blocks';
+                    } else if (z < e.z + PATH_CLEARANCE && z + PATH_CLEARANCE + LAND_STEP > e.z) {
+                        result = 'blocks';
+                    }
                 }
             }
-            return false;
+            return result;
         }
 
         /** Number of existing paths (other than in direction `except`) a new piece would merge with. */
@@ -1119,8 +1383,11 @@
                         }
                         const ok = placement(info, c.z, c.s);
                         if (!ok) continue;
-                        const foreign = touchesForeignPortal(nx, ny, c.z, c.s);
-                        if (foreign && opts.queue) continue;
+                        const foreign = foreignPortalAt(nx, ny, c.z, c.s);
+                        if (foreign === 'blocks' || (foreign && opts.queue)) {
+                            noteFailure('in front of another entrance or exit');
+                            continue;
+                        }
 
                         // A queue tile joins at most two neighbours (see FootpathConnectEdges): the entrance or
                         // previous queue tile first, then the normal path in the lowest direction. So intermediate
@@ -1341,12 +1608,17 @@
         }
 
         // Re-validate every new piece with a real query to get exact costs.
+        // A queue line only needs to be so long; beyond that the route continues as a normal footpath.
+        const maxQueue = plan.queue ? Math.max(1, optInt(params, 'queueLength', 12)) : Infinity;
+        const pathStyle = plan.queue && fullPath.filter(n => !n.existing).length > maxQueue
+            ? resolvePathStyle(tc, plan.near, false, Object.assign({}, params, { surface: params.pathSurface })) : style;
         const toBuild = [];
         let totalCost = 0;
         for (const node of fullPath) {
             if (node.existing) continue;
             const piece = { x: node.x, y: node.y, z: node.z, s: node.s, dir: node.dir };
-            const res = queryActionSync('footpathplace', footpathArgs(piece, style, flags));
+            piece.style = toBuild.length < maxQueue ? style : pathStyle;
+            const res = queryActionSync('footpathplace', footpathArgs(piece, piece.style, flags));
             if (res.error !== 0) {
                 fail('Route validation failed at ' + piece.x + ',' + piece.y + ': ' + describeResult(res), {
                     status: statusName(res.error),
@@ -1370,6 +1642,7 @@
             kind: plan.queue ? 'queue' : 'footpath',
             style: describeStyle(style),
             tilesToBuild: toBuild.length,
+            queueTiles: plan.queue ? Math.min(toBuild.length, maxQueue) : undefined,
             tilesToRejoin: toRejoin.length,
             estimatedCost: totalCost,
             estimatedCostFormatted: formatMoney(totalCost),
@@ -1380,7 +1653,7 @@
             return summary;
         }
 
-        const promises = toBuild.map(piece => executeAction('footpathplace', footpathArgs(piece, style, flags)))
+        const promises = toBuild.map(piece => executeAction('footpathplace', footpathArgs(piece, piece.style, flags)))
             .concat(toRejoin.map(r => executeAction('footpathplace', footpathArgs(r.piece, r.style, flags))));
         const results = await Promise.all(promises);
         const rejoinResults = results.splice(toBuild.length);
@@ -1489,6 +1762,1112 @@
         }
         fail('Ride "' + ride.name + '" has no ' + kind + ' placed yet. Place one in-game (or with execute_action '
             + '"rideentranceexitplace") first.');
+    }
+
+    // ------------------------------------------------------------------
+    // Ride building: ride types, availability, sites
+    // ------------------------------------------------------------------
+
+    const RIDE_STATUS = { closed: 0, open: 1, testing: 2, simulating: 3 };
+    const TRACK_TOWER_BASE = 66;
+    const SPECIAL_MAZE = 1;
+    const SEQ_ORIGIN = 1 << 4;
+    const SEQ_CONNECTS_TO_PATH = 1 << 5;
+
+    function rideTypeInfo(rideType) {
+        const row = RIDE_TYPE_DATA[rideType];
+        if (!row) return null;
+        const [name, category, startPiece, flagsLow, flagsHigh, groups, extraGroups, maxHeight, liftMin, liftMax, special] = row;
+        const has = flag => {
+            const i = RTD_FLAGS[flag];
+            if (i === undefined) return false;
+            return i < 32 ? (flagsLow & (1 << i)) !== 0 : (flagsHigh & (1 << (i - 32))) !== 0;
+        };
+        let kind = 'tracked';
+        if (has('isShopOrFacility')) kind = 'stall';
+        else if (has('isFlatRide')) kind = 'flat';
+        else if (special === SPECIAL_MAZE) kind = 'maze';
+        else if (startPiece === TRACK_TOWER_BASE) kind = 'tower';
+        return {
+            id: rideType, name: name, category: RIDE_CATEGORIES[category] || null, startPiece: startPiece, has: has,
+            groups: groups, extraGroups: extraGroups, maxHeight: maxHeight, liftMin: liftMin, liftMax: liftMax,
+            special: special, kind: kind,
+        };
+    }
+
+    /** Footprint of a single-piece ride (flat ride, stall, tower base) as tile offsets for direction 0. */
+    function pieceFootprint(trackType) {
+        let seg = null;
+        try {
+            seg = context.getTrackSegment(trackType);
+        } catch (e) {
+            seg = null;
+        }
+        if (!seg) return null;
+        const tiles = seg.elements.map(e => ({ x: Math.round(e.x / TILE_SIZE), y: Math.round(e.y / TILE_SIZE) }));
+        const xs = tiles.map(t => t.x);
+        const ys = tiles.map(t => t.y);
+        return {
+            tiles: tiles,
+            minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys),
+            width: Math.max(...xs) - Math.min(...xs) + 1,
+            length: Math.max(...ys) - Math.min(...ys) + 1,
+        };
+    }
+
+    /** Rotate a tile offset by a direction (CoordsXY::Rotate). */
+    function rotate(x, y, direction) {
+        switch (direction & 3) {
+            case 0: return { x: x, y: y };
+            case 1: return { x: y, y: -x };
+            case 2: return { x: -x, y: -y };
+            default: return { x: -y, y: x };
+        }
+    }
+
+    function ignoreResearch() {
+        try {
+            return !!cheats.ignoreResearchStatus;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    /** Ride objects the player may build right now (invented, or every loaded ride with the research cheat). */
+    function buildableRideOptions() {
+        const out = [];
+        const seen = new Set();
+        const add = (obj, rideType, category) => {
+            const key = obj.index + ':' + rideType;
+            if (seen.has(key)) return;
+            seen.add(key);
+            const info = rideTypeInfo(rideType);
+            if (!info) return;
+            const option = {
+                object: obj.index,
+                identifier: obj.identifier,
+                name: obj.name,
+                rideType: rideType,
+                rideTypeName: info.name,
+                category: category || info.category,
+                kind: info.kind,
+                description: obj.description,
+            };
+            if (info.kind === 'flat' || info.kind === 'stall' || info.kind === 'tower') {
+                const fp = pieceFootprint(info.startPiece);
+                if (fp) option.footprint = { width: fp.width, length: fp.length };
+            }
+            out.push(option);
+        };
+        if (ignoreResearch()) {
+            for (const obj of loadedObjects('ride')) {
+                for (const rideType of obj.rideType || []) {
+                    if (rideType !== 255 && rideType < RIDE_TYPE_DATA.length) add(obj, rideType, null);
+                }
+            }
+        } else {
+            let items = [];
+            try {
+                items = park.research.inventedItems;
+            } catch (e) {
+                items = [];
+            }
+            for (const item of items) {
+                if (item.type !== 'ride') continue;
+                let obj = null;
+                try {
+                    obj = objectManager.getObject('ride', item.object);
+                } catch (e) {
+                    obj = null;
+                }
+                if (obj) add(obj, item.rideType, item.category);
+            }
+        }
+        return out;
+    }
+
+    /** Picks the ride the request refers to (object index/identifier, ride type, or a name search). */
+    function resolveRideOption(params, kinds) {
+        const options = buildableRideOptions().filter(o => !kinds || kinds.includes(o.kind));
+        const describe = () => options.slice(0, 40).map(o => o.name + ' (' + o.kind + ', ' + o.category + ')').join(', ');
+        let matches = options;
+        if (params.object !== undefined && params.object !== null) {
+            const ref = params.object;
+            matches = options.filter(o => o.object === ref || o.identifier === ref
+                || (typeof ref === 'string' && o.name.toLowerCase() === ref.toLowerCase()));
+        } else if (isNumber(params.rideType)) {
+            matches = options.filter(o => o.rideType === params.rideType);
+        } else if (typeof params.ride === 'string') {
+            const needle = params.ride.toLowerCase();
+            matches = options.filter(o => o.name.toLowerCase() === needle);
+            if (matches.length === 0) {
+                matches = options.filter(o => o.name.toLowerCase().includes(needle) || o.rideTypeName.includes(needle.replace(/ /g, '_')));
+            }
+        } else {
+            fail('Say which ride to build with "ride" (a name such as "Twist"), "object" or "rideType". '
+                + 'list_buildable_rides shows what is available.');
+        }
+        if (params.category) matches = matches.filter(o => o.category === params.category);
+        if (matches.length === 0) {
+            fail('No buildable ride matches that request. Available: ' + describe()
+                + (options.length > 40 ? ', ...' : '') + '. Rides must be researched first.');
+        }
+        return matches[0];
+    }
+
+    // --- water and site finding -------------------------------------
+
+    const waterCache = { tiles: null };
+
+    function invalidateWaterCache() {
+        waterCache.tiles = null;
+    }
+
+    async function waterTiles() {
+        if (waterCache.tiles) return waterCache.tiles;
+        const size = map.size;
+        const out = [];
+        let counter = 0;
+        for (let y = 1; y < size.y - 1; y++) {
+            for (let x = 1; x < size.x - 1; x++) {
+                const elements = map.getTile(x, y).elements;
+                for (let i = 0; i < elements.length; i++) {
+                    const el = elements[i];
+                    if (el.type === 'surface') {
+                        if (el.waterHeight > el.baseZ) out.push([x, y]);
+                        break;
+                    }
+                }
+                if (++counter % 8192 === 0) await nextTick();
+            }
+        }
+        waterCache.tiles = out;
+        return out;
+    }
+
+    /**
+     * Finds open, owned, level areas for a footprint (plus a free ring for entrances and paths), scored by how
+     * close they are to the target (water or a tile) and to the park's existing paths.
+     *  opts: { width, length, margin, near: 'water' | {x, y}, radius, maxResults, anyTerrain }
+     *  anyTerrain: the footprint only has to be free, not level (tracked rides stand on supports).
+     */
+    async function findSites(tc, opts) {
+        const size = map.size;
+        const radius = Math.min(Math.max(opts.radius || 12, 2), 64);
+        let targets;
+        if (opts.near === 'water') {
+            targets = await waterTiles();
+            if (targets.length === 0) fail('There is no water in this park.');
+        } else if (opts.near && isNumber(opts.near.x) && isNumber(opts.near.y)) {
+            targets = [[Math.floor(opts.near.x), Math.floor(opts.near.y)]];
+        } else {
+            fail('"near" must be "water" or a tile {x, y}.');
+        }
+
+        // Search window: around the targets, clipped to the map and to a sane size.
+        let x1 = Infinity;
+        let y1 = Infinity;
+        let x2 = -Infinity;
+        let y2 = -Infinity;
+        for (const [x, y] of targets) {
+            x1 = Math.min(x1, x);
+            y1 = Math.min(y1, y);
+            x2 = Math.max(x2, x);
+            y2 = Math.max(y2, y);
+        }
+        x1 = Math.max(1, x1 - radius);
+        y1 = Math.max(1, y1 - radius);
+        x2 = Math.min(size.x - 2, x2 + radius);
+        y2 = Math.min(size.y - 2, y2 + radius);
+        const w = x2 - x1 + 1;
+        const h = y2 - y1 + 1;
+        if (w * h > 260 * 260) fail('Search area too large; give a tile with "near" or a smaller radius.');
+
+        const sandbox = isSandbox();
+        const free = new Uint8Array(w * h);      // owned, empty, dry
+        const level = new Int32Array(w * h).fill(-1); // flat surface height or -1
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const info = tc.get(x1 + x, y1 + y);
+                if (!info || !info.surface) continue;
+                const s = info.surface;
+                if (!sandbox && !s.owned) continue;
+                if (opts.anyTerrain) {
+                    // Tracked rides stand on supports: water and small scenery (cleared by the game) are fine.
+                    if (info.paths.length || info.entrances.length || info.tracks.length || info.largeScenery || info.walls.length) continue;
+                } else if (!info.onlySurface || s.water > s.z) {
+                    continue;
+                }
+                free[y * w + x] = 1;
+                if ((s.slope & 0x1F) === 0) level[y * w + x] = s.z;
+            }
+            if (y % 32 === 31) await nextTick();
+        }
+
+        // Distance from every tile in the window to the nearest target (and to the path network).
+        const distTo = sources => {
+            const dist = new Int32Array(w * h).fill(-1);
+            const queue = new Int32Array(w * h);
+            let head = 0;
+            let tail = 0;
+            for (const [sx, sy] of sources) {
+                const lx = sx - x1;
+                const ly = sy - y1;
+                if (lx < 0 || ly < 0 || lx >= w || ly >= h) continue;
+                const i = ly * w + lx;
+                if (dist[i] >= 0) continue;
+                dist[i] = 0;
+                queue[tail++] = i;
+            }
+            while (head < tail) {
+                const i = queue[head++];
+                const x = i % w;
+                const y = (i - x) / w;
+                const nd = dist[i] + 1;
+                if (x > 0 && dist[i - 1] < 0) { dist[i - 1] = nd; queue[tail++] = i - 1; }
+                if (x < w - 1 && dist[i + 1] < 0) { dist[i + 1] = nd; queue[tail++] = i + 1; }
+                if (y > 0 && dist[i - w] < 0) { dist[i - w] = nd; queue[tail++] = i - w; }
+                if (y < h - 1 && dist[i + w] < 0) { dist[i + w] = nd; queue[tail++] = i + w; }
+            }
+            return dist;
+        };
+        const targetDist = distTo(targets);
+        const entrances = await getParkEntrances();
+        const networkTiles = [];
+        for (const key of computeParkNetwork(tc, entrances)) {
+            const [nx, ny] = key.split(',');
+            networkTiles.push([+nx, +ny]);
+        }
+        const pathDist = networkTiles.length > 0 ? distTo(networkTiles) : null;
+
+        const fw = opts.width;
+        const fl = opts.length;
+        const margin = opts.margin === undefined ? 1 : opts.margin;
+        const ow = fw + 2 * margin;
+        const ol = fl + 2 * margin;
+        const used = new Uint8Array(w * h);
+        const candidates = [];
+        for (let y = 0; y + ol <= h; y++) {
+            for (let x = 0; x + ow <= w; x++) {
+                let ok = true;
+                let z = null;
+                let nearest = Infinity;
+                let nearPath = Infinity;
+                for (let dy = 0; dy < ol && ok; dy++) {
+                    for (let dx = 0; dx < ow; dx++) {
+                        const i = (y + dy) * w + (x + dx);
+                        if (!free[i]) {
+                            ok = false;
+                            break;
+                        }
+                        const inner = dx >= margin && dx < margin + fw && dy >= margin && dy < margin + fl;
+                        if (inner && !opts.anyTerrain) {
+                            if (level[i] < 0 || (z !== null && level[i] !== z)) {
+                                ok = false;
+                                break;
+                            }
+                            z = level[i];
+                        } else {
+                            if (targetDist[i] >= 0) nearest = Math.min(nearest, targetDist[i]);
+                            if (pathDist && pathDist[i] >= 0) nearPath = Math.min(nearPath, pathDist[i]);
+                        }
+                    }
+                }
+                if (!ok || nearest === Infinity || nearest > radius) continue;
+                const score = nearest * 3 + Math.min(nearPath, 40) * 0.5;
+                candidates.push({ x: x, y: y, z: z, score: score, distanceToTarget: nearest, distanceToPath: nearPath });
+            }
+            if (y % 16 === 15) await nextTick();
+        }
+        candidates.sort((a, b) => a.score - b.score);
+
+        const results = [];
+        const maxResults = opts.maxResults || 5;
+        for (const c of candidates) {
+            let clash = false;
+            for (let dy = 0; dy < ol && !clash; dy++) {
+                for (let dx = 0; dx < ow; dx++) {
+                    if (used[(c.y + dy) * w + (c.x + dx)]) {
+                        clash = true;
+                        break;
+                    }
+                }
+            }
+            if (clash) continue;
+            for (let dy = 0; dy < ol; dy++) {
+                for (let dx = 0; dx < ow; dx++) used[(c.y + dy) * w + (c.x + dx)] = 1;
+            }
+            results.push({
+                // Top-left tile of the footprint itself (inside the margin).
+                x: x1 + c.x + margin,
+                y: y1 + c.y + margin,
+                z: c.z,
+                width: fw,
+                length: fl,
+                distanceToTarget: c.distanceToTarget,
+                distanceToPath: c.distanceToPath === Infinity ? null : c.distanceToPath,
+            });
+            if (results.length >= maxResults) break;
+        }
+        return results;
+    }
+
+    // --- placing single-piece rides ---------------------------------
+
+    /** Tiles a single-piece ride occupies when its origin is at (ox, oy) facing `direction`. */
+    function placedFootprint(fp, ox, oy, direction) {
+        return fp.tiles.map(t => {
+            const r = rotate(t.x, t.y, direction);
+            return { x: ox + r.x, y: oy + r.y };
+        });
+    }
+
+    /** Origin that puts the rotated footprint's top-left corner at (left, top). */
+    function originForCorner(fp, left, top, direction) {
+        const tiles = fp.tiles.map(t => rotate(t.x, t.y, direction));
+        const minX = Math.min(...tiles.map(t => t.x));
+        const minY = Math.min(...tiles.map(t => t.y));
+        return { x: left - minX, y: top - minY };
+    }
+
+    /**
+     * Where entrances/exits (or, for stalls, paths) may attach to a placed single-piece ride, from the track
+     * piece's sequence flags. Each entry gives the entrance tile, the direction it must face (toward the ride)
+     * and the tile in front of it where the path goes.
+     */
+    function attachmentPoints(trackType, fp, ox, oy, direction) {
+        const flags = TRACK_SEQUENCE_FLAGS[trackType] || [];
+        const tiles = placedFootprint(fp, ox, oy, direction);
+        const occupied = new Set(tiles.map(t => tileKey(t.x, t.y)));
+        const out = [];
+        tiles.forEach((t, i) => {
+            const sides = (flags[i] || 0) & 0x0F;
+            for (let k = 0; k < 4; k++) {
+                if (!(sides & (1 << k))) continue;
+                const out1 = (k + direction) & 3;
+                const ex = t.x + DIR_DX[out1];
+                const ey = t.y + DIR_DY[out1];
+                if (occupied.has(tileKey(ex, ey))) continue;
+                out.push({
+                    x: ex, y: ey,
+                    direction: out1 ^ 2,
+                    front: { x: ex + DIR_DX[out1], y: ey + DIR_DY[out1] },
+                    rideTile: t,
+                    connectsToPath: ((flags[i] || 0) & SEQ_CONNECTS_TO_PATH) !== 0,
+                });
+            }
+        });
+        return out;
+    }
+
+    function rideActionArgs(rideId, trackType, rideType, x, y, z, direction, extra) {
+        return Object.assign({
+            x: x * TILE_SIZE, y: y * TILE_SIZE, z: z, direction: direction,
+            ride: rideId, trackType: trackType, rideType: rideType,
+            brakeSpeed: 0, colour: 0, seatRotation: 4, trackPlaceFlags: 0, isFromTrackDesign: false,
+        }, extra || {});
+    }
+
+    function defaultStationObject() {
+        const stations = loadedObjects('station');
+        const plain = stations.find(o => o.identifier === 'rct2.station.plain');
+        return plain ? plain.index : (stations.length > 0 ? stations[0].index : 0);
+    }
+
+    async function createRide(option, params, flags) {
+        const res = await executeAction('ridecreate', {
+            rideType: option.rideType,
+            rideObject: option.object,
+            entranceObject: params.stationStyle !== undefined
+                ? findObjectIndex('station', params.stationStyle) : defaultStationObject(),
+            colour1: 0,
+            colour2: 0,
+            inspectionInterval: 2,
+            flags: flags,
+        });
+        if (res.error !== 0 || !isNumber(res.ride)) fail('Could not create the ride: ' + describeResult(res));
+        return res.ride;
+    }
+
+    async function demolishRide(rideId, flags) {
+        return executeAction('ridedemolish', { ride: rideId, modifyType: 0, flags: flags });
+    }
+
+    /** Scores usable entrance/exit spots (at station height z) by how cheaply their front tile reaches the paths. */
+    function rankAttachments(tc, points, networkField, z) {
+        return points
+            .map(p => {
+                const front = tc.get(p.front.x, p.front.y);
+                const ok = portalSpotOk(tc, p.x, p.y, z, p.front.x, p.front.y);
+                const d = networkField ? networkField(p.front.x, p.front.y) : 0;
+                const frontHasPath = !!(front && front.paths.some(q => !q.ghost));
+                return Object.assign({ ok: ok, distance: d < 0 ? 999 : d, frontHasPath: frontHasPath }, p);
+            })
+            .filter(p => p.ok)
+            .sort((a, b) => a.distance - b.distance);
+    }
+
+    function chooseEntranceAndExit(ranked) {
+        // The entrance needs a free tile in front for its queue line; an exit may open straight onto a path.
+        const entrance = ranked.find(p => !p.frontHasPath && p.distance >= 2) || ranked.find(p => !p.frontHasPath);
+        if (!entrance) return null;
+        const apart = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        // Keep the exit away from the entrance so the queue and the exit path do not merge.
+        const exit = ranked.find(p => p !== entrance && apart(p, entrance) >= 3 && apart(p.front, entrance.front) >= 3)
+            || ranked.find(p => p !== entrance && apart(p, entrance) >= 2 && apart(p.front, entrance.front) >= 2)
+            || ranked.find(p => p !== entrance);
+        return exit ? { entrance: entrance, exit: exit } : null;
+    }
+
+    // ------------------------------------------------------------------
+    // Track layouts: replaying track designs and custom coasters
+    // ------------------------------------------------------------------
+
+    const TRACK_PLACE_LIFT_HILL = 1 << 0;
+    const TRACK_PLACE_INVERTED = 1 << 1;
+    const STATION_TRACK_TYPES = [1, 2, 3];
+    const STATION_STYLES = [
+        'rct2.station.plain', 'rct2.station.wooden', 'rct2.station.canvas_tent', 'rct2.station.castle_grey',
+        'rct2.station.castle_brown', 'rct2.station.jungle', 'rct2.station.log', 'rct2.station.classical',
+        'rct2.station.abstract', 'rct2.station.snow', 'rct2.station.pagoda', 'rct2.station.space',
+        'openrct2.station.noentrance',
+    ];
+    // RCT2 ride types that OpenRCT2 splits by vehicle (RCT2RideTypeToOpenRCT2RideType).
+    const RCT2_RIDE_TYPE_VARIANTS = { 19: [19, 91], 4: [4, 95], 11: [11, 93], 51: [51, 92], 54: [54, 94] };
+
+    const segmentCache = new Map();
+
+    function trackSegment(type) {
+        if (segmentCache.has(type)) return segmentCache.get(type);
+        let seg = null;
+        try {
+            seg = context.getTrackSegment(type);
+        } catch (e) {
+            seg = null;
+        }
+        const out = seg ? {
+            type: type,
+            name: TRACK_TYPE_NAMES[type] || String(type),
+            description: seg.description,
+            beginZ: seg.beginZ,
+            endZ: seg.endZ,
+            endX: seg.endX,
+            endY: seg.endY,
+            beginDirection: seg.beginDirection,
+            endDirection: seg.endDirection,
+            beginSlope: seg.beginSlope,
+            endSlope: seg.endSlope,
+            beginBank: seg.beginBank,
+            endBank: seg.endBank,
+            trackGroup: seg.trackGroup,
+            allowsChainLift: seg.allowsChainLift,
+            isInversion: seg.isInversion,
+            turnDirection: seg.turnDirection,
+            startsHalfHeightUp: seg.startsHalfHeightUp,
+            length: seg.length,
+            blocks: seg.elements.map(e => ({ x: e.x, y: e.y, z: e.z })),
+        } : null;
+        segmentCache.set(type, out);
+        return out;
+    }
+
+    /**
+     * Walks a layout from a relative origin (0, 0, 0) facing `direction`, exactly like TrackDesignPlaceRide:
+     * each piece goes at (pos, z - beginZ, rotation & 3); then the position advances by the rotated end offset,
+     * the rotation turns, and unless the piece ends diagonally the position steps one tile forward.
+     */
+    function walkLayout(elements, direction) {
+        let x = 0;
+        let y = 0;
+        let z = 0;
+        let rot = direction & 3;
+        const pieces = [];
+        elements.forEach((el, index) => {
+            const seg = trackSegment(el.type);
+            if (!seg) fail('Unknown track piece type ' + el.type + ' at position ' + index + '.');
+            const placeZ = z - seg.beginZ;
+            const blocks = seg.blocks.map(b => {
+                const r = rotate(b.x, b.y, rot);
+                return { x: x + r.x, y: y + r.y, z: placeZ + b.z };
+            });
+            pieces.push({ index: index, el: el, seg: seg, x: x, y: y, z: placeZ, direction: rot & 3, blocks: blocks });
+            const off = rotate(seg.endX, seg.endY, rot);
+            x += off.x;
+            y += off.y;
+            z = z - seg.beginZ + seg.endZ;
+            rot = (rot + seg.endDirection - seg.beginDirection) & 3;
+            if (seg.endDirection & 4) {
+                rot |= 4;
+            } else {
+                x += DIR_DX[rot & 3] * TILE_SIZE;
+                y += DIR_DY[rot & 3] * TILE_SIZE;
+            }
+        });
+        return { pieces: pieces, end: { x: x, y: y, z: z, direction: rot } };
+    }
+
+    /** Tiles (relative to the origin tile) covered by a walked layout plus its entrances. */
+    function layoutTiles(walked, entrances, direction) {
+        const tiles = new Map();
+        for (const p of walked.pieces) {
+            for (const b of p.blocks) {
+                const tx = Math.floor(b.x / TILE_SIZE);
+                const ty = Math.floor(b.y / TILE_SIZE);
+                tiles.set(tileKey(tx, ty), { x: tx, y: ty });
+            }
+        }
+        for (const e of entrances || []) {
+            const r = rotate(e.x, e.y, direction);
+            const tx = Math.floor(r.x / TILE_SIZE);
+            const ty = Math.floor(r.y / TILE_SIZE);
+            tiles.set(tileKey(tx, ty), { x: tx, y: ty });
+        }
+        const list = Array.from(tiles.values());
+        return {
+            tiles: list,
+            minX: Math.min(...list.map(t => t.x)), maxX: Math.max(...list.map(t => t.x)),
+            minY: Math.min(...list.map(t => t.y)), maxY: Math.max(...list.map(t => t.y)),
+        };
+    }
+
+    /** Highest point of a tile's surface, or the water level if higher (as TrackDesignPlace's getPlaceZ). */
+    function surfaceTop(info) {
+        const s = info.surface;
+        let z = s.z;
+        if (s.slope & 0x0F) {
+            z += LAND_STEP;
+            if (s.slope & 0x10) z += LAND_STEP;
+        }
+        return Math.max(z, s.water || 0);
+    }
+
+    /** Base height for a layout with its origin on tile (ox, oy): every block must clear terrain and water. */
+    function layoutBaseZ(tc, walked, ox, oy) {
+        const origin = tc.get(ox, oy);
+        if (!origin || !origin.surface) return null;
+        let z = Math.max(origin.surface.z, origin.surface.water || 0);
+        for (const p of walked.pieces) {
+            for (const b of p.blocks) {
+                const info = tc.get(ox + Math.floor(b.x / TILE_SIZE), oy + Math.floor(b.y / TILE_SIZE));
+                if (!info || !info.surface) return null;
+                z = Math.max(z, surfaceTop(info) - b.z);
+            }
+        }
+        return Math.ceil(z / 8) * 8;
+    }
+
+    function trackPlaceArgs(rideId, rideType, piece, ox, oy, baseZ, flags) {
+        const el = piece.el;
+        let placeFlags = 0;
+        if (el.chain) placeFlags |= TRACK_PLACE_LIFT_HILL;
+        if (el.inverted) placeFlags |= TRACK_PLACE_INVERTED;
+        return {
+            x: ox * TILE_SIZE + piece.x,
+            y: oy * TILE_SIZE + piece.y,
+            z: baseZ + piece.z,
+            direction: piece.direction,
+            ride: rideId,
+            trackType: el.type,
+            rideType: rideType,
+            brakeSpeed: isNumber(el.brakeSpeed) ? el.brakeSpeed : 2,
+            colour: isNumber(el.colourScheme) ? el.colourScheme : 0,
+            seatRotation: isNumber(el.seatRotation) ? el.seatRotation : 4,
+            trackPlaceFlags: placeFlags,
+            isFromTrackDesign: true,
+            flags: flags,
+        };
+    }
+
+    /**
+     * Runs fn synchronously inside the next game tick. Actions executed there run immediately instead of being
+     * queued, which keeps trackplace's isFromTrackDesign flag (lost when a queued action is cloned) and lets a
+     * design cross over its own track. Falls back to running now (queued) while the game is paused.
+     */
+    function inNextTick(fn) {
+        return new Promise((resolve, reject) => {
+            if (context.paused) {
+                Promise.resolve().then(fn).then(resolve, reject);
+                return;
+            }
+            let done = false;
+            let sub = null;
+            const timer = context.setTimeout(() => {
+                if (done) return;
+                done = true;
+                if (sub) sub.dispose();
+                Promise.resolve().then(fn).then(resolve, reject);
+            }, 2000);
+            sub = context.subscribe('interval.tick', () => {
+                if (done) return;
+                done = true;
+                sub.dispose();
+                context.clearTimeout(timer);
+                try {
+                    resolve(fn());
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        });
+    }
+
+    /** executeAction whose callback ran synchronously (inside a tick); null if the action was queued instead. */
+    function executeActionNow(name, args) {
+        let result = null;
+        try {
+            context.executeAction(name, args, res => {
+                result = res;
+            });
+        } catch (e) {
+            return { error: -2, errorMessage: String(e && e.message ? e.message : e) };
+        }
+        return result;
+    }
+
+    /** Finds the ride object a layout needs: its own vehicle if buildable, else another of the same ride type. */
+    function resolveLayoutRide(layout, params) {
+        const options = buildableRideOptions().filter(o => o.kind !== 'stall');
+        if (params.object !== undefined || params.ride !== undefined || isNumber(params.rideType)) {
+            return { option: resolveRideOption(params, ['tracked', 'tower', 'flat', 'maze']), substituted: false };
+        }
+        const legacy = typeof layout.vehicleObject === 'string' ? layout.vehicleObject.trim().toLowerCase() : null;
+        if (legacy) {
+            for (const o of options) {
+                let obj = null;
+                try {
+                    obj = objectManager.getObject('ride', o.object);
+                } catch (e) {
+                    obj = null;
+                }
+                if (obj && obj.legacyIdentifier && obj.legacyIdentifier.trim().toLowerCase() === legacy) {
+                    return { option: o, substituted: false };
+                }
+            }
+        }
+        let types = [];
+        if (isNumber(layout.rideType)) types = [layout.rideType];
+        else if (isNumber(layout.rct2RideType)) types = RCT2_RIDE_TYPE_VARIANTS[layout.rct2RideType] || [layout.rct2RideType];
+        const match = options.find(o => types.includes(o.rideType));
+        if (match) return { option: match, substituted: !!legacy };
+        const typeNames = types.map(t => (RIDE_TYPE_DATA[t] ? RIDE_TYPE_DATA[t][0] : t)).join(' or ');
+        fail('This design needs a ' + (typeNames || 'ride type') + (legacy ? ' (vehicle ' + layout.vehicleObject.trim() + ')' : '')
+            + ' that this park has not researched or loaded.');
+    }
+
+    /** Places the entrances/exits a design specifies; returns problems instead of throwing. */
+    function designEntrancePlacements(layout, rideId, ox, oy, baseZ, direction) {
+        const out = [];
+        for (const e of layout.entrances || []) {
+            const r = rotate(e.x, e.y, direction);
+            const x = ox + Math.floor(r.x / TILE_SIZE);
+            const y = oy + Math.floor(r.y / TILE_SIZE);
+            const dir = (direction + e.direction) & 3;
+            const z = e.z === null || e.z === undefined ? null : e.z * 8 + baseZ;
+            // The station is whatever station the track beside the entrance belongs to.
+            let station = 0;
+            const tile = map.getTile(x + DIR_DX[dir], y + DIR_DY[dir]);
+            for (const el of tile.elements) {
+                if (el.type === 'track' && el.ride === rideId && (z === null || el.baseZ === z)) {
+                    station = el.station === null || el.station === undefined ? 0 : el.station;
+                    break;
+                }
+            }
+            const away = dir ^ 2;
+            out.push({
+                x: x, y: y, direction: dir, station: station, isExit: !!e.isExit, z: z,
+                front: { x: x + DIR_DX[away], y: y + DIR_DY[away] },
+            });
+        }
+        return out;
+    }
+
+    /** Can an entrance/exit stand on (x, y) at height z, with a path possible on the tile in front of it? */
+    function portalSpotOk(tc, x, y, z, frontX, frontY) {
+        const spot = tc.get(x, y);
+        const front = tc.get(frontX, frontY);
+        if (!spot || !spot.surface || !front || !front.surface) return false;
+        const sandbox = isSandbox();
+        if (!sandbox && !spot.surface.owned) return false;
+        if (!sandbox && !front.surface.owned && !front.surface.rights) return false;
+        if (spot.paths.length || spot.entrances.length || spot.largeScenery) return false;
+        if (spot.tracks.some(t => t.z < z + 56 && t.clearanceZ > z)) return false;
+        if (spot.surface.water > z || surfaceTop(spot) > z) return false;
+        if (front.surface.water > z) return false;
+        if (front.entrances.length || front.largeScenery) return false;
+        if (front.tracks.some(t => t.z < z + PATH_CLEARANCE && t.clearanceZ > z)) return false;
+        return true;
+    }
+
+    /** Pieces that entrances can attach to: station platforms, or a flat ride's / tower's base piece. */
+    function portalPieces(walked) {
+        return walked.pieces.filter(p => STATION_TRACK_TYPES.includes(p.el.type)
+            || (TRACK_SEQUENCE_FLAGS[p.el.type] && TRACK_SEQUENCE_FLAGS[p.el.type].some(f => f & 0x0F)));
+    }
+
+    /** Entrance/exit spots along a placed layout's station platforms (used when a layout gives none). */
+    function stationAttachmentPoints(walked, ox, oy) {
+        const points = [];
+        for (const p of portalPieces(walked)) {
+            const fp = pieceFootprint(p.el.type);
+            const tx = ox + Math.floor(p.x / TILE_SIZE);
+            const ty = oy + Math.floor(p.y / TILE_SIZE);
+            for (const a of attachmentPoints(p.el.type, fp, tx, ty, p.direction)) {
+                a.station = 0;
+                points.push(a);
+            }
+        }
+        return points;
+    }
+
+    async function applyLayoutSettings(rideId, layout, option, flags, warnings) {
+        const run = async (action, args, what, quiet) => {
+            const res = await executeAction(action, Object.assign({ ride: rideId, flags: flags }, args));
+            if (res.error !== 0 && !quiet) warnings.push(what + ': ' + describeResult(res));
+        };
+        const s = layout.settings || {};
+        await run('ridesetvehicle', { type: 2, value: option.object, colour: 0 }, 'vehicle');
+        if (isNumber(s.rideMode)) await run('ridesetsetting', { setting: 0, value: s.rideMode }, 'mode');
+        if (isNumber(s.numberOfTrains) && s.numberOfTrains > 0) {
+            await run('ridesetvehicle', { type: 0, value: s.numberOfTrains, colour: 0 }, 'trains');
+        }
+        if (isNumber(s.carsPerTrain) && s.carsPerTrain > 0) {
+            await run('ridesetvehicle', { type: 1, value: s.carsPerTrain, colour: 0 }, 'cars per train');
+        }
+        const settings = [['departFlags', 1], ['minWaitingTime', 2], ['maxWaitingTime', 3], ['operationSetting', 4],
+            ['liftHillSpeed', 8], ['numCircuits', 9]];
+        for (const [key, id] of settings) {
+            if (isNumber(s[key]) && (key !== 'numCircuits' || s[key] > 0) && (key !== 'liftHillSpeed' || s[key] > 0)) {
+                // Like TrackDesignAction, ignore settings that do not apply to the ride's mode.
+                await run('ridesetsetting', { setting: id, value: s[key] }, key, key === 'operationSetting');
+            }
+        }
+        const c = layout.colours || {};
+        (c.track || []).forEach((tc, i) => {
+            if (!tc) return;
+            ['main', 'additional', 'supports'].forEach((k, t) => {
+                if (isNumber(tc[k])) run('ridesetappearance', { type: t, value: tc[k], index: i }, 'track colour');
+            });
+        });
+        (c.vehicles || []).slice(0, 32).forEach((vc, i) => {
+            if (!vc) return;
+            ['body', 'trim', 'tertiary'].forEach((k, t) => {
+                if (isNumber(vc[k])) run('ridesetappearance', { type: 3 + t, value: vc[k], index: i }, 'vehicle colour');
+            });
+        });
+        if (isNumber(c.vehicleColourSettings)) {
+            await run('ridesetappearance', { type: 6, value: c.vehicleColourSettings, index: 0 }, 'vehicle colour scheme');
+        }
+    }
+
+    /** Will this candidate have room for an entrance and an exit (the design's own, or beside the station)? */
+    function portalsPossible(tc, layout, cand, z) {
+        // Tiles the layout's own track will cover once built.
+        const own = new Set();
+        for (const p of cand.walked.pieces) {
+            for (const b of p.blocks) own.add(tileKey(cand.ox + Math.floor(b.x / TILE_SIZE), cand.oy + Math.floor(b.y / TILE_SIZE)));
+        }
+        const ents = (layout.entrances || []).map(e => {
+            const r = rotate(e.x, e.y, cand.direction);
+            const x = cand.ox + Math.floor(r.x / TILE_SIZE);
+            const y = cand.oy + Math.floor(r.y / TILE_SIZE);
+            const dir = (cand.direction + e.direction) & 3;
+            const ez = e.z === null || e.z === undefined ? z : e.z * 8 + z;
+            const fx = x + DIR_DX[dir ^ 2];
+            const fy = y + DIR_DY[dir ^ 2];
+            return { ok: !own.has(tileKey(fx, fy)) && portalSpotOk(tc, x, y, ez, fx, fy), isExit: !!e.isExit };
+        });
+        if (ents.some(e => e.ok && !e.isExit) && ents.some(e => e.ok && e.isExit)) return true;
+        const stations = portalPieces(cand.walked);
+        if (stations.length === 0) return ents.length === 0 || ents.every(e => e.ok);
+        const stationZ = z + Math.min(...stations.map(p => p.z));
+        const spots = stationAttachmentPoints(cand.walked, cand.ox, cand.oy)
+            .filter(a => !own.has(tileKey(a.x, a.y)) && !own.has(tileKey(a.front.x, a.front.y))
+                && portalSpotOk(tc, a.x, a.y, stationZ, a.front.x, a.front.y));
+        return spots.length >= 2;
+    }
+
+    /** Origins for rides that must run on water: every track block over water, near the requested spot. */
+    async function addWaterCandidates(tc, elements, layout, params, directions, candidates) {
+        const water = await waterTiles();
+        if (water.length === 0) fail('This ride must be built on water and the park has none.');
+        let tx;
+        let ty;
+        if (params.near && params.near !== 'water' && isNumber(params.near.x)) {
+            tx = params.near.x;
+            ty = params.near.y;
+        } else {
+            tx = water.reduce((a, w) => a + w[0], 0) / water.length;
+            ty = water.reduce((a, w) => a + w[1], 0) / water.length;
+        }
+        const radius = optInt(params, 'radius', 40);
+        const nearby = water.filter(w => Math.abs(w[0] - tx) + Math.abs(w[1] - ty) <= radius * 2)
+            .sort((a, b) => (Math.abs(a[0] - tx) + Math.abs(a[1] - ty)) - (Math.abs(b[0] - tx) + Math.abs(b[1] - ty)));
+        for (const d of directions) {
+            const walked = walkLayout(elements, d);
+            const shape = layoutTiles(walked, layout.entrances, d);
+            const trackTiles = layoutTiles(walked, [], d).tiles;
+            for (const [wx, wy] of nearby) {
+                const allWet = trackTiles.every(t => {
+                    const info = tc.get(wx + t.x, wy + t.y);
+                    return info && info.surface && info.surface.water > info.surface.z;
+                });
+                if (!allWet) continue;
+                candidates.push({ walked: walked, shape: shape, direction: d, ox: wx, oy: wy,
+                    site: { distanceToTarget: Math.abs(wx - tx) + Math.abs(wy - ty), distanceToPath: null } });
+                if (candidates.length >= 40) return;
+            }
+            await nextTick();
+        }
+    }
+
+    async function placeMaze(tc, layout, rideId, ox, oy, z, direction, flags) {
+        const rol16 = (v, n) => {
+            n &= 15;
+            return ((v << n) | (v >>> (16 - n))) & 0xFFFF;
+        };
+        let cost = 0;
+        for (const m of layout.mazeElements) {
+            const r = rotate(m.x * TILE_SIZE, m.y * TILE_SIZE, direction);
+            const res = await executeAction('mazeplacetrack', {
+                x: ox * TILE_SIZE + r.x, y: oy * TILE_SIZE + r.y, z: z, ride: rideId,
+                mazeEntry: rol16(m.entry, direction * 4), flags: flags,
+            });
+            if (res.error !== 0) fail('Could not place maze tile: ' + describeResult(res));
+            cost += res.cost || 0;
+        }
+        return cost;
+    }
+
+    /**
+     * Places a track layout (decoded track design or custom layout). Returns the summary; throws on failure
+     * after demolishing the partially built ride.
+     * layout: { name, trackElements[], entrances[], mazeElements[], settings{}, colours{}, entranceStyle,
+     *           vehicleObject (DAT name), rct2RideType | rideType }
+     */
+    async function buildLayout(layout, params) {
+        ensureCanBuild(params);
+        const isMaze = Array.isArray(layout.mazeElements) && layout.mazeElements.length > 0;
+        const elements = layout.trackElements || [];
+        if (!isMaze && elements.length === 0) fail('The layout has no track pieces.');
+        if (elements.length > 3000) fail('The layout has too many pieces.');
+        const { option, substituted } = resolveLayoutRide(layout, params);
+        const flags = buildFlags(params);
+        const tc = new TileCache();
+
+        // Candidate origins and directions.
+        const directions = isNumber(params.direction) ? [params.direction & 3] : [0, 1, 2, 3];
+        const candidates = [];
+        const onWater = rideTypeInfo(option.rideType).has('trackMustBeOnWater');
+        if (onWater && !(isNumber(params.x) && isNumber(params.y))) {
+            await addWaterCandidates(tc, elements, layout, params, directions, candidates);
+        }
+        for (const d of (onWater && candidates.length > 0) ? [] : directions) {
+            const walked = isMaze ? { pieces: [], end: null } : walkLayout(elements, d);
+            const shape = isMaze
+                ? layoutTiles({ pieces: [] }, layout.mazeElements.map(m => ({ x: m.x * TILE_SIZE, y: m.y * TILE_SIZE })).concat(
+                    (layout.entrances || []).map(e => ({ x: e.x, y: e.y }))), d)
+                : layoutTiles(walked, layout.entrances, d);
+            const width = shape.maxX - shape.minX + 1;
+            const length = shape.maxY - shape.minY + 1;
+            if (isNumber(params.x) && isNumber(params.y)) {
+                candidates.push({ walked: walked, shape: shape, direction: d,
+                    ox: Math.floor(params.x) - shape.minX, oy: Math.floor(params.y) - shape.minY });
+            } else {
+                const sites = await findSites(tc, {
+                    width: width, length: length, margin: 1, near: params.near || 'water',
+                    radius: optInt(params, 'radius', 16), maxResults: 4, anyTerrain: true,
+                });
+                for (const site of sites) {
+                    candidates.push({ walked: walked, shape: shape, direction: d, site: site,
+                        ox: site.x - shape.minX, oy: site.y - shape.minY });
+                }
+            }
+        }
+        if (candidates.length === 0) {
+            fail('No free area big enough for this layout was found near ' + (params.near === undefined || params.near === 'water'
+                ? 'water' : JSON.stringify(params.near)) + '. Try a larger radius or another location.');
+        }
+        candidates.sort((a, b) => (a.site ? a.site.distanceToTarget : 0) - (b.site ? b.site.distanceToTarget : 0));
+
+        const rideId = await createRide(option, Object.assign({}, params, {
+            stationStyle: params.stationStyle !== undefined ? params.stationStyle
+                : (isNumber(layout.entranceStyle) && STATION_STYLES[layout.entranceStyle]
+                    && loadedObjects('station').some(o => o.identifier === STATION_STYLES[layout.entranceStyle])
+                    ? STATION_STYLES[layout.entranceStyle] : undefined),
+        }), flags);
+        const warnings = [];
+        try {
+            // Validate each candidate with the game's own queries (trying a few heights, as the UI does).
+            let chosen = null;
+            const reasons = [];
+            for (const cand of candidates.slice(0, 16)) {
+                const z0 = isMaze ? null : layoutBaseZ(tc, cand.walked, cand.ox, cand.oy);
+                if (!isMaze && z0 === null) continue;
+                const startZ = isNumber(params.z) ? Math.floor(params.z) : z0;
+                for (let attempt = 0; attempt < (isNumber(params.z) ? 1 : 7) && !chosen; attempt++) {
+                    const z = isMaze ? (isNumber(params.z) ? params.z : surfaceTop(tc.get(cand.ox, cand.oy))) : startZ + attempt * 8;
+                    let ok = true;
+                    let cost = 0;
+                    if (!isMaze) {
+                        for (const p of cand.walked.pieces) {
+                            const r = queryActionSync('trackplace', trackPlaceArgs(rideId, option.rideType, p, cand.ox, cand.oy, z, flags));
+                            if (r.error !== 0) {
+                                ok = false;
+                                reasons.push(describeResult(r));
+                                break;
+                            }
+                            cost += r.cost || 0;
+                        }
+                    }
+                    if (ok && !isMaze && !portalsPossible(tc, layout, cand, z)) {
+                        ok = false;
+                        reasons.push('no usable spot for the entrance and exit');
+                    }
+                    if (ok) chosen = Object.assign({ z: z, estimatedCost: cost }, cand);
+                }
+                if (chosen) break;
+            }
+            if (!chosen) {
+                fail('The game rejected every candidate placement for this layout.', {
+                    reasons: Array.from(new Set(reasons)).slice(0, 6),
+                });
+            }
+
+            const summaryBase = {
+                rideId: rideId,
+                ride: option.name,
+                design: layout.name || null,
+                pieces: isMaze ? layout.mazeElements.length : elements.length,
+                origin: { x: chosen.ox, y: chosen.oy, z: chosen.z },
+                direction: chosen.direction,
+                area: {
+                    x1: chosen.ox + chosen.shape.minX, y1: chosen.oy + chosen.shape.minY,
+                    x2: chosen.ox + chosen.shape.maxX, y2: chosen.oy + chosen.shape.maxY,
+                },
+            };
+            if (substituted) summaryBase.vehicleSubstituted = 'design vehicle ' + layout.vehicleObject.trim() + ' not available';
+            if (chosen.site) summaryBase.site = { distanceToTarget: chosen.site.distanceToTarget, distanceToPath: chosen.site.distanceToPath };
+            if (params.dryRun) {
+                await demolishRide(rideId, flags);
+                return Object.assign({ dryRun: true, validated: true, estimatedCost: chosen.estimatedCost,
+                    estimatedCostFormatted: formatMoney(chosen.estimatedCost),
+                    note: 'The placement passed the game\'s checks; nothing was built.' }, summaryBase);
+            }
+
+            // Build the track inside one game tick so it executes atomically and keeps isFromTrackDesign.
+            let spent = 0;
+            if (isMaze) {
+                spent += await placeMaze(tc, layout, rideId, chosen.ox, chosen.oy, chosen.z, chosen.direction, flags);
+            } else {
+                const results = await inNextTick(() => chosen.walked.pieces.map(p =>
+                    executeActionNow('trackplace', trackPlaceArgs(rideId, option.rideType, p, chosen.ox, chosen.oy, chosen.z, flags))));
+                let queued = results.some(r => r === null);
+                if (queued) {
+                    // Paused: the actions were queued; wait for their results.
+                    const awaited = await Promise.all(chosen.walked.pieces.map(p =>
+                        executeAction('trackplace', trackPlaceArgs(rideId, option.rideType, p, chosen.ox, chosen.oy, chosen.z, flags))));
+                    results.splice(0, results.length, ...awaited);
+                }
+                const failed = results.findIndex(r => !r || r.error !== 0);
+                if (failed >= 0) {
+                    fail('Track piece ' + (failed + 1) + ' (' + TRACK_TYPE_NAMES[elements[failed].type] + ') could not be built: '
+                        + describeResult(results[failed]));
+                }
+                spent += results.reduce((sum, r) => sum + (r.cost || 0), 0);
+            }
+
+            // Entrances and exits: the design's own spots where usable, otherwise spots beside the station.
+            let portals = [];
+            const tcNow = new TileCache();
+            if ((layout.entrances || []).length > 0) {
+                portals = designEntrancePlacements(layout, rideId, chosen.ox, chosen.oy, chosen.z, chosen.direction)
+                    .filter(p => portalSpotOk(tcNow, p.x, p.y, p.z === null ? chosen.z : p.z, p.front.x, p.front.y));
+            }
+            if (!portals.some(p => !p.isExit) || !portals.some(p => p.isExit)) {
+                const keep = portals;
+                const entrances = await getParkEntrances();
+                const goalTiles = entrances.map(e => [e.x, e.y]);
+                for (const key of computeParkNetwork(new TileCache(), entrances)) {
+                    const [nx, ny] = key.split(',');
+                    goalTiles.push([+nx, +ny]);
+                }
+                const field = distanceField(tc, goalTiles);
+                const stationZ = chosen.z + Math.min(...portalPieces(chosen.walked).map(p => p.z));
+                const taken = new Set(keep.map(p => tileKey(p.x, p.y)));
+                const spots = stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy)
+                    .filter(a => !taken.has(tileKey(a.x, a.y)) && portalSpotOk(tcNow, a.x, a.y, stationZ, a.front.x, a.front.y));
+                const ranked = rankAttachments(tcNow, spots, field, stationZ);
+                const pair = chooseEntranceAndExit(ranked);
+                if (!pair) fail('No room beside the station for an entrance and exit.');
+                portals = keep.slice();
+                if (!keep.some(p => !p.isExit)) {
+                    portals.push({ x: pair.entrance.x, y: pair.entrance.y, direction: pair.entrance.direction, station: 0, isExit: false });
+                }
+                if (!keep.some(p => p.isExit)) {
+                    const exit = keep.some(p => !p.isExit) ? pair.entrance : pair.exit;
+                    portals.push({ x: exit.x, y: exit.y, direction: exit.direction, station: 0, isExit: true });
+                }
+                warnings.push('placed ' + (keep.length ? 'some' : 'the') + ' entrance/exit beside the station instead of where the design had them');
+            }
+            for (const p of portals) {
+                const res = await executeAction('rideentranceexitplace', {
+                    x: p.x * TILE_SIZE, y: p.y * TILE_SIZE, direction: p.direction, ride: rideId, station: p.station,
+                    isExit: p.isExit, flags: flags,
+                });
+                if (res.error !== 0) warnings.push((p.isExit ? 'exit' : 'entrance') + ' at ' + p.x + ',' + p.y + ': ' + describeResult(res));
+                else spent += res.cost || 0;
+            }
+
+            await applyLayoutSettings(rideId, layout, option, flags, warnings);
+            const summary = Object.assign({ built: true }, summaryBase);
+            const ride = map.getRide(rideId);
+            summary.name = ride.name;
+            const wantedName = typeof params.name === 'string' && params.name ? params.name : layout.name;
+            if (wantedName) {
+                for (let n = 1; n <= 9; n++) {
+                    const candidateName = n === 1 ? wantedName : wantedName + ' ' + n;
+                    const r = await executeAction('ridesetname', { ride: rideId, name: candidateName, flags: flags });
+                    if (r.error === 0) {
+                        summary.name = candidateName;
+                        break;
+                    }
+                }
+            }
+            summary.stations = rideStations(ride).map(({ index, station }) => ({
+                index: index,
+                entrance: station.entrance ? { x: station.entrance.x / TILE_SIZE, y: station.entrance.y / TILE_SIZE } : null,
+                exit: station.exit ? { x: station.exit.x / TILE_SIZE, y: station.exit.y / TILE_SIZE } : null,
+            }));
+            log('Built ' + summary.name + ' (' + summary.pieces + ' pieces)');
+
+            if (params.connectPaths !== false && summary.stations.some(s => s.entrance)) {
+                const pathParams = { rideId: rideId, allowWhilePaused: params.allowWhilePaused };
+                summary.paths = {};
+                try {
+                    const r = await methods.build_ride_queue(pathParams);
+                    summary.paths.queue = { built: r.built, cost: r.costFormatted, reachesNetwork: r.queueReachesParkNetwork };
+                    spent += r.cost || 0;
+                } catch (e) {
+                    summary.paths.queue = 'failed: ' + e.message;
+                }
+                try {
+                    const r = await methods.connect_ride_exit(pathParams);
+                    summary.paths.exit = r.alreadyConnected ? 'already connected'
+                        : { built: r.built, cost: r.costFormatted, connected: r.exitConnected };
+                    spent += r.cost || 0;
+                } catch (e) {
+                    summary.paths.exit = 'failed: ' + e.message;
+                }
+            }
+            await applyRideSettings(rideId, params, flags, summary);
+            if (warnings.length > 0) summary.warnings = warnings;
+            summary.totalCost = spent;
+            summary.totalCostFormatted = formatMoney(spent);
+            return summary;
+        } catch (e) {
+            await demolishRide(rideId, flags);
+            throw e;
+        }
     }
 
     // ------------------------------------------------------------------
@@ -2099,6 +3478,445 @@
         return fn();
     };
 
+    methods.list_buildable_rides = params => {
+        let options = buildableRideOptions();
+        if (params.category) options = options.filter(o => o.category === params.category);
+        if (params.kind) options = options.filter(o => o.kind === params.kind);
+        if (typeof params.name === 'string') {
+            const needle = params.name.toLowerCase();
+            options = options.filter(o => o.name.toLowerCase().includes(needle) || o.rideTypeName.includes(needle));
+        }
+        return options.map(o => {
+            const out = Object.assign({}, o);
+            if (!params.descriptions) delete out.description;
+            return out;
+        });
+    };
+
+    methods.find_build_sites = async params => {
+        let width = optInt(params, 'width', null);
+        let length = optInt(params, 'length', null);
+        if (params.ride !== undefined || params.object !== undefined || isNumber(params.rideType)) {
+            const option = resolveRideOption(params, ['flat', 'stall', 'tower']);
+            const fp = pieceFootprint(rideTypeInfo(option.rideType).startPiece);
+            width = fp.width;
+            length = fp.length;
+        }
+        if (!width || !length) fail('Give a ride ("ride", "object" or "rideType") or a footprint "width" and "length" in tiles.');
+        const tc = new TileCache();
+        const sites = await findSites(tc, {
+            width: width, length: length, margin: optInt(params, 'margin', 1),
+            near: params.near || 'water', radius: optInt(params, 'radius', 12), maxResults: optInt(params, 'maxResults', 5),
+        });
+        if (width !== length) {
+            const turned = await findSites(tc, {
+                width: length, length: width, margin: optInt(params, 'margin', 1),
+                near: params.near || 'water', radius: optInt(params, 'radius', 12), maxResults: optInt(params, 'maxResults', 5),
+            });
+            sites.push(...turned);
+            sites.sort((a, b) => a.distanceToTarget - b.distanceToTarget || (a.distanceToPath || 99) - (b.distanceToPath || 99));
+        }
+        return { footprint: { width: width, length: length }, sites: sites.slice(0, optInt(params, 'maxResults', 5)) };
+    };
+
+    /** Candidate placements (origin + direction + z) for a single-piece ride. */
+    async function singlePiecePlacements(tc, params, fp) {
+        const directions = isNumber(params.direction) ? [params.direction & 3] : [0, 1, 2, 3];
+        const out = [];
+        if (isNumber(params.x) && isNumber(params.y)) {
+            for (const d of directions) {
+                const origin = originForCorner(fp, Math.floor(params.x), Math.floor(params.y), d);
+                const tiles = placedFootprint(fp, origin.x, origin.y, d);
+                let z = isNumber(params.z) ? Math.floor(params.z) : null;
+                if (z === null) {
+                    for (const t of tiles) {
+                        const info = tc.get(t.x, t.y);
+                        if (!info || !info.surface) fail('The footprint at ' + params.x + ',' + params.y + ' runs off the map.');
+                        const top = info.surface.z + ((info.surface.slope & 0x0F) ? LAND_STEP : 0) + ((info.surface.slope & 0x10) ? LAND_STEP : 0);
+                        z = Math.max(z === null ? 0 : z, top);
+                    }
+                }
+                out.push({ origin: origin, direction: d, z: z });
+            }
+            return out;
+        }
+        const near = params.near || 'water';
+        const radius = optInt(params, 'radius', 12);
+        const shapes = fp.width === fp.length ? [[fp.width, fp.length, [0, 1, 2, 3]]]
+            : [[fp.width, fp.length, [0, 2]], [fp.length, fp.width, [1, 3]]];
+        const all = [];
+        for (const [w, l, dirs] of shapes) {
+            const sites = await findSites(tc, { width: w, length: l, margin: 1, near: near, radius: radius, maxResults: 6 });
+            for (const site of sites) {
+                for (const d of dirs) {
+                    if (!directions.includes(d)) continue;
+                    all.push({ origin: originForCorner(fp, site.x, site.y, d), direction: d, z: site.z, site: site });
+                }
+            }
+        }
+        all.sort((a, b) => a.site.distanceToTarget - b.site.distanceToTarget
+            || (a.site.distanceToPath === null ? 99 : a.site.distanceToPath) - (b.site.distanceToPath === null ? 99 : b.site.distanceToPath));
+        if (all.length === 0) {
+            fail('No free, level, owned area for a ' + fp.width + 'x' + fp.length + ' ride was found within ' + radius
+                + ' tiles of ' + (near === 'water' ? 'water' : near.x + ',' + near.y) + '. Try a larger radius, another spot, '
+                + 'or clear/buy land.');
+        }
+        return all;
+    }
+
+    methods.build_flat_ride = async params => {
+        ensureCanBuild(params);
+        const option = resolveRideOption(params, ['flat', 'stall']);
+        const info = rideTypeInfo(option.rideType);
+        const fp = pieceFootprint(info.startPiece);
+        if (!fp) fail('Unknown footprint for ' + option.name + '.');
+        const isStall = info.kind === 'stall';
+        const flags = buildFlags(params);
+        const tc = new TileCache();
+        const placements = await singlePiecePlacements(tc, params, fp);
+
+        const entrances = await getParkEntrances();
+        const goal = entrances.length > 0 ? { tiles: entrances.map(e => [e.x, e.y]) } : null;
+        if (goal) {
+            for (const key of computeParkNetwork(tc, entrances)) {
+                const [nx, ny] = key.split(',');
+                goal.tiles.push([+nx, +ny]);
+            }
+        }
+        const field = goal ? distanceField(tc, goal.tiles) : null;
+
+        // Work out entrances/exits for each placement before touching the game.
+        const plans = [];
+        for (const p of placements) {
+            const points = rankAttachments(tc, attachmentPoints(info.startPiece, fp, p.origin.x, p.origin.y, p.direction), field, p.z);
+            if (isStall) {
+                if (points.length > 0) plans.push(Object.assign({ pathFrom: points[0] }, p));
+            } else {
+                const pair = chooseEntranceAndExit(points);
+                if (pair) plans.push(Object.assign({ entrance: pair.entrance, exit: pair.exit }, p));
+            }
+        }
+        if (plans.length === 0) fail('Found room for the ride but no usable spot for its ' + (isStall ? 'path' : 'entrance and exit') + '.');
+
+        const describePlan = plan => {
+            const tiles = placedFootprint(fp, plan.origin.x, plan.origin.y, plan.direction);
+            const out = {
+                ride: option.name,
+                kind: info.kind,
+                footprint: {
+                    x1: Math.min(...tiles.map(t => t.x)), y1: Math.min(...tiles.map(t => t.y)),
+                    x2: Math.max(...tiles.map(t => t.x)), y2: Math.max(...tiles.map(t => t.y)), z: plan.z,
+                },
+                direction: plan.direction,
+            };
+            if (plan.entrance) out.entrance = { x: plan.entrance.x, y: plan.entrance.y };
+            if (plan.exit) out.exit = { x: plan.exit.x, y: plan.exit.y };
+            if (plan.pathFrom) out.pathConnection = plan.pathFrom.front;
+            if (plan.site) out.site = { distanceToTarget: plan.site.distanceToTarget, distanceToPath: plan.site.distanceToPath };
+            return out;
+        };
+        if (params.dryRun) {
+            return Object.assign({ dryRun: true, note: 'Placement checked against land, ownership and obstacles; the game '
+                + 'validates the final placement when building.' }, describePlan(plans[0]),
+                { alternatives: plans.slice(1, 4).map(describePlan) });
+        }
+
+        const rideId = await createRide(option, params, flags);
+        let built = null;
+        let spent = 0;
+        const reasons = [];
+        try {
+            for (const plan of plans.slice(0, 12)) {
+                const args = rideActionArgs(rideId, info.startPiece, option.rideType, plan.origin.x, plan.origin.y, plan.z,
+                    plan.direction, { flags: flags });
+                const q = queryActionSync('trackplace', args);
+                if (q.error !== 0) {
+                    reasons.push(describeResult(q));
+                    continue;
+                }
+                const res = await executeAction('trackplace', args);
+                if (res.error !== 0) {
+                    reasons.push(describeResult(res));
+                    continue;
+                }
+                spent += res.cost || 0;
+                built = plan;
+                break;
+            }
+            if (!built) {
+                fail('The game rejected every candidate placement.', { reasons: Array.from(new Set(reasons)).slice(0, 6) });
+            }
+
+            if (!isStall) {
+                for (const which of ['entrance', 'exit']) {
+                    const point = built[which];
+                    const res = await executeAction('rideentranceexitplace', {
+                        x: point.x * TILE_SIZE, y: point.y * TILE_SIZE, direction: point.direction,
+                        ride: rideId, station: 0, isExit: which === 'exit', flags: flags,
+                    });
+                    if (res.error !== 0) fail('Could not place the ' + which + ': ' + describeResult(res));
+                    spent += res.cost || 0;
+                }
+            }
+        } catch (e) {
+            await demolishRide(rideId, flags);
+            throw e;
+        }
+
+        const summary = Object.assign({ built: true, rideId: rideId }, describePlan(built));
+        try {
+            summary.name = map.getRide(rideId).name;
+            if (typeof params.name === 'string' && params.name) {
+                const r = await executeAction('ridesetname', { ride: rideId, name: params.name, flags: flags });
+                if (r.error === 0) summary.name = params.name;
+            }
+        } catch (e) {
+            // naming is cosmetic
+        }
+        log('Built ' + summary.name + ' at ' + summary.footprint.x1 + ',' + summary.footprint.y1);
+
+        if (params.connectPaths !== false) {
+            const pathParams = { rideId: rideId, allowWhilePaused: params.allowWhilePaused };
+            summary.paths = {};
+            if (isStall) {
+                try {
+                    const r = await methods.build_path_route(Object.assign({ from: built.pathFrom.front }, pathParams));
+                    summary.paths.access = r.alreadyConnected ? 'already connected' : { built: r.built, cost: r.costFormatted };
+                    spent += r.cost || 0;
+                } catch (e) {
+                    summary.paths.access = 'failed: ' + e.message;
+                }
+            } else {
+                try {
+                    const r = await methods.build_ride_queue(pathParams);
+                    summary.paths.queue = { built: r.built, cost: r.costFormatted, reachesNetwork: r.queueReachesParkNetwork };
+                    spent += r.cost || 0;
+                } catch (e) {
+                    summary.paths.queue = 'failed: ' + e.message;
+                }
+                try {
+                    const r = await methods.connect_ride_exit(pathParams);
+                    summary.paths.exit = r.alreadyConnected ? 'already connected'
+                        : { built: r.built, cost: r.costFormatted, connected: r.exitConnected };
+                    spent += r.cost || 0;
+                } catch (e) {
+                    summary.paths.exit = 'failed: ' + e.message;
+                }
+            }
+        }
+
+        await applyRideSettings(rideId, params, flags, summary);
+        summary.totalCost = spent;
+        summary.totalCostFormatted = formatMoney(spent);
+        return summary;
+    };
+
+    /** Optional price and status changes after building. */
+    async function applyRideSettings(rideId, params, flags, summary) {
+        if (isNumber(params.price)) {
+            const r = await executeAction('ridesetprice', { ride: rideId, price: Math.round(params.price), isPrimaryPrice: true, flags: flags });
+            summary.price = r.error === 0 ? formatMoney(Math.round(params.price)) : 'failed: ' + describeResult(r);
+        }
+        if (params.open || params.status) {
+            const status = params.status || 'open';
+            const r = await executeAction('ridesetstatus', { ride: rideId, status: RIDE_STATUS[status], flags: flags });
+            summary.status = r.error === 0 ? status : 'could not set ' + status + ': ' + describeResult(r);
+        }
+    }
+
+    methods.set_ride_status = async params => {
+        const ride = getRideOrFail(params.rideId);
+        const status = params.status;
+        if (!(status in RIDE_STATUS)) fail('"status" must be one of: ' + Object.keys(RIDE_STATUS).join(', ') + '.');
+        const res = await executeAction('ridesetstatus', { ride: ride.id, status: RIDE_STATUS[status], flags: 0 });
+        if (res.error !== 0) fail('Could not set "' + ride.name + '" to ' + status + ': ' + describeResult(res));
+        log('Set ' + ride.name + ' to ' + status);
+        return { ride: ride.name, status: map.getRide(ride.id).status };
+    };
+
+    methods.set_ride_price = async params => {
+        const ride = getRideOrFail(params.rideId);
+        const price = requireInt(params, 'price');
+        const res = await executeAction('ridesetprice', {
+            ride: ride.id, price: price, isPrimaryPrice: params.secondary ? false : true, flags: 0,
+        });
+        if (res.error !== 0) fail('Could not set the price: ' + describeResult(res));
+        return { ride: ride.name, price: formatMoney(price) };
+    };
+
+    methods.demolish_ride = async params => {
+        const ride = getRideOrFail(params.rideId);
+        const name = ride.name;
+        const res = await demolishRide(ride.id, buildFlags(params));
+        if (res.error !== 0) fail('Could not demolish "' + name + '": ' + describeResult(res));
+        log('Demolished ' + name);
+        return { demolished: name, refund: formatMoney(-(res.cost || 0)) };
+    };
+
+    /** Offset from a piece's start to the next piece's start: forward/right tiles, up in z, and the turn. */
+    function pieceMove(seg) {
+        const turn = (seg.endDirection - seg.beginDirection) & 3;
+        const diagonal = (seg.endDirection & 4) !== 0;
+        // For heading 0 (x-1) forward is -x and right is +y.
+        const nx = seg.endX / TILE_SIZE + (diagonal ? 0 : DIR_DX[turn]);
+        const ny = seg.endY / TILE_SIZE + (diagonal ? 0 : DIR_DY[turn]);
+        return {
+            forward: -nx,
+            right: ny,
+            up: seg.endZ - seg.beginZ,
+            turn: turn === 1 ? 'right' : turn === 3 ? 'left' : turn === 2 ? 'reverse' : 'none',
+            endsDiagonal: diagonal,
+        };
+    }
+
+    /** Turns agent-supplied pieces (names, ids or objects) into layout track elements. */
+    function normaliseLayoutPieces(pieces) {
+        if (!Array.isArray(pieces) || pieces.length === 0) fail('"pieces" must be a non-empty array of track pieces.');
+        return pieces.map((p, i) => {
+            const spec = typeof p === 'object' && p !== null ? p : { type: p };
+            let type = spec.type;
+            if (typeof type === 'string') {
+                const idx = TRACK_TYPE_NAMES.indexOf(type);
+                if (idx < 0) fail('Unknown track piece "' + type + '" at position ' + i + '. list_track_pieces shows valid names.');
+                type = idx;
+            }
+            if (!isNumber(type) || !trackSegment(type)) fail('Invalid track piece at position ' + i + '.');
+            return {
+                type: type,
+                chain: !!spec.chain,
+                inverted: !!spec.inverted,
+                brakeSpeed: isNumber(spec.brakeSpeed) ? spec.brakeSpeed : 2,
+                seatRotation: isNumber(spec.seatRotation) ? spec.seatRotation : 4,
+                colourScheme: isNumber(spec.colourScheme) ? spec.colourScheme : 0,
+                station: 0,
+            };
+        });
+    }
+
+    /** Track pieces a ride type may use (its enabled track groups, as the construction window offers). */
+    function allowedPieceTypes(rideType) {
+        const info = rideTypeInfo(rideType);
+        if (!info) return new Set();
+        const groups = new Set(info.groups);
+        let allDrawable = false;
+        try {
+            allDrawable = !!cheats.enableAllDrawableTrackPieces;
+        } catch (e) {
+            allDrawable = false;
+        }
+        if (allDrawable) info.extraGroups.forEach(g => groups.add(g));
+        const out = new Set();
+        for (let t = 0; t < TRACK_TYPE_NAMES.length; t++) {
+            const seg = trackSegment(t);
+            if (seg && groups.has(seg.trackGroup)) out.add(t);
+        }
+        if (info.kind === 'tracked') STATION_TRACK_TYPES.forEach(t => out.add(t));
+        return out;
+    }
+
+    /**
+     * Geometry report for a layout: where it ends, whether it closes into a circuit and whether consecutive
+     * pieces join (matching slope and banking).
+     */
+    function checkLayout(elements, allowed) {
+        const walked = walkLayout(elements, 0);
+        const problems = [];
+        for (let i = 1; i < walked.pieces.length; i++) {
+            const a = walked.pieces[i - 1].seg;
+            const b = walked.pieces[i].seg;
+            if (a.endSlope !== b.beginSlope || a.endBank !== b.beginBank) {
+                problems.push('piece ' + i + ' (' + b.name + ') does not join ' + a.name + ' (slope/bank ' + a.endSlope + '/'
+                    + a.endBank + ' vs ' + b.beginSlope + '/' + b.beginBank + ')');
+            }
+            if (walked.pieces[i].el.chain && !b.allowsChainLift) problems.push('piece ' + i + ' (' + b.name + ') cannot have a chain lift');
+        }
+        if (allowed) {
+            walked.pieces.forEach((p, i) => {
+                if (!allowed.has(p.el.type)) problems.push('piece ' + i + ' (' + p.seg.name + ') is not available for this ride type');
+            });
+        }
+        const end = walked.end;
+        const closes = end.x === 0 && end.y === 0 && end.z === 0 && (end.direction & 7) === 0;
+        if (closes && walked.pieces.length > 1) {
+            const first = walked.pieces[0].seg;
+            const last = walked.pieces[walked.pieces.length - 1].seg;
+            if (last.endSlope !== first.beginSlope || last.endBank !== first.beginBank) {
+                problems.push('the last piece does not join the first (slope/bank mismatch)');
+            }
+        }
+        const stations = walked.pieces.filter(p => STATION_TRACK_TYPES.includes(p.el.type)).length;
+        const shape = layoutTiles(walked, [], 0);
+        return {
+            pieces: elements.length,
+            stationPieces: stations,
+            closesCircuit: closes,
+            end: {
+                x: end.x / TILE_SIZE, y: end.y / TILE_SIZE, z: end.z, direction: end.direction & 3,
+                diagonal: (end.direction & 4) !== 0,
+            },
+            size: { width: shape.maxX - shape.minX + 1, length: shape.maxY - shape.minY + 1 },
+            heightRange: {
+                min: Math.min(...walked.pieces.map(p => p.z)),
+                max: Math.max(...walked.pieces.map(p => p.z)),
+            },
+            problems: problems,
+        };
+    }
+
+    methods.place_track_layout = async params => {
+        let layout = params.layout;
+        if (!layout && params.pieces) {
+            layout = { name: params.name, trackElements: normaliseLayoutPieces(params.pieces), entrances: [] };
+        }
+        if (!layout || typeof layout !== 'object') fail('Give "pieces" (a custom layout) or a decoded "layout".');
+        if (params.pieces) {
+            // Custom layouts must form a proper circuit before anything is placed.
+            const option = resolveRideOption(params, ['tracked', 'tower']);
+            const report = checkLayout(layout.trackElements, params.allowAnyPiece ? null : allowedPieceTypes(option.rideType));
+            const kind = rideTypeInfo(option.rideType).kind;
+            if (kind === 'tracked' && report.stationPieces === 0) report.problems.push('the layout has no station pieces');
+            if (kind === 'tracked' && !report.closesCircuit && !params.allowOpenCircuit) {
+                report.problems.push('the layout does not return to its start (ends at ' + JSON.stringify(report.end) + ')');
+            }
+            if (report.problems.length > 0) fail('The layout is not buildable as given.', report);
+        }
+        return buildLayout(layout, params);
+    };
+
+    methods.check_track_layout = params => {
+        const elements = normaliseLayoutPieces(params.pieces);
+        let allowed = null;
+        if (params.ride !== undefined || params.object !== undefined || isNumber(params.rideType)) {
+            allowed = allowedPieceTypes(resolveRideOption(params, ['tracked', 'tower']).rideType);
+        }
+        return checkLayout(elements, allowed);
+    };
+
+    methods.list_track_pieces = params => {
+        const option = resolveRideOption(params, ['tracked', 'tower']);
+        const allowed = allowedPieceTypes(option.rideType);
+        const pieces = [];
+        for (const t of allowed) {
+            const seg = trackSegment(t);
+            if (!seg) continue;
+            if (params.group && TRACK_GROUPS[seg.trackGroup] !== params.group) continue;
+            const turn = (seg.endDirection - seg.beginDirection) & 3;
+            pieces.push({
+                name: seg.name,
+                type: t,
+                group: TRACK_GROUPS[seg.trackGroup],
+                // Where the next piece starts relative to this one, in tiles, seen along its heading.
+                move: pieceMove(seg),
+                slope: [seg.beginSlope, seg.endSlope],
+                bank: [seg.beginBank, seg.endBank],
+                chainLift: seg.allowsChainLift,
+                inversion: seg.isInversion,
+            });
+        }
+        pieces.sort((a, b) => a.type - b.type);
+        return { ride: option.name, rideType: option.rideTypeName, count: pieces.length, pieces: params.namesOnly ? pieces.map(p => p.name) : pieces };
+    };
+
     methods.list_methods = () => Object.keys(methods).sort();
 
     // ------------------------------------------------------------------
@@ -2342,9 +4160,11 @@
         }
         context.subscribe('map.changed', () => {
             invalidateParkEntrances();
+            invalidateWaterCache();
         });
         context.subscribe('action.execute', e => {
             if (e.action === 'parkentranceplace' || e.action === 'parkentranceremove') invalidateParkEntrances();
+            if (e.action === 'waterraise' || e.action === 'waterlower' || e.action === 'watersetheight') invalidateWaterCache();
         });
         startServer();
         if (typeof ui !== 'undefined') {
