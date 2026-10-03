@@ -35,6 +35,7 @@
     const TILE_SIZE = 32;
     const LAND_STEP = 16;
     const PATH_CLEARANCE = 32;
+    const ENTRANCE_CLEARANCE = 56;
     const FOOTPATH_MIN_Z = 2 * 8;
     const FOOTPATH_MAX_Z = 248 * 8;
     const DIR_DX = [-1, 0, 1, 0];
@@ -158,111 +159,111 @@
         "diagBooster", "diagSlopeSteepLong", "diveLoop", "diagSlope", "diagSlopeSteepUp", "diagSlopeSteepDown",
     ];
     // Index = ride type id: [name, category, startPiece, flagsLow, flagsHigh, trackGroups, extraTrackGroups,
-    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType]
+    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType, clearanceHeight]
     const RIDE_TYPE_DATA = [
-        ["spiral_rc",2,1,1309689527,5466,[1,2,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,46,68,87,88,89],[3,49],19,7,7,0],
-        ["stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],25,4,6,0],
-        ["suspended_swinging_rc",2,1,1309689527,136282,[1,2,3,8,9,11,13,15,16,17,26,27,28,41,68,87,88,89],[],24,4,6,0],
-        ["inverted_rc",2,1,1309689527,8525146,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,26,27,28,29,31,34,35,41,42,43,44,47,68,69,70,79,80,81,82,85,86,87,88,89],[10,32,49,71,72],42,5,7,0],
-        ["junior_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,10,11,13,15,16,17,22,23,28,41,49,81,82,87],[9,29,68,88,89],12,4,6,0],
-        ["miniature_railway",0,1,1241530932,68914,[1,2,8,13,15,16,17,87],[],7,5,5,0],
-        ["monorail",0,1,1241530935,3378,[1,2,8,13,15,16,17,87],[],8,5,5,0],
-        ["mini_suspended_rc",2,1,1309689525,136282,[1,2,3,8,13,15,16,17,87],[],10,4,5,0],
-        ["boat_hire",4,1,1308641349,18,[1,2,13,14,15,16,17],[],255,5,5,10],
-        ["wooden_wild_mouse",2,1,3457173173,5210,[1,2,3,4,8,9,10,14,15,68],[],14,4,5,0],
-        ["steeplechase",2,1,1309689527,5210,[1,2,3,8,13,15,16,17,26,27,28,41,81,82,87],[],14,4,5,0],
-        ["car_ride",1,1,3390063143,9266,[1,2,8,14,15,48],[9,56,68],6,5,5,0],
-        ["launched_freefall",3,66,1242841871,5138,[21],[],255,5,5,0],
-        ["bobsleigh_rc",2,1,1309689527,5466,[1,2,3,6,8,13,15,16,22,23,28,29,41],[],19,4,5,0],
-        ["observation_tower",1,66,1241792783,9234,[21],[],255,5,5,0],
-        ["looping_rc",2,1,1309689527,142611802,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,49,68,81,82,87,88,89],[10,18,19,20,31,32,34,44,47,69,70,71,72],35,4,6,0],
-        ["dinghy_slide",4,1,1309693623,5202,[1,2,3,8,9,13,15,16,68],[],15,4,5,0],
-        ["mine_train_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,43,68,81,82,87,88,89],[],21,4,6,0],
-        ["chairlift",0,1,1241530405,67251250,[1,2,8,14],[],40,5,5,0],
-        ["corkscrew_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,49,68,69,70,79,81,82,85,87,88,89],[10,18,31,32,44,47,71,72,86],28,4,6,0],
-        ["maze",1,101,138684428,1048592,[],[],6,5,5,1],
-        ["spiral_slide",1,258,796943,36882,[],[],15,5,5,3],
-        ["go_karts",3,1,1242826757,2101266,[1,2,8,11,13,14,15,16,17,79,87],[9,43,68,88,89],8,5,5,0],
-        ["log_flume",4,1,1242580535,5234,[1,2,8,9,13,15,29,36],[],10,5,5,0],
-        ["river_rapids",4,1,1242842677,5234,[1,2,8,14,29,56,60,61],[],9,5,5,0],
-        ["dodgems",1,259,34343183,33562643,[],[],9,5,5,0],
-        ["swinging_ship",3,261,34423053,37010,[],[],12,5,5,0],
-        ["swinging_inverter_ship",3,263,34423055,37010,[],[],15,5,5,0],
-        ["food_stall",5,262,9316617,32768,[],[],12,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["drink_stall",5,262,17705225,32768,[],[],12,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["shop",5,262,928009,32768,[],[],12,5,5,0],
-        ["merry_go_round",1,266,34423048,16814227,[],[],12,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["information_kiosk",5,264,928009,32768,[],[],12,5,5,0],
-        ["toilets",5,262,7219464,32768,[],[],12,5,5,4],
-        ["ferris_wheel",1,265,34406665,41106,[],[],16,5,5,0],
-        ["motion_simulator",3,258,34423048,41106,[],[],12,5,5,8],
-        ["3d_cinema",3,266,38617352,32914,[],[],12,5,5,0],
-        ["top_spin",3,266,34423055,37010,[],[],16,5,5,0],
-        ["space_rings",1,266,34343176,41106,[],[],16,5,5,9],
-        ["reverse_freefall_rc",2,1,1309722279,8393810,[1,2,4,29,39],[],255,5,5,0],
-        ["lift",0,66,1510228237,3090,[21],[],255,5,5,0],
-        ["vertical_drop_rc",2,1,1309689527,5210,[0,1,2,3,4,6,7,8,9,10,11,12,13,15,16,17,20,22,23,24,25,26,27,28,29,31,34,35,41,42,44,62,68,69,70,71,72,79,81,82,86,87,88,89],[18,19,32,33,34,43,47,49,85],55,4,5,0],
-        ["cash_machine",5,262,928008,32768,[],[],12,5,5,5],
-        ["twist",3,266,34423048,37010,[],[],12,5,5,0],
-        ["haunted_house",1,266,5062920,32914,[],[],16,5,5,0],
-        ["first_aid",5,262,7219464,32768,[],[],12,5,5,6],
-        ["circus",1,266,38617352,32913,[],[],12,5,5,0],
-        ["ghost_train",1,1,3390064295,267378,[1,2,8,14,15,28,48],[],8,5,5,0],
-        ["twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,81,82,85,86,87,88,89],[4,10,62],40,5,8,0],
-        ["wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,28,29,30,34,35,41,42,43,68,70,81,82,87,88,89],[49],41,5,7,0],
-        ["side_friction_rc",2,1,1309689527,8394074,[1,2,3,8,9,13,15,16,17,28,68,87,88,89],[],18,3,5,0],
-        ["steel_wild_mouse",2,1,3457173175,5210,[1,2,3,4,8,9,10,11,14,15,28,41,68],[67],16,4,6,0],
-        ["multi_dimension_rc",2,1,1309689527,12588382,[1,2,3,6,8,9,13,15,16,17,22,23,24,25,26,27,28,29,31,41,50,52,53,68,81,82,87,88,89],[],40,4,6,0],
-        ["multi_dimension_rc_alt",255,1,1309689527,541069314,[],[],40,4,6,0],
-        ["flying_rc",2,1,1309689527,21854,[1,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,50,52,57,68,73,79,81,82,87,88,89],[2,7,10,33,43,49,75,77,85],30,4,6,0],
-        ["flying_rc_alt",255,1,1309689527,536891394,[],[],30,4,6,0],
-        ["virginia_reel",2,1,1309689527,5210,[1,2,3,8,14,15],[],14,3,5,0],
-        ["splash_boats",4,1,1242580535,9330,[1,2,8,9,13,16,29],[],16,5,5,0],
-        ["mini_helicopters",1,1,3390063143,9266,[1,2,8,14,15],[48],7,5,5,0],
-        ["lay_down_rc",2,1,1309689527,5470,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,50,57,63,68,79,81,82,85,87,88,89],[10,49,77],26,4,6,0],
-        ["suspended_monorail",0,1,1241530935,134450,[1,2,8,13,15,16,17,87],[],12,5,5,0],
-        ["lay_down_rc_alt",255,1,1309689527,536875010,[],[],26,4,6,0],
-        ["reverser_rc",2,1,1846560439,5210,[1,2,3,8,13,15,16,28,38],[],18,3,5,0],
-        ["heartline_twister_rc",2,1,1309689527,8393818,[1,2,3,4,8,9,37,65,68],[],22,4,6,0],
-        ["mini_golf",1,1,1207961607,2105362,[1,2,8,14,66],[],7,5,5,2],
-        ["giga_rc",2,1,1309689527,8394586,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,45,68,79,81,82,85,87,88,89],[7,10,19,20,32,33,34,47,49,69,70,71,72,84,86],86,5,8,0],
-        ["roto_drop",3,66,1242841871,5266,[21],[],255,5,5,0],
-        ["flying_saucers",1,259,34343179,4243,[],[],9,5,5,0],
-        ["crooked_house",1,266,5062920,32914,[],[],16,5,5,0],
-        ["monorail_cycles",1,1,1242581543,8210,[1,2,13,15,16],[],5,5,5,0],
-        ["compact_inverted_rc",2,1,1309689527,268571994,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,28,29,31,41,68,81,82,87,88,89],[],27,4,6,0],
-        ["water_coaster",2,1,1309693623,5210,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,49,68,81,82,87,88,89],[10],18,4,6,0],
-        ["air_powered_vertical_rc",2,1,1309689511,5210,[1,2,4,5,6,16,28,29,39,40],[49],255,5,5,0],
-        ["inverted_hairpin_rc",2,1,1309689527,136282,[1,2,3,4,8,9,10,11,14,15,28,41,68],[],16,4,6,0],
-        ["magic_carpet",3,257,34423055,37010,[],[],15,5,5,0],
-        ["submarine_ride",4,1,1242579031,58,[1,2,14,15],[],255,5,5,0],
-        ["river_rafts",4,1,1242579511,9266,[1,2,13,16],[8,9,29],12,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["enterprise",3,259,35471624,37010,[],[],16,5,5,7],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["inverted_impulse_rc",2,1,1309689527,8525146,[1,2,8,9,31,44,68],[],45,4,7,0],
-        ["mini_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,68,87,88,89],[46,49],16,4,6,0],
-        ["mine_ride",2,1,1309689527,8394074,[1,2,6,8,13,15,16,17,22,23,24,25,26,27,29,87],[],13,5,5,0],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0],
-        ["lim_launched_rc",2,1,1309689527,8394074,[1,2,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,43,44,47,68,69,70,71,72,87,88,89],[10],35,4,6,0],
-        ["hypercoaster",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,68,79,81,82,85,87,88,89],[7,10,18,19,20,31,32,34,44,47,49,69,70,71,72,86],55,4,6,0],
-        ["hyper_twister",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,68,79,81,82,85,87,88,89],[4,7,10,18,19,20,32,33,34,47,49,62,69,70,71,72,86],61,5,8,0],
-        ["monster_trucks",1,1,1242579495,9266,[1,2,8,9,14,15,56,68],[48],18,5,5,0],
-        ["spinning_wild_mouse",2,1,1309689527,5210,[1,2,3,8,10,14,15,28,41,67],[4,9,11,68],16,4,6,0],
-        ["classic_mini_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,9,10,11,13,15,16,17,22,23,28,41,49,68,81,82,87,88,89],[29],15,4,6,0],
-        ["hybrid_rc",2,1,1309689525,8394074,[0,1,2,3,4,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,32,33,35,41,42,43,44,47,68,71,72,79,81,82,83,87,88,89],[49],43,5,11,0],
-        ["single_rail_rc",2,1,1309689527,8394074,[0,1,2,3,4,6,8,9,10,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,44,47,68,69,70,71,72,79,81,82,83,86,87,88,89],[43,85],28,5,8,0],
-        ["alpine_rc",2,1,1309691429,528434,[0,1,2,3,6,8,10,11,13,15,16,17,23,25,27,87],[22,24,26],18,4,5,0],
-        ["classic_wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,13,15,16,17,28,29,30,34,41,43,68,70,81,82,87,88,89],[12,49],24,3,5,0],
-        ["classic_stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,26,27,28,29,34,41,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],30,4,6,0],
-        ["lsm_rc",2,1,1309689527,8394586,[1,2,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,80,81,82,84,85,86,87,88,89],[3,10,45],33,5,5,0],
-        ["classic_wooden_twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,28,29,35,41,43,68,81,82,87,88,89],[7,30,34,49,70],24,3,5,0],
+        ["spiral_rc",2,1,1309689527,5466,[1,2,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,46,68,87,88,89],[3,49],19,7,7,0,24],
+        ["stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],25,4,6,0,24],
+        ["suspended_swinging_rc",2,1,1309689527,136282,[1,2,3,8,9,11,13,15,16,17,26,27,28,41,68,87,88,89],[],24,4,6,0,40],
+        ["inverted_rc",2,1,1309689527,8525146,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,26,27,28,29,31,34,35,41,42,43,44,47,68,69,70,79,80,81,82,85,86,87,88,89],[10,32,49,71,72],42,5,7,0,40],
+        ["junior_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,10,11,13,15,16,17,22,23,28,41,49,81,82,87],[9,29,68,88,89],12,4,6,0,24],
+        ["miniature_railway",0,1,1241530932,68914,[1,2,8,13,15,16,17,87],[],7,5,5,0,32],
+        ["monorail",0,1,1241530935,3378,[1,2,8,13,15,16,17,87],[],8,5,5,0,32],
+        ["mini_suspended_rc",2,1,1309689525,136282,[1,2,3,8,13,15,16,17,87],[],10,4,5,0,24],
+        ["boat_hire",4,1,1308641349,18,[1,2,13,14,15,16,17],[],255,5,5,10,16],
+        ["wooden_wild_mouse",2,1,3457173173,5210,[1,2,3,4,8,9,10,14,15,68],[],14,4,5,0,24],
+        ["steeplechase",2,1,1309689527,5210,[1,2,3,8,13,15,16,17,26,27,28,41,81,82,87],[],14,4,5,0,24],
+        ["car_ride",1,1,3390063143,9266,[1,2,8,14,15,48],[9,56,68],6,5,5,0,24],
+        ["launched_freefall",3,66,1242841871,5138,[21],[],255,5,5,0,32],
+        ["bobsleigh_rc",2,1,1309689527,5466,[1,2,3,6,8,13,15,16,22,23,28,29,41],[],19,4,5,0,24],
+        ["observation_tower",1,66,1241792783,9234,[21],[],255,5,5,0,32],
+        ["looping_rc",2,1,1309689527,142611802,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,49,68,81,82,87,88,89],[10,18,19,20,31,32,34,44,47,69,70,71,72],35,4,6,0,24],
+        ["dinghy_slide",4,1,1309693623,5202,[1,2,3,8,9,13,15,16,68],[],15,4,5,0,24],
+        ["mine_train_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,43,68,81,82,87,88,89],[],21,4,6,0,24],
+        ["chairlift",0,1,1241530405,67251250,[1,2,8,14],[],40,5,5,0,32],
+        ["corkscrew_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,49,68,69,70,79,81,82,85,87,88,89],[10,18,31,32,44,47,71,72,86],28,4,6,0,24],
+        ["maze",1,101,138684428,1048592,[],[],6,5,5,1,24],
+        ["spiral_slide",1,258,796943,36882,[],[],15,5,5,3,128],
+        ["go_karts",3,1,1242826757,2101266,[1,2,8,11,13,14,15,16,17,79,87],[9,43,68,88,89],8,5,5,0,24],
+        ["log_flume",4,1,1242580535,5234,[1,2,8,9,13,15,29,36],[],10,5,5,0,24],
+        ["river_rapids",4,1,1242842677,5234,[1,2,8,14,29,56,60,61],[],9,5,5,0,32],
+        ["dodgems",1,259,34343183,33562643,[],[],9,5,5,0,48],
+        ["swinging_ship",3,261,34423053,37010,[],[],12,5,5,0,112],
+        ["swinging_inverter_ship",3,263,34423055,37010,[],[],15,5,5,0,176],
+        ["food_stall",5,262,9316617,32768,[],[],12,5,5,0,64],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["drink_stall",5,262,17705225,32768,[],[],12,5,5,0,64],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["shop",5,262,928009,32768,[],[],12,5,5,0,64],
+        ["merry_go_round",1,266,34423048,16814227,[],[],12,5,5,0,64],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["information_kiosk",5,264,928009,32768,[],[],12,5,5,0,48],
+        ["toilets",5,262,7219464,32768,[],[],12,5,5,4,32],
+        ["ferris_wheel",1,265,34406665,41106,[],[],16,5,5,0,176],
+        ["motion_simulator",3,258,34423048,41106,[],[],12,5,5,8,64],
+        ["3d_cinema",3,266,38617352,32914,[],[],12,5,5,0,128],
+        ["top_spin",3,266,34423055,37010,[],[],16,5,5,0,112],
+        ["space_rings",1,266,34343176,41106,[],[],16,5,5,9,48],
+        ["reverse_freefall_rc",2,1,1309722279,8393810,[1,2,4,29,39],[],255,5,5,0,32],
+        ["lift",0,66,1510228237,3090,[21],[],255,5,5,0,32],
+        ["vertical_drop_rc",2,1,1309689527,5210,[0,1,2,3,4,6,7,8,9,10,11,12,13,15,16,17,20,22,23,24,25,26,27,28,29,31,34,35,41,42,44,62,68,69,70,71,72,79,81,82,86,87,88,89],[18,19,32,33,34,43,47,49,85],55,4,5,0,24],
+        ["cash_machine",5,262,928008,32768,[],[],12,5,5,5,64],
+        ["twist",3,266,34423048,37010,[],[],12,5,5,0,64],
+        ["haunted_house",1,266,5062920,32914,[],[],16,5,5,0,160],
+        ["first_aid",5,262,7219464,32768,[],[],12,5,5,6,48],
+        ["circus",1,266,38617352,32913,[],[],12,5,5,0,128],
+        ["ghost_train",1,1,3390064295,267378,[1,2,8,14,15,28,48],[],8,5,5,0,24],
+        ["twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,81,82,85,86,87,88,89],[4,10,62],40,5,8,0,24],
+        ["wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,28,29,30,34,35,41,42,43,68,70,81,82,87,88,89],[49],41,5,7,0,24],
+        ["side_friction_rc",2,1,1309689527,8394074,[1,2,3,8,9,13,15,16,17,28,68,87,88,89],[],18,3,5,0,24],
+        ["steel_wild_mouse",2,1,3457173175,5210,[1,2,3,4,8,9,10,11,14,15,28,41,68],[67],16,4,6,0,24],
+        ["multi_dimension_rc",2,1,1309689527,12588382,[1,2,3,6,8,9,13,15,16,17,22,23,24,25,26,27,28,29,31,41,50,52,53,68,81,82,87,88,89],[],40,4,6,0,24],
+        ["multi_dimension_rc_alt",255,1,1309689527,541069314,[],[],40,4,6,0,24],
+        ["flying_rc",2,1,1309689527,21854,[1,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,50,52,57,68,73,79,81,82,87,88,89],[2,7,10,33,43,49,75,77,85],30,4,6,0,24],
+        ["flying_rc_alt",255,1,1309689527,536891394,[],[],30,4,6,0,24],
+        ["virginia_reel",2,1,1309689527,5210,[1,2,3,8,14,15],[],14,3,5,0,24],
+        ["splash_boats",4,1,1242580535,9330,[1,2,8,9,13,16,29],[],16,5,5,0,24],
+        ["mini_helicopters",1,1,3390063143,9266,[1,2,8,14,15],[48],7,5,5,0,24],
+        ["lay_down_rc",2,1,1309689527,5470,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,50,57,63,68,79,81,82,85,87,88,89],[10,49,77],26,4,6,0,24],
+        ["suspended_monorail",0,1,1241530935,134450,[1,2,8,13,15,16,17,87],[],12,5,5,0,40],
+        ["lay_down_rc_alt",255,1,1309689527,536875010,[],[],26,4,6,0,24],
+        ["reverser_rc",2,1,1846560439,5210,[1,2,3,8,13,15,16,28,38],[],18,3,5,0,24],
+        ["heartline_twister_rc",2,1,1309689527,8393818,[1,2,3,4,8,9,37,65,68],[],22,4,6,0,24],
+        ["mini_golf",1,1,1207961607,2105362,[1,2,8,14,66],[],7,5,5,2,32],
+        ["giga_rc",2,1,1309689527,8394586,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,45,68,79,81,82,85,87,88,89],[7,10,19,20,32,33,34,47,49,69,70,71,72,84,86],86,5,8,0,24],
+        ["roto_drop",3,66,1242841871,5266,[21],[],255,5,5,0,32],
+        ["flying_saucers",1,259,34343179,4243,[],[],9,5,5,0,48],
+        ["crooked_house",1,266,5062920,32914,[],[],16,5,5,0,96],
+        ["monorail_cycles",1,1,1242581543,8210,[1,2,13,15,16],[],5,5,5,0,24],
+        ["compact_inverted_rc",2,1,1309689527,268571994,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,28,29,31,41,68,81,82,87,88,89],[],27,4,6,0,40],
+        ["water_coaster",2,1,1309693623,5210,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,49,68,81,82,87,88,89],[10],18,4,6,0,24],
+        ["air_powered_vertical_rc",2,1,1309689511,5210,[1,2,4,5,6,16,28,29,39,40],[49],255,5,5,0,32],
+        ["inverted_hairpin_rc",2,1,1309689527,136282,[1,2,3,4,8,9,10,11,14,15,28,41,68],[],16,4,6,0,24],
+        ["magic_carpet",3,257,34423055,37010,[],[],15,5,5,0,176],
+        ["submarine_ride",4,1,1242579031,58,[1,2,14,15],[],255,5,5,0,16],
+        ["river_rafts",4,1,1242579511,9266,[1,2,13,16],[8,9,29],12,5,5,0,24],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["enterprise",3,259,35471624,37010,[],[],16,5,5,7,160],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["inverted_impulse_rc",2,1,1309689527,8525146,[1,2,8,9,31,44,68],[],45,4,7,0,40],
+        ["mini_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,68,87,88,89],[46,49],16,4,6,0,24],
+        ["mine_ride",2,1,1309689527,8394074,[1,2,6,8,13,15,16,17,22,23,24,25,26,27,29,87],[],13,5,5,0,24],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
+        ["lim_launched_rc",2,1,1309689527,8394074,[1,2,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,43,44,47,68,69,70,71,72,87,88,89],[10],35,4,6,0,24],
+        ["hypercoaster",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,68,79,81,82,85,87,88,89],[7,10,18,19,20,31,32,34,44,47,49,69,70,71,72,86],55,4,6,0,24],
+        ["hyper_twister",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,68,79,81,82,85,87,88,89],[4,7,10,18,19,20,32,33,34,47,49,62,69,70,71,72,86],61,5,8,0,24],
+        ["monster_trucks",1,1,1242579495,9266,[1,2,8,9,14,15,56,68],[48],18,5,5,0,24],
+        ["spinning_wild_mouse",2,1,1309689527,5210,[1,2,3,8,10,14,15,28,41,67],[4,9,11,68],16,4,6,0,24],
+        ["classic_mini_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,9,10,11,13,15,16,17,22,23,28,41,49,68,81,82,87,88,89],[29],15,4,6,0,24],
+        ["hybrid_rc",2,1,1309689525,8394074,[0,1,2,3,4,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,32,33,35,41,42,43,44,47,68,71,72,79,81,82,83,87,88,89],[49],43,5,11,0,24],
+        ["single_rail_rc",2,1,1309689527,8394074,[0,1,2,3,4,6,8,9,10,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,44,47,68,69,70,71,72,79,81,82,83,86,87,88,89],[43,85],28,5,8,0,24],
+        ["alpine_rc",2,1,1309691429,528434,[0,1,2,3,6,8,10,11,13,15,16,17,23,25,27,87],[22,24,26],18,4,5,0,24],
+        ["classic_wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,13,15,16,17,28,29,30,34,41,43,68,70,81,82,87,88,89],[12,49],24,3,5,0,24],
+        ["classic_stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,26,27,28,29,34,41,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],30,4,6,0,24],
+        ["lsm_rc",2,1,1309689527,8394586,[1,2,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,80,81,82,84,85,86,87,88,89],[3,10,45],33,5,5,0,24],
+        ["classic_wooden_twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,28,29,35,41,43,68,81,82,87,88,89],[7,30,34,49,70],24,3,5,0,24],
     ];
     // Index = track type (TrackElemType) id
     const TRACK_TYPE_NAMES = [
@@ -328,6 +329,146 @@
     ];
     // Track type -> per-sequence flags (bits 0-3: entrance connection sides, bit 4: origin, bit 5: connects to path)
     const TRACK_SEQUENCE_FLAGS = {1:[218],2:[218],3:[218],66:[16,137,1,131,8,2,140,134,4],101:[31],257:[154,0,138,0],258:[153,131,140,134],259:[153,1,1,131,8,0,0,2,8,0,0,2,140,4,4,134],260:[153,1,1,131,140,4,4,134],261:[26,0,138,138,0],262:[177],263:[146,0,130,0],264:[191],265:[26,139,10,142],266:[16,137,1,131,8,2,140,134,4]};
+    // Index = ride type id: rating requirements { name: threshold } and whether inversions relax drop height,
+    // drop count and negative G requirements (RideRatings.cpp). Missing one divides the ride's ratings.
+    const RIDE_REQUIREMENTS = [
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:50},
+        {requirementDropHeight:8,requirementMaxSpeed:786432,requirementNegativeGs:60,requirementLateralGs:150,requirementLength:24248320},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:30,relaxIfInversions:1},
+        {requirementDropHeight:6,requirementMaxSpeed:458752,requirementNumDrops:1},
+        {requirementLength:13107200,requirementUnsheltered:4},
+        {requirementLength:11141120,requirementUnsheltered:4},
+        {requirementDropHeight:6,requirementMaxSpeed:524288,requirementLateralGs:130,requirementLength:13107200},
+        {},
+        {requirementDropHeight:8,requirementMaxSpeed:458752,requirementNegativeGs:10,requirementLateralGs:150,requirementLength:11141120,requirementNumDrops:3},
+        {requirementDropHeight:4,requirementMaxSpeed:524288,requirementNegativeGs:50,requirementLength:15728640,requirementNumDrops:2},
+        {requirementLength:13107200},
+        {},
+        {requirementMaxSpeed:786432,requirementLateralGs:120,requirementLength:24248320},
+        {requirementUnsheltered:5},
+        {requirementDropHeight:14,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementDropHeight:12,requirementMaxSpeed:458752,requirementLength:9175040},
+        {requirementDropHeight:8,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementLength:24248320,requirementNumDrops:2},
+        {requirementLength:9830400,requirementStations:1,requirementUnsheltered:4},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {},
+        {},
+        {requirementUnsheltered:6},
+        {requirementDropHeight:6},
+        {requirementDropHeight:2,requirementLength:13107200},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {requirementDropHeight:34},
+        {requirementUnsheltered:5},
+        {requirementDropHeight:20,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementNumDrops:1},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {requirementLength:11796480},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementLength:24248320,requirementNumDrops:2},
+        {requirementDropHeight:6,requirementMaxSpeed:327680,requirementLength:16384000,requirementNumDrops:2},
+        {requirementDropHeight:6,requirementMaxSpeed:458752,requirementLateralGs:150,requirementLength:11141120,requirementNumDrops:2},
+        {requirementInversions:1,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementInversions:1,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementInversions:1,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementInversions:1,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementLength:13762560,requirementNumDrops:2},
+        {requirementDropHeight:6},
+        {requirementLength:10485760},
+        {requirementInversions:1,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementLength:11141120,requirementUnsheltered:4},
+        {requirementInversions:1,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementReversals:1,requirementLength:13107200,requirementNumDrops:2},
+        {requirementInversions:1,requirementNumDrops:1},
+        {requirementHoles:1},
+        {requirementDropHeight:16,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2},
+        {},
+        {},
+        {},
+        {requirementLength:9175040},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:30,relaxIfInversions:1},
+        {requirementDropHeight:8,requirementMaxSpeed:458752,requirementNumDrops:1,requirementSplashdown:0},
+        {requirementDropHeight:34},
+        {requirementDropHeight:8,requirementMaxSpeed:458752,requirementNegativeGs:10,requirementLateralGs:150,requirementLength:11141120,requirementNumDrops:3},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {},
+        {requirementDropHeight:20,requirementMaxSpeed:655360},
+        {requirementDropHeight:12,requirementMaxSpeed:458752,requirementNegativeGs:50,requirementNumDrops:2},
+        {requirementLength:17694720},
+        {},
+        {requirementDropHeight:10,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2,relaxIfInversions:1},
+        {requirementLength:13107200},
+        {requirementDropHeight:6,requirementMaxSpeed:458752,requirementLateralGs:150,requirementLength:11141120,requirementNumDrops:2},
+        {requirementDropHeight:6,requirementMaxSpeed:458752,requirementNumDrops:2},
+        {requirementDropHeight:14,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2},
+        {requirementDropHeight:14,requirementMaxSpeed:655360,requirementNegativeGs:40,requirementNumDrops:2},
+        {requirementMaxSpeed:327680,requirementLength:24248320},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementLength:24248320,requirementNumDrops:2},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:50},
+        {requirementDropHeight:10,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementNumDrops:2},
+        {requirementDropHeight:12,requirementMaxSpeed:655360,requirementNegativeGs:10,requirementLength:24248320,requirementNumDrops:2},
+    ];
+    // Track type -> clearance of each block above its base z, before the ride's own clearance (+256: vertical block)
+    const TRACK_BLOCK_CLEARANCE = [
+        [0],[0],[0],[0],[16],[64],[8],[32],[32],[8],[16],[64],
+        [8],[32],[32],[8],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0],[0],[0],[0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],
+        [8],[8],[8],[8],[8],[8],[8],[8],[0],[0],[16,0,16,16,0,16,16],[16,0,16,16,0,16,16],
+        [16,0,16,16,0,16,16],[16,0,16,16,0,16,16],[0,0,0,0],[0,0,0,0],[16,16,96,16,0,0,16,96,16,16],[16,16,96,16,0,0,16,96,16,16],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[16,0,0,16],[16,0,0,16],
+        [16,0,0,16],[16,0,0,16],[0],[0],[0,16,0],[0,16,0],[0,16,0],[0,16,0],[16,16,96,16],[16,96,16,16],[16,32,16],[16,32,16],
+        [16,32,16],[16,32,16],[24],[24],[24],[24],[64,0,0,0,0,0,0,0,0],[0,0],[0],[16],[64],[8],
+        [32],[32],[8],[16],[64],[8],[32],[32],[8],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0],
+        [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,4,4,0,0,4,4],[0,0,4,4,0,0,4,4],[4,4,0,0,4,4,0,0],[4,4,0,0,4,4,0,0],[0,0,0,0,4,4,4,0,0,0,0,4,4,4],[0,0,0,0,4,4,4,0,0,0,0,4,4,4],[4,4,4,0,0,0,0,4,4,4,0,0,0,0],[4,4,4,0,0,0,0,4,4,4,0,0,0,0],[64],
+        [64],[64],[64],[0],[0],[0],[8,8,8,16,16,16,16],[8,8,8,16,16,16,16],[16,16,16,16,8,8,8],[16,16,16,16,8,8,8],[8,8,8,16,16,16,16],[8,8,8,16,16,16,16],
+        [16,16,16,16,8,8,8],[16,16,16,16,8,8,8],[16],[16],[16],[0],[16],[16],[16],[16,16,16,16,16],[8,16,24,48],[48,48,24,8],
+        [0],[48,24,16,8],[8,24,48,48],[8,8,32,64],[16,32,48,80,160,208,208],[48,48],[264,256],[264,256],[288,256],[288],[312],[312,256],
+        [24],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0],[16,16,16,16],[64,64,64,64],
+        [8,8,8,8],[32,32,32,32],[32,32,32,32],[8,8,8,8],[16,16,16,16],[64,64,64,64],[8,8,8,8],[32,32,32,32],[32,32,32,32],[8,8,8,8],[24,24,24,24],[24,24,24,24],
+        [24,24,24,24],[24,24,24,24],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],
+        [8,8,8,8],[8,8,8,8],[0,0,0,0],[0,0,0,0],[0],[0],[0,16,16],[0,16,16],[16,16,0],[16,16,0],[0,16,16,16],[16,16,16,16],
+        [16,16,16,0],[16,16,16,0],[16],[24,40,56,192,96,192,16],[24,40,56,192,96,192,16],[16,192,96,192,56,40,24],[16,192,96,192,56,40,24],[0,16,16],[0,16,16],[16,16,0],[16,16,0],[16,16,96,16],
+        [16,96,16,16],[16,32,16],[16,32,16],[16,32,16],[16,32,16],[0,32,0,0],[0,32,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0],[0,0],[0,0],
+        [0,0,0],[0,0,0],[272,288,312,256],[312,288,272],[272,288,312,256],[0,0,8,8],[0,0,8,8],[0,0,0,0,0,0],[0,0,0,0,0,0],[32,32,32,32],[48,48],[208,208,160,80,48,32,16],
+        [0],[16,0,0,16],[16,0,0,16],[16,0,0,16],[16,0,0,16],[16,0,16,16,0,16,16],[16,0,16,16,0,16,16],[16,0,16,16,0,16,16],[16,0,16,16,0,16,16],[16],[16],[16],
+        [16],[16],[16],[16],[16],[8],[8],[8],[8],[8],[8],[8],
+        [8],[8],[8],[8],[8],[8],[8],[8],[8],[328,256],[328,256],[328,256],
+        [328,256],[312,288,272],[272,288,312,256],[312,288,272],[0],[0,0,0,0],[0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0],[0],[0,0,0,0],
+        [0],[0,0,0,0],[0,0,0,0,0,0,0,0,0],[16,32,24,24,40,24],[16,32,24,24,40,24],[24,40,24,24,32,16],[24,40,24,24,32,16],[24,48,120,120,24],[24,48,120,120,24],[24,120,120,48,24],[24,120,120,48,24],[16,24,16],
+        [16,24,16],[16,24,16],[16,24,16],[64,48,40,16],[64,48,40,16],[16,40,48,64],[16,40,48,64],[24,40,56,192,96,192,16],[24,40,56,192,96,192,16],[16,192,96,192,56,40,24],[16,192,96,192,56,40,24],[24,40,56,192,96,192,32],
+        [24,40,56,192,96,192,32],[32,192,96,192,56,40,24],[32,192,96,192,56,40,24],[16,16,96,32],[32,96,16,16],[16,32,16,16,24],[16,32,16,16,24],[16,16,16,16,16],[16,16,16,16,16],[16,16,16,16,16],[16,16,16,16,16],[24,16,16,32,16],
+        [24,16,16,32,16],[16,16,16,16],[16,16,16,16],[16,16,16,16],[16,16,16,16],[16,16,16,16],[16,16,16,16],[16,16,16,16],[16,16,16,16],[8,8,8,8],[8,8,8,8],[8,8,8,8],
+        [8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],[8,8,8,8],
+        [8,8,8,8],[16,16,16,16],[16,16,16,16],[16,16,16,16],[16,16,16,16],[16,32,16,16,24],[16,32,16,16,24],[16,16,16,16,16],[16,16,16,16,16],[16,16,16,16,16],[16,16,16,16,16],[24,16,16,32,16],
+        [24,16,16,32,16],[0,0,0,0],[0,0,0,0],[16],[0,0,0,0],[0,16,16,32,40,40,64,88,88,104],[64,72,72,80,32,32,8,8,8,8],[8,8,8,8,32,32,80,72,72,64],[104,88,88,64,40,40,32,16,16,0],[64,88,88,80,48,24],[64,88,88,80,48,24],[24,48,80,88,88,64],
+        [24,48,80,88,88,64],[16,16,16,16],
+    ];
     // </generated-ride-data>
 
     // ------------------------------------------------------------------
@@ -1217,7 +1358,8 @@
                     if (opts.allowedPortal && opts.allowedPortal.x === m.x && opts.allowedPortal.y === m.y) continue;
                     if (edgeZ(z, s, k) === e.z) {
                         result = e.type === ENTRANCE_RIDE_EXIT ? (result || 'joins') : 'blocks';
-                    } else if (z < e.z + PATH_CLEARANCE && z + PATH_CLEARANCE + LAND_STEP > e.z) {
+                    } else if (z < e.z + 2 * PATH_CLEARANCE && z + PATH_CLEARANCE + LAND_STEP > e.z) {
+                        // Too close above or below: the entrance's own path would be boxed in under it.
                         result = 'blocks';
                     }
                 }
@@ -1777,7 +1919,8 @@
     function rideTypeInfo(rideType) {
         const row = RIDE_TYPE_DATA[rideType];
         if (!row) return null;
-        const [name, category, startPiece, flagsLow, flagsHigh, groups, extraGroups, maxHeight, liftMin, liftMax, special] = row;
+        const [name, category, startPiece, flagsLow, flagsHigh, groups, extraGroups, maxHeight, liftMin, liftMax, special,
+            clearance] = row;
         const has = flag => {
             const i = RTD_FLAGS[flag];
             if (i === undefined) return false;
@@ -1791,8 +1934,39 @@
         return {
             id: rideType, name: name, category: RIDE_CATEGORIES[category] || null, startPiece: startPiece, has: has,
             groups: groups, extraGroups: extraGroups, maxHeight: maxHeight, liftMin: liftMin, liftMax: liftMax,
-            special: special, kind: kind,
+            special: special, kind: kind, clearance: clearance,
         };
+    }
+
+    /**
+     * Height range [low, high) one block of a placed piece occupies, as TrackPlaceAction computes it. rideClearance
+     * is the ride's clearance height (the ride type's default; ride objects may differ slightly).
+     */
+    function blockSpan(trackType, blockIndex, z, rideClearance) {
+        const raw = (TRACK_BLOCK_CLEARANCE[trackType] || [])[blockIndex] || 0;
+        const vertical = raw >= 256;
+        const extra = vertical && rideClearance > 24 ? 24 : rideClearance;
+        const low = Math.floor(z / 8) * 8;
+        return { low: low, high: low + Math.floor(((raw & 0xFF) + extra) / 8) * 8 };
+    }
+
+    /** Height spans per tile (key -> [{low, high}]) a walked layout will occupy once placed at (ox, oy, baseZ). */
+    function layoutOccupancy(walked, ox, oy, baseZ, rideClearance) {
+        const occ = new Map();
+        for (const p of walked.pieces) {
+            p.blocks.forEach((b, i) => {
+                const key = tileKey(ox + Math.floor(b.x / TILE_SIZE), oy + Math.floor(b.y / TILE_SIZE));
+                if (!occ.has(key)) occ.set(key, []);
+                occ.get(key).push(blockSpan(p.el.type, i, baseZ + b.z, rideClearance));
+            });
+        }
+        return occ;
+    }
+
+    /** Does anything in occ on tile (x, y) overlap heights [low, high)? */
+    function spanOccupied(occ, x, y, low, high) {
+        const spans = occ.get(tileKey(x, y));
+        return !!spans && spans.some(s => s.low < high && s.high > low);
     }
 
     /** Footprint of a single-piece ride (flat ride, stall, tower base) as tile offsets for direction 0. */
@@ -1846,6 +2020,7 @@
             const option = {
                 object: obj.index,
                 identifier: obj.identifier,
+                legacyIdentifier: obj.legacyIdentifier || null,
                 name: obj.name,
                 rideType: rideType,
                 rideTypeName: info.name,
@@ -2207,6 +2382,23 @@
             .sort((a, b) => a.distance - b.distance);
     }
 
+    /** How many ways a path could leave tile (x, y) at height z, not counting the way back to (fromX, fromY). */
+    function pathExits(tc, x, y, z, fromX, fromY) {
+        let count = 0;
+        for (let k = 0; k < 4; k++) {
+            const nx = x + DIR_DX[k];
+            const ny = y + DIR_DY[k];
+            if (nx === fromX && ny === fromY) continue;
+            const info = tc.get(nx, ny);
+            if (!info || !info.surface || info.entrances.length > 0 || info.largeScenery) continue;
+            if (!isSandbox() && !info.surface.owned && !info.surface.rights) continue;
+            if (info.surface.water > z || surfaceTop(info) > z + LAND_STEP) continue;
+            if (info.tracks.some(t => t.z < z + PATH_CLEARANCE + LAND_STEP && t.clearanceZ > z - LAND_STEP)) continue;
+            count++;
+        }
+        return count;
+    }
+
     function chooseEntranceAndExit(ranked) {
         // The entrance needs a free tile in front for its queue line; an exit may open straight onto a path.
         const entrance = ranked.find(p => !p.frontHasPath && p.distance >= 2) || ranked.find(p => !p.frontHasPath);
@@ -2265,6 +2457,7 @@
             turnDirection: seg.turnDirection,
             startsHalfHeightUp: seg.startsHalfHeightUp,
             length: seg.length,
+            subLength: seg.getSubpositionLength(0, 0),
             blocks: seg.elements.map(e => ({ x: e.x, y: e.y, z: e.z })),
         } : null;
         segmentCache.set(type, out);
@@ -2490,7 +2683,7 @@
         if (!sandbox && !spot.surface.owned) return false;
         if (!sandbox && !front.surface.owned && !front.surface.rights) return false;
         if (spot.paths.length || spot.entrances.length || spot.largeScenery) return false;
-        if (spot.tracks.some(t => t.z < z + 56 && t.clearanceZ > z)) return false;
+        if (spot.tracks.some(t => t.z < z + ENTRANCE_CLEARANCE && t.clearanceZ > z)) return false;
         if (spot.surface.water > z || surfaceTop(spot) > z) return false;
         if (front.surface.water > z) return false;
         if (front.entrances.length || front.largeScenery) return false;
@@ -2542,47 +2735,46 @@
             }
         }
         const c = layout.colours || {};
+        const colourRuns = [];
         (c.track || []).forEach((tc, i) => {
             if (!tc) return;
             ['main', 'additional', 'supports'].forEach((k, t) => {
-                if (isNumber(tc[k])) run('ridesetappearance', { type: t, value: tc[k], index: i }, 'track colour');
+                if (isNumber(tc[k])) colourRuns.push(run('ridesetappearance', { type: t, value: tc[k], index: i }, 'track colour'));
             });
         });
         (c.vehicles || []).slice(0, 32).forEach((vc, i) => {
             if (!vc) return;
             ['body', 'trim', 'tertiary'].forEach((k, t) => {
-                if (isNumber(vc[k])) run('ridesetappearance', { type: 3 + t, value: vc[k], index: i }, 'vehicle colour');
+                if (isNumber(vc[k])) colourRuns.push(run('ridesetappearance', { type: 3 + t, value: vc[k], index: i }, 'vehicle colour'));
             });
         });
+        await Promise.all(colourRuns);
         if (isNumber(c.vehicleColourSettings)) {
             await run('ridesetappearance', { type: 6, value: c.vehicleColourSettings, index: 0 }, 'vehicle colour scheme');
         }
     }
 
     /** Will this candidate have room for an entrance and an exit (the design's own, or beside the station)? */
-    function portalsPossible(tc, layout, cand, z) {
-        // Tiles the layout's own track will cover once built.
-        const own = new Set();
-        for (const p of cand.walked.pieces) {
-            for (const b of p.blocks) own.add(tileKey(cand.ox + Math.floor(b.x / TILE_SIZE), cand.oy + Math.floor(b.y / TILE_SIZE)));
-        }
+    function portalsPossible(tc, layout, cand, z, rideClearance) {
+        // Space the layout's own track will take once built: an entrance needs its tile clear for its height and
+        // the path in front of it needs headroom (track passing high overhead is fine).
+        const own = layoutOccupancy(cand.walked, cand.ox, cand.oy, z, rideClearance);
+        const clear = (x, y, ez, fx, fy) => !spanOccupied(own, x, y, ez, ez + ENTRANCE_CLEARANCE)
+            && !spanOccupied(own, fx, fy, ez, ez + PATH_CLEARANCE) && portalSpotOk(tc, x, y, ez, fx, fy);
         const ents = (layout.entrances || []).map(e => {
             const r = rotate(e.x, e.y, cand.direction);
             const x = cand.ox + Math.floor(r.x / TILE_SIZE);
             const y = cand.oy + Math.floor(r.y / TILE_SIZE);
             const dir = (cand.direction + e.direction) & 3;
             const ez = e.z === null || e.z === undefined ? z : e.z * 8 + z;
-            const fx = x + DIR_DX[dir ^ 2];
-            const fy = y + DIR_DY[dir ^ 2];
-            return { ok: !own.has(tileKey(fx, fy)) && portalSpotOk(tc, x, y, ez, fx, fy), isExit: !!e.isExit };
+            return { ok: clear(x, y, ez, x + DIR_DX[dir ^ 2], y + DIR_DY[dir ^ 2]), isExit: !!e.isExit };
         });
         if (ents.some(e => e.ok && !e.isExit) && ents.some(e => e.ok && e.isExit)) return true;
         const stations = portalPieces(cand.walked);
         if (stations.length === 0) return ents.length === 0 || ents.every(e => e.ok);
         const stationZ = z + Math.min(...stations.map(p => p.z));
         const spots = stationAttachmentPoints(cand.walked, cand.ox, cand.oy)
-            .filter(a => !own.has(tileKey(a.x, a.y)) && !own.has(tileKey(a.front.x, a.front.y))
-                && portalSpotOk(tc, a.x, a.y, stationZ, a.front.x, a.front.y));
+            .filter(a => clear(a.x, a.y, stationZ, a.front.x, a.front.y));
         return spots.length >= 2;
     }
 
@@ -2646,6 +2838,7 @@
      */
     async function buildLayout(layout, params) {
         ensureCanBuild(params);
+        checkStatusParam(params);
         const isMaze = Array.isArray(layout.mazeElements) && layout.mazeElements.length > 0;
         const elements = layout.trackElements || [];
         if (!isMaze && elements.length === 0) fail('The layout has no track pieces.');
@@ -2700,6 +2893,7 @@
             // Validate each candidate with the game's own queries (trying a few heights, as the UI does).
             let chosen = null;
             const reasons = [];
+            const debugInfo = [];
             for (const cand of candidates.slice(0, 16)) {
                 const z0 = isMaze ? null : layoutBaseZ(tc, cand.walked, cand.ox, cand.oy);
                 if (!isMaze && z0 === null) continue;
@@ -2719,10 +2913,11 @@
                             cost += r.cost || 0;
                         }
                     }
-                    if (ok && !isMaze && !portalsPossible(tc, layout, cand, z)) {
+                    if (ok && !isMaze && !portalsPossible(tc, layout, cand, z, rideTypeInfo(option.rideType).clearance)) {
                         ok = false;
                         reasons.push('no usable spot for the entrance and exit');
                     }
+                    if (params.debug) debugInfo.push({ ox: cand.ox, oy: cand.oy, direction: cand.direction, z: z, ok: ok, last: reasons[reasons.length - 1] });
                     if (ok) chosen = Object.assign({ z: z, estimatedCost: cost }, cand);
                 }
                 if (chosen) break;
@@ -2730,6 +2925,7 @@
             if (!chosen) {
                 fail('The game rejected every candidate placement for this layout.', {
                     reasons: Array.from(new Set(reasons)).slice(0, 6),
+                    candidates: params.debug ? debugInfo : undefined,
                 });
             }
 
@@ -2761,7 +2957,7 @@
             } else {
                 const results = await inNextTick(() => chosen.walked.pieces.map(p =>
                     executeActionNow('trackplace', trackPlaceArgs(rideId, option.rideType, p, chosen.ox, chosen.oy, chosen.z, flags))));
-                let queued = results.some(r => r === null);
+                const queued = results.some(r => r === null);
                 if (queued) {
                     // Paused: the actions were queued; wait for their results.
                     const awaited = await Promise.all(chosen.walked.pieces.map(p =>
@@ -2794,8 +2990,17 @@
                 const field = distanceField(tc, goalTiles);
                 const stationZ = chosen.z + Math.min(...portalPieces(chosen.walked).map(p => p.z));
                 const taken = new Set(keep.map(p => tileKey(p.x, p.y)));
-                const spots = stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy)
+                let spots = stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy)
                     .filter(a => !taken.has(tileKey(a.x, a.y)) && portalSpotOk(tcNow, a.x, a.y, stationZ, a.front.x, a.front.y));
+                // Prefer the open side of the station: a path in front of a spot hemmed in by the ride's own track
+                // has nowhere to go once the queue takes the only way out.
+                for (const need of [3, 2]) {
+                    const open = spots.filter(a => pathExits(tcNow, a.front.x, a.front.y, stationZ, a.x, a.y) >= need);
+                    if (open.length >= 2) {
+                        spots = open;
+                        break;
+                    }
+                }
                 const ranked = rankAttachments(tcNow, spots, field, stationZ);
                 const pair = chooseEntranceAndExit(ranked);
                 if (!pair) fail('No room beside the station for an entrance and exit.');
@@ -2807,7 +3012,9 @@
                     const exit = keep.some(p => !p.isExit) ? pair.entrance : pair.exit;
                     portals.push({ x: exit.x, y: exit.y, direction: exit.direction, station: 0, isExit: true });
                 }
-                warnings.push('placed ' + (keep.length ? 'some' : 'the') + ' entrance/exit beside the station instead of where the design had them');
+                if ((layout.entrances || []).length > 0) {
+                    warnings.push('placed ' + (keep.length ? 'some' : 'the') + ' entrance/exit beside the station instead of where the design had them');
+                }
             }
             for (const p of portals) {
                 const res = await executeAction('rideentranceexitplace', {
@@ -2818,7 +3025,10 @@
                 else spent += res.cost || 0;
             }
 
-            await applyLayoutSettings(rideId, layout, option, flags, warnings);
+            const settingsLayout = Object.assign({}, layout, { settings: Object.assign({}, layout.settings || {}) });
+            if (isNumber(params.trains)) settingsLayout.settings.numberOfTrains = Math.floor(params.trains);
+            if (isNumber(params.carsPerTrain)) settingsLayout.settings.carsPerTrain = Math.floor(params.carsPerTrain);
+            await applyLayoutSettings(rideId, settingsLayout, option, flags, warnings);
             const summary = Object.assign({ built: true }, summaryBase);
             const ride = map.getRide(rideId);
             summary.name = ride.name;
@@ -2859,7 +3069,10 @@
                     summary.paths.exit = 'failed: ' + e.message;
                 }
             }
-            await applyRideSettings(rideId, params, flags, summary);
+            // Tracked rides start testing unless told otherwise, so the game measures their ratings.
+            const kind = rideTypeInfo(option.rideType).kind;
+            const status = params.status || (params.open ? 'open' : (kind === 'tracked' || kind === 'tower' ? 'testing' : null));
+            await applyRideSettings(rideId, Object.assign({}, params, { status: status, open: false }), flags, summary);
             if (warnings.length > 0) summary.warnings = warnings;
             summary.totalCost = spent;
             summary.totalCostFormatted = formatMoney(spent);
@@ -2868,6 +3081,597 @@
             await demolishRide(rideId, flags);
             throw e;
         }
+    }
+
+    // ------------------------------------------------------------------
+    // Roller coaster generator
+    // ------------------------------------------------------------------
+
+    /** Small seeded random number generator (mulberry32), so a design can be repeated from its seed. */
+    function makeRng(seed) {
+        let a = seed >>> 0;
+        const next = () => {
+            a = (a + 0x6D2B79F5) >>> 0;
+            let t = a;
+            t = Math.imul(t ^ (t >>> 15), t | 1);
+            t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+            return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+        return {
+            next: next,
+            int: (lo, hi) => lo + Math.floor(next() * (hi - lo + 1)),
+            pick: list => list[Math.floor(next() * list.length)],
+            chance: p => next() < p,
+        };
+    }
+
+    function shuffle(rng, list) {
+        const out = list.slice();
+        for (let i = out.length - 1; i > 0; i--) {
+            const j = Math.floor(rng.next() * (i + 1));
+            [out[i], out[j]] = [out[j], out[i]];
+        }
+        return out;
+    }
+
+    function pickWeighted(rng, items) {
+        const total = items.reduce((s, i) => s + i.weight, 0);
+        let r = rng.next() * total;
+        for (const item of items) {
+            r -= item.weight;
+            if (r <= 0) return item;
+        }
+        return items[items.length - 1];
+    }
+
+    function mirrorPieceName(name) {
+        return name.replace(/left|Left|right|Right/g, m => ({ left: 'right', Left: 'Right', right: 'left', Right: 'Left' })[m]);
+    }
+
+    const repeat = (name, n) => Array.from({ length: Math.max(0, n) }, () => name);
+
+    // Energy model, in z units. A train's "energy" is the height it could still climb to: a chain lift sets it to
+    // the top of the lift, friction takes some away per tile, and crests must stay below it by a margin. Its
+    // speed head (energy minus current height) stands in for speed: measured top speeds follow about
+    // 3.2 * sqrt(head) mph. Calibrated against test runs in the game; deliberately on the safe side.
+    const COASTER_LOSS_PER_TILE = 1.5;
+    const COASTER_CREST_MARGIN = 16;
+    const COASTER_INVERSION_MARGIN = 40;
+    const COASTER_LIFT_EXIT_ENERGY = 8;
+    const COASTER_STATION_ENERGY = 8;
+    const COASTER_BRAKE_SPEED = 12;
+    const COASTER_METRES_PER_TILE = 4.5;
+    const speedHead = mph => Math.round((mph / 3.2) * (mph / 3.2));
+
+    /**
+     * A track drafted piece by piece in layout coordinates: the station starts on tile (0, 0) heading in
+     * direction 0, z is relative to the station. Pieces that hit earlier track (using the game's clearances),
+     * leave the bounds, go below the station or climb higher than the train could are refused.
+     */
+    class TrackDraft {
+        constructor(types, rideClearance, bounds, maxZ) {
+            this.types = types;
+            this.rideClearance = rideClearance;
+            this.bounds = bounds;
+            this.maxZ = maxZ;
+            this.els = [];
+            this.history = [];
+            this.occ = new Map();
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
+            this.rot = 0;
+            this.energy = COASTER_STATION_ENERGY;
+            this.peak = 0;
+            this.inversions = 0;
+            this.length = 0;
+            this.drops = 0;
+            this.dropping = false;
+            this.airtime = 0;
+            this.firstDrop = 0;
+            this.liftHeight = 0;
+            this.refusals = {};
+        }
+
+        has(names) {
+            return names.every(n => this.types.has(n));
+        }
+
+        head() {
+            return this.energy - this.z;
+        }
+
+        refuse(name, reason) {
+            const key = name + ': ' + reason;
+            this.refusals[key] = (this.refusals[key] || 0) + 1;
+            return false;
+        }
+
+        /** Appends pieces by name, all or nothing. */
+        add(names, chain) {
+            const mark = this.els.length;
+            for (const n of names) {
+                if (!this.push(n, chain)) {
+                    this.rewind(mark);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        push(name, chain) {
+            const type = this.types.get(name);
+            if (type === undefined) return this.refuse(name, 'not available');
+            const seg = trackSegment(type);
+            if (!seg || (seg.beginDirection & 4) || (seg.endDirection & 4)) return this.refuse(name, 'diagonal');
+            if (chain && !seg.allowsChainLift) return this.refuse(name, 'no chain');
+            const last = this.els.length > 0 ? trackSegment(this.els[this.els.length - 1].type) : null;
+            if (last && (last.endSlope !== seg.beginSlope || last.endBank !== seg.beginBank)) return this.refuse(name, 'join');
+            const placeZ = this.z - seg.beginZ;
+            const spans = [];
+            let top = -Infinity;
+            for (let i = 0; i < seg.blocks.length; i++) {
+                const b = seg.blocks[i];
+                const r = rotate(b.x, b.y, this.rot);
+                const tx = Math.floor((this.x + r.x) / TILE_SIZE);
+                const ty = Math.floor((this.y + r.y) / TILE_SIZE);
+                const bounds = this.bounds;
+                if (tx < bounds.minX || tx > bounds.maxX || ty < bounds.minY || ty > bounds.maxY) return this.refuse(name, 'bounds');
+                const bz = placeZ + b.z;
+                if (bz < 0) return this.refuse(name, 'underground');
+                const span = blockSpan(type, i, bz, this.rideClearance);
+                if (span.high > this.maxZ) return this.refuse(name, 'too high');
+                if (spanOccupied(this.occ, tx, ty, span.low, span.high)) return this.refuse(name, 'collision');
+                spans.push({ key: tileKey(tx, ty), low: span.low, high: span.high });
+                top = Math.max(top, bz);
+            }
+            const off = rotate(seg.endX, seg.endY, this.rot);
+            const rot = (this.rot + seg.endDirection - seg.beginDirection) & 3;
+            const x = this.x + off.x + DIR_DX[rot] * TILE_SIZE;
+            const y = this.y + off.y + DIR_DY[rot] * TILE_SIZE;
+            const z = this.z - seg.beginZ + seg.endZ;
+            const inverts = seg.beginBank === 15 || seg.endBank === 15 || seg.isInversion;
+            let energy = this.energy;
+            const crest = Math.max(top, z);
+            if (chain) {
+                energy = Math.max(energy, z + COASTER_LIFT_EXIT_ENERGY);
+            } else if (crest > this.z && crest > energy - (inverts ? COASTER_INVERSION_MARGIN : COASTER_CREST_MARGIN)) {
+                return this.refuse(name, 'not enough speed');
+            }
+            const tiles = (seg.subLength || 32) / 32;
+            energy -= COASTER_LOSS_PER_TILE * tiles;
+            if (STATION_TRACK_TYPES.includes(type)) energy = Math.max(energy, z + COASTER_STATION_ENERGY);
+            if (name === 'brakes') energy = Math.min(energy, z + speedHead(COASTER_BRAKE_SPEED));
+
+            this.history.push({
+                x: this.x, y: this.y, z: this.z, rot: this.rot, energy: this.energy, peak: this.peak,
+                inversions: this.inversions, length: this.length, drops: this.drops, dropping: this.dropping,
+                airtime: this.airtime, spans: spans,
+            });
+            for (const s of spans) {
+                if (!this.occ.has(s.key)) this.occ.set(s.key, []);
+                this.occ.get(s.key).push(s);
+            }
+            this.els.push({
+                type: type, chain: !!chain, inverted: false, brakeSpeed: name === 'brakes' ? COASTER_BRAKE_SPEED : 2,
+                seatRotation: 4, colourScheme: 0, station: 0,
+            });
+            // Drops as the game counts them (roughly): each new run of downhill track.
+            const descending = z < this.z || seg.beginSlope >= 6;
+            if (descending && !this.dropping) {
+                this.drops++;
+                // Going over a crest with speed to spare gives the negative G (airtime) some ride types need.
+                if (last && last.endSlope === 0 && this.head() >= 32 && !inverts) this.airtime++;
+            }
+            this.dropping = descending;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.rot = rot;
+            this.energy = energy;
+            this.peak = Math.max(this.peak, crest);
+            if (seg.endBank === 15 && seg.beginBank !== 15) this.inversions++;
+            if (seg.isInversion && seg.beginBank !== 15 && seg.endBank !== 15) this.inversions++;
+            this.length += tiles;
+            return true;
+        }
+
+        rewind(count) {
+            while (this.els.length > count) {
+                this.els.pop();
+                const h = this.history.pop();
+                for (const s of h.spans) {
+                    const list = this.occ.get(s.key);
+                    list.splice(list.indexOf(s), 1);
+                    if (list.length === 0) this.occ.delete(s.key);
+                }
+                Object.assign(this, {
+                    x: h.x, y: h.y, z: h.z, rot: h.rot, energy: h.energy, peak: h.peak, inversions: h.inversions,
+                    length: h.length, drops: h.drops, dropping: h.dropping, airtime: h.airtime,
+                });
+            }
+        }
+    }
+
+    // Fastest a turn may be entered (speed head, z units) before its lateral G gets uncomfortable.
+    const TURN_SPEED_LIMITS = {
+        leftQuarterTurn1Tile: 16, leftQuarterTurn3Tiles: 32, leftQuarterTurn5Tiles: 56, sBendLeft: 64,
+        leftBankedQuarterTurn3Tiles: 80, bankedLeftQuarterTurn5Tiles: 150, leftHalfBankedHelixDownSmall: 80,
+        leftHalfBankedHelixDownLarge: 150, leftQuarterBankedHelixLargeDown: 150, leftQuarterTurn3TilesDown25: 24,
+        leftQuarterTurn5TilesDown25: 48, leftBankedQuarterTurn3TileDown25: 64, leftBankedQuarterTurn5TileDown25: 120,
+        leftQuarterTurn3TilesUp25: 64, leftBankedQuarterTurn3TileUp25: 120, leftQuarterTurn5TilesUp25: 96,
+    };
+
+    /** Fastest entry (speed head) a run of pieces allows: its tightest turn decides. */
+    function sequenceSpeedLimit(names) {
+        let limit = Infinity;
+        for (const n of names) {
+            const key = n.replace(/right|Right/g, m => (m === 'right' ? 'left' : 'Left'));
+            if (TURN_SPEED_LIMITS[key] !== undefined) limit = Math.min(limit, TURN_SPEED_LIMITS[key]);
+        }
+        return limit;
+    }
+
+    /** Features a generated coaster is built from. Each starts and ends on flat, unbanked track. */
+    function coasterFeatureCatalogue(draft, style) {
+        const both = list => list.flatMap(names => [names, names.map(mirrorPieceName)]);
+        const usable = list => list.filter(names => draft.has(names));
+        const intense = style === 'intense';
+        const gentle = style === 'gentle';
+        return [
+            { kind: 'straight', weight: 1, options: () => [['flat'], ['flat', 'flat']] },
+            { kind: 'turn', weight: gentle ? 4 : 2, options: () => usable(both([['leftQuarterTurn5Tiles'], ['leftQuarterTurn3Tiles'],
+                ['leftQuarterTurn1Tile']])) },
+            { kind: 'banked turn', weight: gentle ? 2 : 4, options: () => usable(both([
+                ['flatToLeftBank', 'bankedLeftQuarterTurn5Tiles', 'leftBankToFlat'],
+                ['flatToLeftBank', 'leftBankedQuarterTurn3Tiles', 'leftBankToFlat']])) },
+            { kind: 's-bend', weight: 1, options: () => usable(both([['sBendLeft']])) },
+            { kind: 'hill', weight: 3, airtime: true, options: rng => usable([0, 1, 2, 3].map(k => ['flatToUp25'].concat(repeat('up25', k),
+                ['up25ToFlat', 'flatToDown25'], repeat('down25', k + rng.int(0, 1)), ['down25ToFlat']))) },
+            { kind: 'drop', weight: 2, descends: true, options: () => usable([0, 1, 2, 3, 4].map(k =>
+                ['flatToDown25'].concat(repeat('down25', k), ['down25ToFlat']))) },
+            { kind: 'steep drop', weight: gentle ? 0 : 2, descends: true, options: () => usable([0, 1].map(k =>
+                ['flatToDown25', 'down25ToDown60'].concat(repeat('down60', k), ['down60ToDown25', 'down25ToFlat']))) },
+            { kind: 'turning drop', weight: 3, descends: true, options: () => usable(both([
+                ['flatToDown25', 'leftQuarterTurn5TilesDown25', 'down25ToFlat'],
+                ['flatToDown25', 'leftQuarterTurn3TilesDown25', 'down25ToFlat'],
+                ['flatToDown25', 'leftBankedQuarterTurn5TileDown25', 'down25ToFlat'],
+                ['flatToDown25', 'leftBankedQuarterTurn3TileDown25', 'down25ToFlat']])) },
+            { kind: 'helix', weight: 2, descends: true, options: () => usable(both([
+                ['flatToLeftBank', 'leftHalfBankedHelixDownLarge', 'leftBankToFlat'],
+                ['flatToLeftBank', 'leftHalfBankedHelixDownLarge', 'leftHalfBankedHelixDownLarge', 'leftBankToFlat'],
+                ['flatToLeftBank', 'leftHalfBankedHelixDownSmall', 'leftHalfBankedHelixDownSmall', 'leftBankToFlat'],
+                ['flatToLeftBank', 'leftQuarterBankedHelixLargeDown', 'leftBankToFlat']])) },
+            { kind: 'climbing turn', weight: 1, options: () => usable(both([
+                ['flatToUp25', 'leftQuarterTurn3TilesUp25', 'up25ToFlat'],
+                ['flatToUp25', 'leftBankedQuarterTurn3TileUp25', 'up25ToFlat'],
+                ['flatToUp25', 'leftQuarterTurn5TilesUp25', 'up25ToFlat']])) },
+            { kind: 'vertical loop', weight: gentle ? 0 : (intense ? 4 : 2), inversion: true, options: () => usable(both([
+                ['flatToUp25', 'leftVerticalLoop', 'down25ToFlat']])) },
+            { kind: 'corkscrew', weight: gentle ? 0 : (intense ? 4 : 2), inversion: true, options: () => usable(both([
+                ['leftCorkscrewUp', 'leftCorkscrewDown'], ['leftCorkscrewUp', 'rightCorkscrewDown'],
+                ['leftLargeCorkscrewUp', 'leftLargeCorkscrewDown'], ['leftLargeCorkscrewUp', 'rightLargeCorkscrewDown']])) },
+        ];
+    }
+
+    /** Pieces for a drop of `depth` z ending flat (steep in the middle when allowed and deep enough). */
+    function dropPieces(draft, depth, steep) {
+        if (depth < 16) return [];
+        if (steep && depth >= 80 && draft.has(['down25ToDown60', 'down60', 'down60ToDown25'])) {
+            const s = Math.floor((depth - 80) / 64);
+            const r = Math.floor((depth - 80 - 64 * s) / 16);
+            return ['flatToDown25'].concat(repeat('down25', r), ['down25ToDown60'], repeat('down60', s), ['down60ToDown25', 'down25ToFlat']);
+        }
+        return ['flatToDown25'].concat(repeat('down25', depth / 16 - 1), ['down25ToFlat']);
+    }
+
+    /**
+     * Finds pieces that bring the draft back to the start of its station: A* over flat, turning and descending
+     * moves, refusing turns taken too fast and anything that would hit the track already drafted.
+     */
+    function closeCircuit(draft, maxNodes) {
+        const macros = [];
+        const addMacro = names => {
+            if (draft.has(names)) macros.push(names);
+        };
+        addMacro(['flat']);
+        for (const t of [['leftQuarterTurn3Tiles'], ['leftQuarterTurn5Tiles'], ['leftQuarterTurn1Tile'],
+            ['flatToLeftBank', 'bankedLeftQuarterTurn5Tiles', 'leftBankToFlat'],
+            ['flatToLeftBank', 'leftBankedQuarterTurn3Tiles', 'leftBankToFlat']]) {
+            addMacro(t);
+            addMacro(t.map(mirrorPieceName));
+        }
+        for (let k = 0; k <= 4; k++) addMacro(['flatToDown25'].concat(repeat('down25', k), ['down25ToFlat']));
+        for (const t of ['leftQuarterTurn3TilesDown25', 'leftQuarterTurn5TilesDown25']) {
+            addMacro(['flatToDown25', t, 'down25ToFlat']);
+            addMacro(['flatToDown25', mirrorPieceName(t), 'down25ToFlat']);
+        }
+        // Each macro's footprint and end pose from each heading, starting at (0, 0, 0).
+        const moves = macros.map(names => [0, 1, 2, 3].map(rot => {
+            let x = 0;
+            let y = 0;
+            let z = 0;
+            let r = rot;
+            let cost = 0;
+            const blocks = [];
+            for (const n of names) {
+                const type = draft.types.get(n);
+                const seg = trackSegment(type);
+                const placeZ = z - seg.beginZ;
+                seg.blocks.forEach((b, i) => {
+                    const p = rotate(b.x, b.y, r);
+                    const span = blockSpan(type, i, placeZ + b.z + 1024, draft.rideClearance);
+                    blocks.push({ dx: Math.floor((x + p.x) / TILE_SIZE), dy: Math.floor((y + p.y) / TILE_SIZE),
+                        low: span.low - 1024, high: span.high - 1024, z: placeZ + b.z });
+                });
+                const off = rotate(seg.endX, seg.endY, r);
+                r = (r + seg.endDirection - seg.beginDirection) & 3;
+                x += off.x + DIR_DX[r] * TILE_SIZE;
+                y += off.y + DIR_DY[r] * TILE_SIZE;
+                z += seg.endZ - seg.beginZ;
+                cost += (seg.subLength || 32) / 32;
+            }
+            return { names: names, blocks: blocks, dx: x, dy: y, dz: z, rot: r, cost: cost, limit: sequenceSpeedLimit(names) };
+        }));
+        const start = { x: draft.x, y: draft.y, z: draft.z, rot: draft.rot, g: 0, parent: null, move: null };
+        const h = n => (Math.abs(n.x) + Math.abs(n.y)) / TILE_SIZE + n.z / 16 + (n.rot !== 0 ? 1 : 0);
+        start.f = h(start);
+        const heap = [start];
+        const pushHeap = n => {
+            heap.push(n);
+            let i = heap.length - 1;
+            while (i > 0) {
+                const p = (i - 1) >> 1;
+                if (heap[p].f <= heap[i].f) break;
+                [heap[p], heap[i]] = [heap[i], heap[p]];
+                i = p;
+            }
+        };
+        const popHeap = () => {
+            const top = heap[0];
+            const last = heap.pop();
+            if (heap.length > 0) {
+                heap[0] = last;
+                let i = 0;
+                for (;;) {
+                    const l = 2 * i + 1;
+                    const r = l + 1;
+                    let m = i;
+                    if (l < heap.length && heap[l].f < heap[m].f) m = l;
+                    if (r < heap.length && heap[r].f < heap[m].f) m = r;
+                    if (m === i) break;
+                    [heap[m], heap[i]] = [heap[i], heap[m]];
+                    i = m;
+                }
+            }
+            return top;
+        };
+        const best = new Map();
+        const b = draft.bounds;
+        let expanded = 0;
+        while (heap.length > 0 && expanded < maxNodes) {
+            const node = popHeap();
+            if (node.x === 0 && node.y === 0 && node.z === 0 && node.rot === 0 && node.parent) {
+                const path = [];
+                for (let n = node; n.parent; n = n.parent) path.unshift(n.move.names);
+                return path;
+            }
+            const key = node.x + ',' + node.y + ',' + node.z + ',' + node.rot;
+            if (best.has(key) && best.get(key) <= node.g) continue;
+            best.set(key, node.g);
+            expanded++;
+            const head = draft.energy - COASTER_LOSS_PER_TILE * node.g - node.z;
+            for (const m of moves) {
+                const mv = m[node.rot];
+                const nz = node.z + mv.dz;
+                if (nz < 0 || head > mv.limit) continue;
+                const bx = Math.floor(node.x / TILE_SIZE);
+                const by = Math.floor(node.y / TILE_SIZE);
+                let ok = true;
+                for (const blk of mv.blocks) {
+                    const tx = bx + blk.dx;
+                    const ty = by + blk.dy;
+                    if (tx < b.minX || tx > b.maxX || ty < b.minY || ty > b.maxY || node.z + blk.z < 0
+                        || spanOccupied(draft.occ, tx, ty, node.z + blk.low, node.z + blk.high)) {
+                        ok = false;
+                        break;
+                    }
+                    // The path found so far must not cross itself either.
+                    for (let n = node; n.parent && ok; n = n.parent) {
+                        const pbx = Math.floor(n.parent.x / TILE_SIZE);
+                        const pby = Math.floor(n.parent.y / TILE_SIZE);
+                        for (const pb of n.move.blocks) {
+                            if (pbx + pb.dx === tx && pby + pb.dy === ty && n.parent.z + pb.low < node.z + blk.high
+                                && n.parent.z + pb.high > node.z + blk.low) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (!ok) break;
+                }
+                if (!ok) continue;
+                const next = { x: node.x + mv.dx, y: node.y + mv.dy, z: nz, rot: mv.rot, g: node.g + mv.cost, parent: node, move: mv };
+                const nkey = next.x + ',' + next.y + ',' + next.z + ',' + next.rot;
+                if (best.has(nkey) && best.get(nkey) <= next.g) continue;
+                next.f = next.g + 1.5 * h(next);
+                pushHeap(next);
+            }
+        }
+        return null;
+    }
+
+    const COASTER_STYLES = {
+        gentle: { lift: 5, features: [4, 6], size: [16, 10] },
+        moderate: { lift: 8, features: [6, 9], size: [22, 14] },
+        intense: { lift: 12, features: [7, 11], size: [28, 16] },
+    };
+
+    /** What a ride type's rating requirements ask of a layout, in generator units. */
+    function coasterTargets(rideType) {
+        const req = RIDE_REQUIREMENTS[rideType] || {};
+        return {
+            dropZ: (req.requirementDropHeight || 0) * 8,
+            drops: req.requirementNumDrops || 0,
+            airtime: req.requirementNegativeGs !== undefined && req.requirementNegativeGs <= 50,
+            inversions: req.requirementInversions || 0,
+            lengthTiles: req.requirementLength ? Math.ceil(req.requirementLength / 65536 / COASTER_METRES_PER_TILE) : 0,
+            speedZ: req.requirementMaxSpeed ? speedHead(req.requirementMaxSpeed / 65536) : 0,
+            relaxIfInversions: !!req.relaxIfInversions,
+        };
+    }
+
+    /** Which requirements a finished draft should meet (the game has the final word when it tests the ride). */
+    function checkTargets(draft, targets) {
+        const relaxed = targets.relaxIfInversions && draft.inversions > 0;
+        const misses = [];
+        if (targets.dropZ && !relaxed && draft.firstDrop < targets.dropZ) misses.push('drop height');
+        if (targets.drops && !relaxed && draft.drops < targets.drops) misses.push('number of drops');
+        if (targets.airtime && !relaxed && draft.airtime === 0) misses.push('airtime (negative G)');
+        if (targets.inversions && draft.inversions < targets.inversions) misses.push('inversions');
+        if (targets.lengthTiles && draft.length < targets.lengthTiles) misses.push('length');
+        return misses;
+    }
+
+    /** One attempt at a complete coaster; returns the draft or null (counting the reason in `why`). */
+    function draftCoaster(types, info, opts, rng, why) {
+        const failed = stage => {
+            why[stage] = (why[stage] || 0) + 1;
+            return null;
+        };
+        const style = COASTER_STYLES[opts.style];
+        const targets = opts.targets;
+        // Station along y = 0 heading -x; the track stays on the +y side, so the entrance and exit fit at y = -1.
+        // The three columns behind the station (x 1-3) are kept free for the way back in.
+        const bounds = { minX: -(opts.length - 4), maxX: 0, minY: 0, maxY: opts.width - 1 };
+        const draft = new TrackDraft(types, info.clearance, bounds, opts.maxZ);
+        if (!draft.add(['beginStation'].concat(repeat('middleStation', opts.stationLength - 2), ['endStation']))) return failed('station');
+        if (rng.chance(0.5)) draft.add(['flat']);
+
+        // Chain lift (straight ahead, or after a turn) as high as still leaves room to turn and drop at the top.
+        const minDrop = Math.max(32, targets.dropZ + 8, targets.speedZ);
+        const liftSteps = Math.max(Math.ceil(minDrop / 16) + 1, opts.liftHeight);
+        const steep = opts.style !== 'gentle';
+        const topTurns = shuffle(rng, [['rightQuarterTurn3Tiles'], ['rightQuarterTurn5Tiles'], ['leftQuarterTurn3Tiles'],
+            ['leftQuarterTurn5Tiles'], ['rightQuarterTurn1Tile'], ['leftQuarterTurn1Tile']]);
+        const topOptions = rng.chance(0.4) ? [[]].concat(topTurns) : topTurns.concat([[]]);
+        const firstDrop = () => {
+            for (const turn of topOptions) {
+                const mark = draft.els.length;
+                if (turn.length > 0 && !draft.add(turn)) continue;
+                const top = draft.z;
+                for (let depth = top; depth >= Math.max(minDrop, top / 2); depth -= 16) {
+                    if (draft.add(dropPieces(draft, depth, steep)) || draft.add(dropPieces(draft, depth, false))) {
+                        draft.firstDrop = depth;
+                        return true;
+                    }
+                }
+                draft.rewind(mark);
+            }
+            return false;
+        };
+        let dropped = false;
+        for (const turn of rng.chance(0.35) ? [true, false] : [false, true]) {
+            const beforeTurn = draft.els.length;
+            if (turn && !draft.add(rng.pick([['rightQuarterTurn3Tiles'], ['rightQuarterTurn5Tiles']]))
+                && !draft.add(['rightQuarterTurn5Tiles']) && !draft.add(['rightQuarterTurn3Tiles'])
+                && !draft.add(['rightQuarterTurn1Tile'])) continue;
+            for (let k = liftSteps - 1; k >= Math.ceil(minDrop / 16) - 1 && !dropped; k--) {
+                const beforeLift = draft.els.length;
+                if (!draft.add(['flatToUp25'].concat(repeat('up25', k), ['up25ToFlat']), true)) continue;
+                draft.liftHeight = draft.z;
+                if (rng.chance(0.5)) draft.add(['flat'], true);
+                dropped = firstDrop();
+                if (!dropped) draft.rewind(beforeLift);
+            }
+            if (dropped) break;
+            draft.rewind(beforeTurn);
+        }
+        if (!dropped) {
+            if (opts.debug) why.refusals = draft.refusals;
+            return failed('lift and first drop');
+        }
+
+        // Features while there is room, steered toward whatever the ride type's ratings still need.
+        const catalogue = coasterFeatureCatalogue(draft, opts.style).filter(f => f.weight > 0 && (opts.inversions || !f.inversion));
+        const wanted = rng.int(style.features[0], style.features[1]);
+        let placed = 0;
+        const featureMarks = [];
+        const needs = () => checkTargets(draft, targets);
+        for (let tries = 0; tries < wanted * 10; tries++) {
+            const missing = needs();
+            const longEnough = !targets.lengthTiles || draft.length >= targets.lengthTiles * 0.8;
+            if (placed >= wanted && missing.length === 0 && longEnough) break;
+            const head = draft.head();
+            const weighted = catalogue.map(f => {
+                let w = f.weight;
+                if (f.descends) w *= draft.z >= 48 ? 3 : (draft.z < 16 ? 0 : 1);
+                if (f.descends && missing.includes('number of drops')) w *= 2;
+                if (f.airtime && missing.includes('airtime (negative G)') && head >= 40) w *= 4;
+                if (f.inversion && missing.includes('inversions')) w *= 5;
+                return Object.assign({}, f, { weight: w });
+            }).filter(f => f.weight > 0);
+            if (weighted.length === 0) break;
+            const feature = pickWeighted(rng, weighted);
+            const options = feature.options(rng).filter(names => sequenceSpeedLimit(names) >= head);
+            if (options.length === 0) continue;
+            const before = draft.els.length;
+            if (draft.add(rng.pick(options))) {
+                placed++;
+                featureMarks.push(before);
+            }
+        }
+
+        // Back to the station (through a brake run if the train is still fast). If there is no way home from
+        // where the features ended, give up the last feature and try again from there.
+        bounds.maxX = 3;
+        for (;;) {
+            const mark = draft.els.length;
+            let closing = closeCircuit(draft, 12000);
+            if (!closing && draft.head() > speedHead(COASTER_BRAKE_SPEED) + 8 && draft.has(['brakes'])
+                && draft.add(['brakes', 'brakes'])) {
+                closing = closeCircuit(draft, 12000);
+            }
+            if (closing && closing.every(names => draft.add(names))
+                && draft.x === 0 && draft.y === 0 && draft.z === 0 && draft.rot === 0) {
+                draft.features = placed;
+                return draft;
+            }
+            draft.rewind(mark);
+            if (featureMarks.length === 0) return failed('closing the circuit');
+            draft.rewind(featureMarks.pop());
+            placed--;
+        }
+    }
+
+    /** Roller coasters this park can build with a chain lift, best suited to the style first. */
+    function coasterCandidates(params, style) {
+        let options;
+        if (params.ride !== undefined || params.object !== undefined || isNumber(params.rideType)) {
+            options = [resolveRideOption(params, ['tracked'])];
+        } else {
+            options = buildableRideOptions().filter(o => o.kind === 'tracked' && o.category === 'rollercoaster');
+        }
+        const scored = [];
+        for (const option of options) {
+            const allowed = allowedPieceTypes(option.rideType);
+            const types = new Map();
+            for (const t of allowed) types.set(TRACK_TYPE_NAMES[t], t);
+            const lift = ['flatToUp25', 'up25', 'up25ToFlat'].every(n => types.has(n) && trackSegment(types.get(n)).allowsChainLift);
+            if (!lift || !['beginStation', 'middleStation', 'endStation', 'flatToDown25', 'down25ToFlat'].every(n => types.has(n))) continue;
+            const info = rideTypeInfo(option.rideType);
+            let score = 0;
+            const inversions = ['leftVerticalLoop', 'leftCorkscrewUp', 'leftLargeCorkscrewUp'].filter(n => types.has(n)).length;
+            score += style === 'intense' ? 2 * inversions : style === 'gentle' ? -2 * inversions : Math.min(inversions, 1);
+            if (types.has('down60')) score += style === 'gentle' ? -1 : 1;
+            if (types.has('bankedLeftQuarterTurn5Tiles')) score += 1;
+            if (info.maxHeight < 16) score += style === 'gentle' ? 3 : -3;
+            // Long minimum lengths are hard to meet in a compact layout.
+            if (coasterTargets(option.rideType).lengthTiles > 60) score -= 2;
+            scored.push({ option: option, types: types, info: info, score: score });
+        }
+        scored.sort((a, b) => b.score - a.score);
+        return scored;
     }
 
     // ------------------------------------------------------------------
@@ -3566,6 +4370,7 @@
 
     methods.build_flat_ride = async params => {
         ensureCanBuild(params);
+        checkStatusParam(params);
         const option = resolveRideOption(params, ['flat', 'stall']);
         const info = rideTypeInfo(option.rideType);
         const fp = pieceFootprint(info.startPiece);
@@ -3711,11 +4516,42 @@
         return summary;
     };
 
+    /**
+     * Why a ride's ticket price would be ignored, or null. Rides (not shops) only charge when the park has free
+     * entry or unlocked prices, and nothing charges in a no-money park (Park::RidePricesUnlocked, RideGetPrice).
+     */
+    function priceLockReason(ride) {
+        const flag = name => {
+            try {
+                return park.getFlag(name);
+            } catch (e) {
+                return false;
+            }
+        };
+        if (flag('noMoney')) return 'this park has no money, so nothing charges';
+        if (ride.classification === 'ride' && !flag('freeParkEntry') && !flag('unlockAllPrices')) {
+            return 'this park charges for entry, so ride tickets are free (only shops and stalls can be priced)';
+        }
+        return null;
+    }
+
+    /** Rejects a bad status before anything is built (applyRideSettings runs after building). */
+    function checkStatusParam(params) {
+        if (params.status !== undefined && params.status !== null && !(params.status in RIDE_STATUS)) {
+            fail('"status" must be one of: ' + Object.keys(RIDE_STATUS).join(', ') + '.');
+        }
+    }
+
     /** Optional price and status changes after building. */
     async function applyRideSettings(rideId, params, flags, summary) {
         if (isNumber(params.price)) {
-            const r = await executeAction('ridesetprice', { ride: rideId, price: Math.round(params.price), isPrimaryPrice: true, flags: flags });
-            summary.price = r.error === 0 ? formatMoney(Math.round(params.price)) : 'failed: ' + describeResult(r);
+            const locked = priceLockReason(map.getRide(rideId));
+            if (locked) {
+                summary.price = 'not set: ' + locked;
+            } else {
+                const r = await executeAction('ridesetprice', { ride: rideId, price: Math.round(params.price), isPrimaryPrice: true, flags: flags });
+                summary.price = r.error === 0 ? formatMoney(Math.round(params.price)) : 'failed: ' + describeResult(r);
+            }
         }
         if (params.open || params.status) {
             const status = params.status || 'open';
@@ -3737,6 +4573,8 @@
     methods.set_ride_price = async params => {
         const ride = getRideOrFail(params.rideId);
         const price = requireInt(params, 'price');
+        const locked = params.secondary ? null : priceLockReason(ride);
+        if (locked) fail('The price of "' + ride.name + '" cannot be changed: ' + locked + '.');
         const res = await executeAction('ridesetprice', {
             ride: ride.id, price: price, isPrimaryPrice: params.secondary ? false : true, flags: 0,
         });
@@ -3753,20 +4591,28 @@
         return { demolished: name, refund: formatMoney(-(res.cost || 0)) };
     };
 
-    /** Offset from a piece's start to the next piece's start: forward/right tiles, up in z, and the turn. */
+    const TURN_NAMES = ['none', 'half right', 'right', 'sharp right', 'reverse', 'sharp left', 'left', 'half left'];
+
+    /**
+     * Offset from a piece's start to the next piece's start: tiles forward/right (along the axes of direction 0,
+     * so for pieces that start diagonally "forward" is still the x axis), change in z, and the change of heading.
+     */
     function pieceMove(seg) {
-        const turn = (seg.endDirection - seg.beginDirection) & 3;
-        const diagonal = (seg.endDirection & 4) !== 0;
-        // For heading 0 (x-1) forward is -x and right is +y.
-        const nx = seg.endX / TILE_SIZE + (diagonal ? 0 : DIR_DX[turn]);
-        const ny = seg.endY / TILE_SIZE + (diagonal ? 0 : DIR_DY[turn]);
-        return {
+        const eighths = d => (d & 3) * 2 + ((d & 4) ? 1 : 0);
+        const endsDiagonal = (seg.endDirection & 4) !== 0;
+        const endHeading = seg.endDirection & 3;
+        // Pieces that end straight step one tile on along their end heading; diagonal ones do not.
+        const nx = seg.endX / TILE_SIZE + (endsDiagonal ? 0 : DIR_DX[endHeading]);
+        const ny = seg.endY / TILE_SIZE + (endsDiagonal ? 0 : DIR_DY[endHeading]);
+        const move = {
             forward: -nx,
             right: ny,
             up: seg.endZ - seg.beginZ,
-            turn: turn === 1 ? 'right' : turn === 3 ? 'left' : turn === 2 ? 'reverse' : 'none',
-            endsDiagonal: diagonal,
+            turn: TURN_NAMES[(eighths(seg.endDirection) - eighths(seg.beginDirection) + 8) & 7],
         };
+        if (seg.beginDirection & 4) move.startsDiagonal = true;
+        if (endsDiagonal) move.endsDiagonal = true;
+        return move;
     }
 
     /** Turns agent-supplied pieces (names, ids or objects) into layout track elements. */
@@ -3900,7 +4746,6 @@
             const seg = trackSegment(t);
             if (!seg) continue;
             if (params.group && TRACK_GROUPS[seg.trackGroup] !== params.group) continue;
-            const turn = (seg.endDirection - seg.beginDirection) & 3;
             pieces.push({
                 name: seg.name,
                 type: t,
@@ -3915,6 +4760,90 @@
         }
         pieces.sort((a, b) => a.type - b.type);
         return { ride: option.name, rideType: option.rideTypeName, count: pieces.length, pieces: params.namesOnly ? pieces.map(p => p.name) : pieces };
+    };
+
+    methods.design_roller_coaster = async params => {
+        const style = params.style || 'moderate';
+        if (!COASTER_STYLES[style]) fail('"style" must be gentle, moderate or intense.');
+        checkStatusParam(params);
+        const candidates = coasterCandidates(params, style);
+        if (candidates.length === 0) {
+            fail(params.ride !== undefined || params.object !== undefined || isNumber(params.rideType)
+                ? 'That ride cannot be generated: it needs a chain lift on 25 degree slopes and normal station pieces. '
+                    + 'Build it piece by piece with build_custom_track instead.'
+                : 'This park has no roller coaster with a chain lift researched yet.');
+        }
+        const chosen = candidates[0];
+        const s = COASTER_STYLES[style];
+        const maxZ = Math.min(chosen.info.maxHeight * 16 - 32, 1500);
+        const opts = {
+            style: style,
+            length: Math.max(12, Math.min(64, optInt(params, 'maxLength', s.size[0]))),
+            width: Math.max(6, Math.min(64, optInt(params, 'maxWidth', s.size[1]))),
+            liftHeight: Math.max(2, Math.min(optInt(params, 'liftHeight', s.lift), Math.floor(maxZ / 16) - 2)),
+            stationLength: Math.max(3, Math.min(12, optInt(params, 'stationLength', 6))),
+            inversions: params.inversions !== false,
+            maxZ: maxZ,
+            targets: coasterTargets(chosen.option.rideType),
+            debug: !!params.debug,
+        };
+        const baseSeed = isNumber(params.seed) ? Math.floor(params.seed) >>> 0 : Math.floor(Math.random() * 0x7FFFFFFF);
+        // Several attempts; keep the first that meets every rating requirement, else the one missing the fewest.
+        let draft = null;
+        let best = null;
+        const why = {};
+        for (let attempt = 0; attempt < 40; attempt++) {
+            const attemptSeed = (baseSeed + attempt * 7919) >>> 0;
+            const d = draftCoaster(chosen.types, chosen.info, opts, makeRng(attemptSeed), why);
+            if (!d) continue;
+            const misses = checkTargets(d, opts.targets);
+            if (!best || misses.length < best.misses.length) best = { draft: d, misses: misses };
+            if (misses.length === 0) break;
+        }
+        if (best) draft = best.draft;
+        if (!draft) {
+            fail('Could not fit a complete circuit for ' + chosen.option.name + ' in ' + opts.length + 'x' + opts.width
+                + ' tiles. Allow more room (maxLength/maxWidth) or a lower liftHeight.', opts.debug ? { failedAt: why } : undefined);
+        }
+        const report = checkLayout(draft.els, allowedPieceTypes(chosen.option.rideType));
+        if (report.problems.length > 0 || !report.closesCircuit) fail('The generated layout failed its own checks.', report);
+        const design = {
+            ride: chosen.option.name,
+            style: style,
+            seed: baseSeed,
+            pieces: draft.els.length,
+            size: report.size,
+            liftHeight: draft.liftHeight,
+            firstDrop: draft.firstDrop,
+            inversions: draft.inversions,
+            drops: draft.drops,
+            lengthTiles: Math.round(draft.length),
+            features: draft.features,
+        };
+        if (best.misses.length > 0) {
+            design.mayMissRequirements = best.misses;
+            design.note = 'This ride type rates poorly without these; a larger area (maxLength/maxWidth) usually helps.';
+        }
+        const pieces = draft.els.map(e => {
+            const name = TRACK_TYPE_NAMES[e.type];
+            if (e.chain) return { type: name, chain: true };
+            if (name === 'brakes') return { type: name, brakeSpeed: e.brakeSpeed };
+            return name;
+        });
+        if (params.previewOnly) {
+            return { design: design, pieces: pieces, note: 'Not built. Pass these pieces to build_custom_track (with the same '
+                + 'ride) to build them, or call design_roller_coaster again with this seed.' };
+        }
+        const layout = {
+            name: typeof params.name === 'string' && params.name ? params.name : null,
+            trackElements: draft.els,
+            entrances: [],
+            settings: { numberOfTrains: 1 },
+        };
+        const buildParams = Object.assign({}, params, { object: chosen.option.object, ride: undefined, rideType: undefined });
+        const result = await buildLayout(layout, buildParams);
+        delete result.design;
+        return Object.assign(result, { design: design }, params.dryRun ? { pieces: pieces } : {});
     };
 
     methods.list_methods = () => Object.keys(methods).sort();

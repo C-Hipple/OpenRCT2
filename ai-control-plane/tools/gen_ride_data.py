@@ -2,8 +2,8 @@
 """Regenerate the ride data block embedded in plugin/ai-control-plane.js.
 
 The plugin API does not expose ride type descriptors (flat ride or not, start piece, which track
-groups a ride type can build) or track sequence flags (which sides of a ride accept entrances), so
-they are dumped from the game with dump_ride_data.cpp and embedded in the plugin:
+groups a ride type can build, clearance, rating requirements), track sequence flags (which sides of a ride accept entrances)
+or track block clearances, so they are dumped from the game with dump_ride_data.cpp and embedded in the plugin:
 
     # build the dumper against an OpenRCT2 build tree (see ../README.md, "Regenerating ride data")
     ./dump_ride_data > ride_data.json
@@ -62,6 +62,7 @@ def main():
     data = json.load(open(sys.argv[1]) if len(sys.argv) > 1 else sys.stdin)
     flags = enum_names("src/openrct2/ride/RideData.h", "RtdFlag")
     groups = enum_names("src/openrct2/ride/ted/TrackGroup.h", "TrackGroup")
+    modifiers = enum_names("src/openrct2/ride/RideData.h", "RatingsModifierType")
     if len(groups) != data["trackGroupCount"]:
         sys.exit(f"TrackGroup mismatch: header has {len(groups)}, dump has {data['trackGroupCount']}")
     if max(max(r["flags"] or [0]) for r in data["rideTypes"]) >= len(flags):
@@ -72,7 +73,8 @@ def main():
         lo = sum(1 << f for f in r["flags"] if f < 32)
         hi = sum(1 << (f - 32) for f in r["flags"] if f >= 32)
         rows.append(json.dumps([r["name"], r["category"], r["start"], lo, hi, r["groups"], r["extra"],
-                                r["maxHeight"], r["liftMin"], r["liftMax"], r["special"]], separators=(",", ":")))
+                                r["maxHeight"], r["liftMin"], r["liftMax"], r["special"], r["clearance"]],
+                               separators=(",", ":")))
 
     lines = [BEGIN + " (tools/gen_ride_data.py; do not edit by hand)"]
     lines.append("    const RIDE_CATEGORIES = " + json.dumps(CATEGORIES) + ";")
@@ -85,7 +87,7 @@ def main():
         lines.append("        " + ", ".join(json.dumps(g) for g in groups[i:i + 6]) + ",")
     lines.append("    ];")
     lines.append("    // Index = ride type id: [name, category, startPiece, flagsLow, flagsHigh, trackGroups, extraTrackGroups,")
-    lines.append("    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType]")
+    lines.append("    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType, clearanceHeight]")
     lines.append("    const RIDE_TYPE_DATA = [")
     for row in rows:
         lines.append("        " + row + ",")
@@ -99,6 +101,21 @@ def main():
     lines.append("    // Track type -> per-sequence flags (bits 0-3: entrance connection sides, bit 4: origin, bit 5: connects to path)")
     lines.append("    const TRACK_SEQUENCE_FLAGS = " + json.dumps({int(k): v for k, v in data["sequenceFlags"].items()},
                                                             separators=(",", ":")).replace('"', "") + ";")
+    lines.append("    // Index = ride type id: rating requirements { name: threshold } and whether inversions relax drop height,")
+    lines.append("    // drop count and negative G requirements (RideRatings.cpp). Missing one divides the ride's ratings.")
+    lines.append("    const RIDE_REQUIREMENTS = [")
+    for r in data["rideTypes"]:
+        reqs = {modifiers[t]: v for t, v in r["requirements"]}
+        if r["relaxIfInversions"]:
+            reqs["relaxIfInversions"] = 1
+        lines.append("        " + json.dumps(reqs, separators=(",", ":")).replace('"', "") + ",")
+    lines.append("    ];")
+    lines.append("    // Track type -> clearance of each block above its base z, before the ride's own clearance (+256: vertical block)")
+    lines.append("    const TRACK_BLOCK_CLEARANCE = [")
+    blocks = [json.dumps(b, separators=(",", ":")) for b in data["blockClearance"]]
+    for i in range(0, len(blocks), 12):
+        lines.append("        " + ",".join(blocks[i:i + 12]) + ",")
+    lines.append("    ];")
     lines.append(END)
 
     src = open(PLUGIN, encoding="utf-8").read()

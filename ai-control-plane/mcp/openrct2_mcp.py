@@ -22,6 +22,10 @@ import socket
 import sys
 import threading
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import designs  # noqa: E402
+import td6  # noqa: E402
+
 SERVER_NAME = "openrct2"
 SERVER_VERSION = "1.0.0"
 SUPPORTED_PROTOCOL_VERSIONS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"]
@@ -158,6 +162,69 @@ BUILD_OPTIONS = {
     "maxNodes": {
         "type": "integer",
         "description": "Search budget for the route finder (default 40000). Raise it for very long routes.",
+    },
+}
+
+
+RIDE_REF = {
+    "ride": {
+        "type": "string",
+        "description": "Ride to build, by name or ride type, e.g. 'Twist', 'Merry-Go-Round', 'looping', 'wooden'. "
+                       "list_buildable_rides shows what this park can build.",
+    },
+    "object": {"type": ["string", "integer"], "description": "Exact ride object (identifier or index) instead of 'ride'."},
+    "rideType": {"type": "integer", "description": "Ride type id instead of 'ride'."},
+}
+
+PLACEMENT = {
+    "x": {"type": "integer", "description": "Tile for the ride's lowest x/y corner. Omit to search for a site."},
+    "y": {"type": "integer"},
+    "z": {"type": "integer", "description": "Height to build at. Default: just above the terrain."},
+    "direction": {"type": "integer", "description": "Orientation 0-3. Default: whichever fits best."},
+    "near": {
+        "description": "Where to look for a site when x/y are not given: 'water' (default) or a tile {x, y}.",
+        "anyOf": [{"type": "string", "enum": ["water"]},
+                  {"type": "object", "properties": {"x": {"type": "integer"}, "y": {"type": "integer"}}, "required": ["x", "y"]}],
+    },
+    "radius": {"type": "integer", "description": "How far from 'near' to search, in tiles."},
+}
+
+AFTER_BUILD = {
+    "name": {"type": "string", "description": "Name for the new ride."},
+    "stationStyle": {"type": ["string", "integer"], "description": "Station/entrance style object (e.g. 'rct2.station.castle_grey')."},
+    "connectPaths": {
+        "type": "boolean",
+        "description": "Build the queue from the entrance and a path from the exit to the park's paths (default true).",
+    },
+    "status": {
+        "type": "string",
+        "enum": ["closed", "testing", "open"],
+        "description": "Status after building. Default: closed for flat rides; testing for tracked rides (so the game measures "
+                       "ratings). Ask the player before opening.",
+    },
+    "price": {"type": "integer", "description": "Ticket price in money units (10 = 1.00). Only charged if the park allows ride prices."},
+    "dryRun": {"type": "boolean", "description": "Find and validate a placement and estimate the cost without building."},
+    "allowWhilePaused": BUILD_OPTIONS["allowWhilePaused"],
+}
+
+PIECES = {
+    "type": "array",
+    "description": (
+        "Track pieces in order from the start of the station, by name (list_track_pieces) or as objects "
+        "{type, chain, inverted, brakeSpeed}. Begin with the station: e.g. EndStation, then BeginStation/MiddleStation... "
+        "The circuit must end where it began, heading the same way, unless allowOpenCircuit."
+    ),
+    "items": {
+        "anyOf": [
+            {"type": "string"},
+            {"type": "integer"},
+            {"type": "object", "properties": {
+                "type": {"type": ["string", "integer"]},
+                "chain": {"type": "boolean", "description": "Chain lift on this piece."},
+                "inverted": {"type": "boolean"},
+                "brakeSpeed": {"type": "integer"},
+            }, "required": ["type"]},
+        ],
     },
 }
 
@@ -308,6 +375,154 @@ TOOLS = [
         }, ["tiles"]),
     },
     {
+        "name": "list_buildable_rides",
+        "description": (
+            "Rides, stalls and facilities this park can build now (researched, or everything with the research cheat), "
+            "with each one's kind (flat, tracked, tower, maze, stall), category and footprint."
+        ),
+        "inputSchema": _schema({
+            "category": {"type": "string", "enum": ["transport", "gentle", "rollercoaster", "thrill", "water", "shop"]},
+            "kind": {"type": "string", "enum": ["flat", "tracked", "tower", "maze", "stall"]},
+            "name": {"type": "string", "description": "Only rides whose name or ride type contains this text."},
+            "descriptions": {"type": "boolean", "description": "Include each ride's description."},
+        }),
+    },
+    {
+        "name": "find_build_sites",
+        "description": (
+            "Find free, level, owned land for a ride's footprint (or any width x length), near water or near a tile, "
+            "ranked by distance to it and to existing paths. " + COORDS_NOTE
+        ),
+        "inputSchema": _schema(dict(RIDE_REF, **{
+            "width": {"type": "integer", "description": "Footprint size in tiles when no ride is given."},
+            "length": {"type": "integer"},
+            "near": PLACEMENT["near"],
+            "radius": PLACEMENT["radius"],
+            "margin": {"type": "integer", "description": "Free tiles to keep around the footprint (default 1)."},
+            "maxResults": {"type": "integer"},
+        })),
+    },
+    {
+        "name": "build_flat_ride",
+        "description": (
+            "Build a flat ride (e.g. Twist, Enterprise, Top Spin) or a stall/facility in one step: picks a site "
+            "(near water by default, or at x/y), places the ride, its entrance and exit, then builds the queue line and "
+            "exit path to the park's paths. Use dryRun to preview. For several rides, call it once per ride."
+        ),
+        "inputSchema": _schema(dict(RIDE_REF, **PLACEMENT, **AFTER_BUILD)),
+    },
+    {
+        "name": "list_track_designs",
+        "description": (
+            "Pre-built track designs installed with the game and saved by the player (roller coasters, water rides, "
+            "mazes, ...), with size, excitement/intensity and whether this park can build them."
+        ),
+        "inputSchema": _schema({
+            "ride": {"type": "string", "description": "Only designs whose name, ride type or vehicle contains this text, e.g. 'coaster'."},
+            "buildableOnly": {"type": "boolean", "description": "Only designs this park can build now (default true)."},
+            "limit": {"type": "integer", "description": "Maximum designs to list (default 40)."},
+        }),
+    },
+    {
+        "name": "build_track_design",
+        "description": (
+            "Build a pre-built track design (list_track_designs): finds room for it near water or a tile (or uses x/y), "
+            "builds the track, entrance and exit, queue and exit path, applies the design's trains and colours, and "
+            "starts testing so the game measures its ratings. Uses another vehicle of the same ride type if the "
+            "design's own is not available. Use dryRun first: big coasters cost a lot."
+        ),
+        "inputSchema": _schema(dict({
+            "design": {"type": "string", "description": "Design name (or unique part of it) or a .td6 file path."},
+        }, **RIDE_REF, **PLACEMENT, **AFTER_BUILD), ["design"]),
+    },
+    {
+        "name": "list_track_pieces",
+        "description": (
+            "Track pieces a tracked ride type can build (straights, slopes, turns, banked turns, loops, ...), each with "
+            "where the next piece starts relative to it (forward/right tiles, height change, turn), its slope and "
+            "banking at each end, and whether it can carry a chain lift. Use it to design a custom track."
+        ),
+        "inputSchema": _schema(dict(RIDE_REF, **{
+            "group": {"type": "string", "description": "Only one track group, e.g. 'flat', 'curve', 'slope', 'verticalLoop'."},
+            "namesOnly": {"type": "boolean", "description": "Just the piece names."},
+        })),
+    },
+    {
+        "name": "check_track_layout",
+        "description": (
+            "Check a custom track without building it: where it ends, whether it closes into a circuit, its size and "
+            "height range, and any pieces that do not join or are not available for the ride."
+        ),
+        "inputSchema": _schema(dict({"pieces": PIECES}, **RIDE_REF), ["pieces"]),
+    },
+    {
+        "name": "build_custom_track",
+        "description": (
+            "Build a tracked ride from your own list of track pieces (see list_track_pieces and check_track_layout), "
+            "then its entrance, exit, queue and exit path. The layout is validated first: it must have a station, its "
+            "pieces must join and it must return to the start. To have a complete coaster designed for you, use "
+            "design_roller_coaster instead."
+        ),
+        "inputSchema": _schema(dict({
+            "pieces": PIECES,
+            "trains": {"type": "integer", "description": "Number of trains (default: the ride's default)."},
+            "carsPerTrain": {"type": "integer"},
+            "allowAnyPiece": {"type": "boolean", "description": "Allow pieces the ride type does not normally offer."},
+            "allowOpenCircuit": {"type": "boolean", "description": "Allow a track that does not return to the start (shuttle rides)."},
+        }, **RIDE_REF, **PLACEMENT, **AFTER_BUILD), ["pieces"]),
+    },
+    {
+        "name": "design_roller_coaster",
+        "description": (
+            "Design and build a brand-new roller coaster (no pre-built design needed): a station, chain lift, first "
+            "drop, then hills, turns, helixes and (unless gentle) loops or corkscrews, closed back into the station. "
+            "The layout respects the game's clearances, the train's momentum (so it makes it round), comfortable "
+            "turn speeds and the ride type's rating requirements. It then finds room, builds it with entrance, exit "
+            "and paths, and starts testing. Use previewOnly or dryRun first; pass the same seed to get the same "
+            "design again. Picks the best researched coaster unless 'ride' is given."
+        ),
+        "inputSchema": _schema(dict({
+            "style": {"type": "string", "enum": ["gentle", "moderate", "intense"],
+                      "description": "gentle: family coaster, no inversions; intense: tall, steep, with inversions. Default moderate."},
+            "liftHeight": {"type": "integer", "description": "Chain lift height in land steps (default by style)."},
+            "maxLength": {"type": "integer", "description": "Longest side of the area the layout may use, in tiles."},
+            "maxWidth": {"type": "integer", "description": "Shorter side of the area, in tiles."},
+            "stationLength": {"type": "integer", "description": "Station length in tiles (default 6)."},
+            "inversions": {"type": "boolean", "description": "Allow loops and corkscrews (default true; never for gentle)."},
+            "seed": {"type": "integer", "description": "Random seed; the same seed and options give the same design."},
+            "previewOnly": {"type": "boolean", "description": "Only design it: return the piece list and stats."},
+            "trains": {"type": "integer", "description": "Number of trains (default 1; more need block brakes to run safely)."},
+        }, **RIDE_REF, **PLACEMENT, **AFTER_BUILD)),
+    },
+    {
+        "name": "set_ride_status",
+        "description": "Open, close or test a ride. Opening needs a complete circuit, entrance and exit.",
+        "inputSchema": _schema({
+            "rideId": {"type": "integer"},
+            "status": {"type": "string", "enum": ["closed", "open", "testing", "simulating"]},
+        }, ["rideId", "status"]),
+    },
+    {
+        "name": "set_ride_price",
+        "description": (
+            "Set a ride's ticket price (or a shop's item price) in money units (10 = 1.00). Ride tickets can only be "
+            "priced in parks with free entry or unlocked prices."
+        ),
+        "inputSchema": _schema({
+            "rideId": {"type": "integer"},
+            "price": {"type": "integer"},
+            "secondary": {"type": "boolean", "description": "Set the secondary price (on-ride photo or a stall's second item)."},
+        }, ["rideId", "price"]),
+    },
+    {
+        "name": "demolish_ride",
+        "description": "Demolish a ride completely (track, entrance and exit) and refund it. Confirm with the player first.",
+        "inputSchema": _schema({
+            "rideId": {"type": "integer"},
+            "allowWhilePaused": BUILD_OPTIONS["allowWhilePaused"],
+        }, ["rideId"]),
+    },
+    {
         "name": "execute_game_action",
         "description": (
             "Run any built-in OpenRCT2 game action (the same commands the UI uses), e.g. 'ridesetstatus', "
@@ -345,8 +560,14 @@ TOOLS = [
 SERVER_INSTRUCTIONS = """\
 Controls a running OpenRCT2 (RollerCoaster Tycoon 2) game that the user is playing.
 - x/y are tile coordinates; z is world height (16 per land step). Directions: 0 = x-1, 1 = y+1, 2 = x+1, 3 = y-1.
-- Typical workflow: get_park_info -> list_rides (find the ride, check entrance/exit connectivity) ->
-  get_map_region around it -> connect_ride_exit / build_ride_queue (use dryRun first for big or costly builds).
+- Paths: get_park_info -> list_rides (find the ride, check entrance/exit connectivity) -> get_map_region around
+  it -> connect_ride_exit / build_ride_queue (use dryRun first for big or costly builds).
+- New rides: list_buildable_rides shows what the park has researched. build_flat_ride builds a flat ride or stall
+  with its paths (near water by default, or near a tile). For coasters and other tracked rides use
+  list_track_designs + build_track_design (pre-built designs), design_roller_coaster (a new generated coaster),
+  or list_track_pieces + check_track_layout + build_custom_track (your own piece list).
+- New tracked rides start in testing so the game measures their ratings; check get_ride, then set_ride_status
+  open once the player agrees. Use dryRun (or previewOnly) first: coasters cost thousands.
 - Building spends the park's money and changes the user's live game; summarise what you built and what it cost.
 - Construction fails while the game is paused (dry runs still work); ask the user before unpausing or using
   allowWhilePaused.
@@ -389,9 +610,72 @@ def to_text(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
 
+DESIGNS = designs.DesignLibrary()
+
+
+def list_track_designs(client, args):
+    text = str(args.get("ride") or "").strip().lower()
+    buildable_only = args.get("buildableOnly", True) is not False
+    limit = max(1, int(args.get("limit") or 40))
+    buildable = client.call("list_buildable_rides", {})
+    rows = []
+    seen = set()
+    for d in DESIGNS.all():
+        key = (d["name"].lower(), d["rct2RideType"], len(d["trackElements"]), len(d["mazeElements"]))
+        if key in seen:
+            continue  # the same design installed in two folders
+        seen.add(key)
+        label = designs.ride_type_label(d["rct2RideType"])
+        if text and text not in d["name"].lower() and text not in label and text not in d["vehicleObject"].lower():
+            continue
+        status, option = designs.availability(d, buildable)
+        if buildable_only and status == "no":
+            continue
+        row = {
+            "design": d["name"],
+            "rideType": label,
+            "vehicle": option["name"] if option else d["vehicleObject"].strip(),
+            "buildable": status,
+            "size": f'{d["spaceRequired"]["x"]}x{d["spaceRequired"]["y"]}',
+            "pieces": len(d["trackElements"]) or len(d["mazeElements"]),
+        }
+        if d["excitement"] or d["intensity"]:
+            row.update(excitement=d["excitement"], intensity=d["intensity"], nausea=d["nausea"])
+        if d.get("inversions"):
+            row["inversions"] = d["inversions"]
+        rows.append(row)
+    rows.sort(key=lambda r: (r["buildable"] != "yes", -(r.get("excitement") or 0)))
+    result = {"count": len(rows), "designs": rows[:limit], "folders": designs.design_dirs()}
+    if len(rows) > limit:
+        result["note"] = f"Showing {limit} of {len(rows)}; filter with 'ride' or raise 'limit'."
+    if not result["folders"]:
+        result["note"] = ("No track design folders found. Designs are read from the OpenRCT2 user folder's 'track' folder, "
+                          "the RCT2 install's Tracks folder (game_path in config.ini) and OPENRCT2_TRACK_DIRS.")
+    return result
+
+
+def build_track_design(client, args):
+    ref = args.pop("design", None)
+    if not ref:
+        raise GameError('Give "design": a name from list_track_designs or a .td6 file path.')
+    try:
+        design = DESIGNS.find(str(ref))
+    except (ValueError, td6.TrackDesignError) as e:
+        raise GameError(str(e)) from None
+    params = dict(args)
+    params["layout"] = td6.to_layout(design)
+    return client.call("place_track_layout", params)
+
+
 def run_tool(client, name, args):
     """Execute one MCP tool and return text for the agent."""
     args = dict(args or {})
+    if name == "list_track_designs":
+        return to_text(list_track_designs(client, args))
+    if name == "build_track_design":
+        return to_text(build_track_design(client, args))
+    if name == "build_custom_track":
+        return to_text(client.call("place_track_layout", args))
     if name == "get_map_region":
         if "centerX" in args and "centerY" in args:
             r = int(args.pop("radius", 12))
