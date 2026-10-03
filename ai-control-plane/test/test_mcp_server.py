@@ -9,11 +9,13 @@ import os
 import socket
 import subprocess
 import sys
+import tempfile
 import threading
 import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SERVER = os.path.join(HERE, "..", "mcp", "openrct2_mcp.py")
+sys.path.insert(0, HERE)
 
 
 class FakePlugin:
@@ -62,6 +64,11 @@ class FakePlugin:
             return {"id": req["id"], "error": {"message": "No buildable footpath route found", "data": {"hint": "buy land"}}}
         if method == "execute_action":
             return {"id": req["id"], "result": {"query": params["query"], "action": params["action"]}}
+        if method == "list_buildable_rides":
+            return {"id": req["id"], "result": [
+                {"object": 6, "identifier": "rct2.ride.arrx", "legacyIdentifier": "ARRX", "name": "Looping Trains",
+                 "rideType": 15, "kind": "tracked", "category": "rollercoaster"},
+            ]}
         return {"id": req["id"], "result": {"method": method, "params": params}}
 
     def close(self):
@@ -69,9 +76,11 @@ class FakePlugin:
 
 
 class McpServerTest(unittest.TestCase):
+    extra_env = {}
+
     def setUp(self):
         self.plugin = FakePlugin()
-        env = dict(os.environ, OPENRCT2_AI_PORT=str(self.plugin.port))
+        env = dict(os.environ, OPENRCT2_AI_PORT=str(self.plugin.port), **self.extra_env)
         self.proc = subprocess.Popen(
             [sys.executable, SERVER], stdin=subprocess.PIPE, stdout=subprocess.PIPE, env=env)
         self.next_id = 1
@@ -123,7 +132,9 @@ class McpServerTest(unittest.TestCase):
         tools = self.send("tools/list")["result"]["tools"]
         names = {t["name"] for t in tools}
         for expected in ("get_park_info", "list_rides", "get_map_region", "connect_ride_exit",
-                         "build_ride_queue", "build_path_route", "place_footpath", "execute_game_action"):
+                         "build_ride_queue", "build_path_route", "place_footpath", "execute_game_action",
+                         "list_buildable_rides", "build_flat_ride", "list_track_designs", "build_track_design",
+                         "design_roller_coaster", "build_custom_track", "list_track_pieces"):
             self.assertIn(expected, names)
         for t in tools:
             self.assertEqual(t["inputSchema"]["type"], "object")
@@ -165,6 +176,53 @@ class McpServerTest(unittest.TestCase):
 
     def test_ping(self):
         self.assertEqual(self.send("ping")["result"], {})
+
+
+class TrackDesignToolsTest(McpServerTest):
+    """list_track_designs / build_track_design read design files in the bridge, then call the plugin."""
+
+    @classmethod
+    def setUpClass(cls):
+        from test_designs import COASTER, make_td6
+        cls.tmp = tempfile.TemporaryDirectory()
+        for name, kwargs in [("Loopy Lou", {}), ("Timber Wolf", {"ride_type": 52, "vehicle": "PTCT1"})]:
+            with open(os.path.join(cls.tmp.name, name + ".td6"), "wb") as f:
+                f.write(make_td6(elements=COASTER, **kwargs))
+        cls.extra_env = {"OPENRCT2_TRACK_DIRS": cls.tmp.name,
+                         "OPENRCT2_USER_DIR": os.path.join(cls.tmp.name, "no-user-dir")}
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_list_track_designs(self):
+        self.initialize()
+        result = json.loads(self.call_tool("list_track_designs")["content"][0]["text"])
+        self.assertEqual([d["design"] for d in result["designs"]], ["Loopy Lou"])
+        self.assertEqual(result["designs"][0]["buildable"], "yes")
+        self.assertEqual(result["designs"][0]["rideType"], "looping roller coaster")
+        everything = json.loads(self.call_tool("list_track_designs", {"buildableOnly": False})["content"][0]["text"])
+        self.assertEqual(everything["count"], 2)
+        wooden = json.loads(self.call_tool("list_track_designs", {"buildableOnly": False, "ride": "wooden"})["content"][0]["text"])
+        self.assertEqual([d["design"] for d in wooden["designs"]], ["Timber Wolf"])
+        self.assertEqual(wooden["designs"][0]["buildable"], "no")
+
+    def test_build_track_design_sends_layout(self):
+        self.initialize()
+        result = self.call_tool("build_track_design", {"design": "loopy", "near": {"x": 5, "y": 6}, "dryRun": True})
+        self.assertFalse(result["isError"])
+        req = [r for r in self.plugin.requests if r["method"] == "place_track_layout"][-1]["params"]
+        self.assertEqual(req["near"], {"x": 5, "y": 6})
+        self.assertTrue(req["dryRun"])
+        self.assertNotIn("design", req)
+        self.assertEqual(req["layout"]["name"], "Loopy Lou")
+        self.assertEqual(len(req["layout"]["trackElements"]), len(__import__("test_designs").COASTER))
+
+    def test_unknown_design_is_a_tool_error(self):
+        self.initialize()
+        result = self.call_tool("build_track_design", {"design": "Nonexistent"})
+        self.assertTrue(result["isError"])
+        self.assertIn("No track design", result["content"][0]["text"])
 
 
 class NoGameTest(unittest.TestCase):

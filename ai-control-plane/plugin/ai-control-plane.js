@@ -3170,6 +3170,7 @@
             this.airtime = 0;
             this.firstDrop = 0;
             this.liftHeight = 0;
+            this.turnScale = this.has(['flatToLeftBank', 'bankedLeftQuarterTurn5Tiles']) ? 1 : 2.5;
             this.refusals = {};
         }
 
@@ -3294,20 +3295,25 @@
     }
 
     // Fastest a turn may be entered (speed head, z units) before its lateral G gets uncomfortable.
+    // (A head of 200 is about 45 mph.)
     const TURN_SPEED_LIMITS = {
-        leftQuarterTurn1Tile: 16, leftQuarterTurn3Tiles: 32, leftQuarterTurn5Tiles: 56, sBendLeft: 64,
-        leftBankedQuarterTurn3Tiles: 80, bankedLeftQuarterTurn5Tiles: 150, leftHalfBankedHelixDownSmall: 80,
-        leftHalfBankedHelixDownLarge: 150, leftQuarterBankedHelixLargeDown: 150, leftQuarterTurn3TilesDown25: 24,
-        leftQuarterTurn5TilesDown25: 48, leftBankedQuarterTurn3TileDown25: 64, leftBankedQuarterTurn5TileDown25: 120,
-        leftQuarterTurn3TilesUp25: 64, leftBankedQuarterTurn3TileUp25: 120, leftQuarterTurn5TilesUp25: 96,
+        leftQuarterTurn1Tile: 16, leftQuarterTurn3Tiles: 36, leftQuarterTurn5Tiles: 64, sBendLeft: 80,
+        leftBankedQuarterTurn3Tiles: 110, bankedLeftQuarterTurn5Tiles: 220, leftHalfBankedHelixDownSmall: 110,
+        leftHalfBankedHelixDownLarge: 220, leftQuarterBankedHelixLargeDown: 220, leftQuarterTurn3TilesDown25: 28,
+        leftQuarterTurn5TilesDown25: 56, leftBankedQuarterTurn3TileDown25: 90, leftBankedQuarterTurn5TileDown25: 160,
+        leftQuarterTurn3TilesUp25: 72, leftBankedQuarterTurn3TileUp25: 140, leftQuarterTurn5TilesUp25: 110,
+        leftBankedQuarterTurn5TileUp25: 240,
     };
 
-    /** Fastest entry (speed head) a run of pieces allows: its tightest turn decides. */
-    function sequenceSpeedLimit(names) {
+    /**
+     * Fastest entry (speed head) a run of pieces allows: its tightest turn decides. Ride types without banked
+     * track (wild mice, suspended and bobsleigh-like rides) are built to take flat turns faster.
+     */
+    function sequenceSpeedLimit(names, scale) {
         let limit = Infinity;
         for (const n of names) {
             const key = n.replace(/right|Right/g, m => (m === 'right' ? 'left' : 'Left'));
-            if (TURN_SPEED_LIMITS[key] !== undefined) limit = Math.min(limit, TURN_SPEED_LIMITS[key]);
+            if (TURN_SPEED_LIMITS[key] !== undefined) limit = Math.min(limit, TURN_SPEED_LIMITS[key] * (scale || 1));
         }
         return limit;
     }
@@ -3386,6 +3392,8 @@
             addMacro(['flatToDown25', t, 'down25ToFlat']);
             addMacro(['flatToDown25', mirrorPieceName(t), 'down25ToFlat']);
         }
+        addMacro(['brakes']);
+        const brakeHead = speedHead(COASTER_BRAKE_SPEED);
         // Each macro's footprint and end pose from each heading, starting at (0, 0, 0).
         const moves = macros.map(names => [0, 1, 2, 3].map(rot => {
             let x = 0;
@@ -3411,9 +3419,11 @@
                 z += seg.endZ - seg.beginZ;
                 cost += (seg.subLength || 32) / 32;
             }
-            return { names: names, blocks: blocks, dx: x, dy: y, dz: z, rot: r, cost: cost, limit: sequenceSpeedLimit(names) };
+            const brakes = names.length === 1 && names[0] === 'brakes';
+            return { names: names, blocks: blocks, dx: x, dy: y, dz: z, rot: r, cost: cost, brakes: brakes,
+                limit: sequenceSpeedLimit(names, draft.turnScale), penalty: brakes ? 2 : 0 };
         }));
-        const start = { x: draft.x, y: draft.y, z: draft.z, rot: draft.rot, g: 0, parent: null, move: null };
+        const start = { x: draft.x, y: draft.y, z: draft.z, rot: draft.rot, g: 0, e: draft.energy, parent: null, move: null };
         const h = n => (Math.abs(n.x) + Math.abs(n.y)) / TILE_SIZE + n.z / 16 + (n.rot !== 0 ? 1 : 0);
         start.f = h(start);
         const heap = [start];
@@ -3456,15 +3466,17 @@
                 for (let n = node; n.parent; n = n.parent) path.unshift(n.move.names);
                 return path;
             }
-            const key = node.x + ',' + node.y + ',' + node.z + ',' + node.rot;
+            // Speed matters (fast trains may not take tight turns), so states differ by speed band too.
+            const head = node.e - node.z;
+            const band = head <= 24 ? 0 : head <= 56 ? 1 : head <= 96 ? 2 : 3;
+            const key = node.x + ',' + node.y + ',' + node.z + ',' + node.rot + ',' + band;
             if (best.has(key) && best.get(key) <= node.g) continue;
             best.set(key, node.g);
             expanded++;
-            const head = draft.energy - COASTER_LOSS_PER_TILE * node.g - node.z;
             for (const m of moves) {
                 const mv = m[node.rot];
                 const nz = node.z + mv.dz;
-                if (nz < 0 || head > mv.limit) continue;
+                if (nz < 0 || head > mv.limit || (mv.brakes && head <= brakeHead + 8)) continue;
                 const bx = Math.floor(node.x / TILE_SIZE);
                 const by = Math.floor(node.y / TILE_SIZE);
                 let ok = true;
@@ -3491,9 +3503,10 @@
                     if (!ok) break;
                 }
                 if (!ok) continue;
-                const next = { x: node.x + mv.dx, y: node.y + mv.dy, z: nz, rot: mv.rot, g: node.g + mv.cost, parent: node, move: mv };
-                const nkey = next.x + ',' + next.y + ',' + next.z + ',' + next.rot;
-                if (best.has(nkey) && best.get(nkey) <= next.g) continue;
+                let e = node.e - COASTER_LOSS_PER_TILE * mv.cost;
+                if (mv.brakes) e = Math.min(e, node.z + brakeHead);
+                const next = { x: node.x + mv.dx, y: node.y + mv.dy, z: nz, rot: mv.rot, g: node.g + mv.cost + mv.penalty, e: e,
+                    parent: node, move: mv };
                 next.f = next.g + 1.5 * h(next);
                 pushHeap(next);
             }
@@ -3552,18 +3565,39 @@
         const minDrop = Math.max(32, targets.dropZ + 8, targets.speedZ);
         const liftSteps = Math.max(Math.ceil(minDrop / 16) + 1, opts.liftHeight);
         const steep = opts.style !== 'gentle';
+        // Turning back on itself at the top gives the drop the long side of the area (an out-and-back).
         const topTurns = shuffle(rng, [['rightQuarterTurn3Tiles'], ['rightQuarterTurn5Tiles'], ['leftQuarterTurn3Tiles'],
-            ['leftQuarterTurn5Tiles'], ['rightQuarterTurn1Tile'], ['leftQuarterTurn1Tile']]);
+            ['leftQuarterTurn5Tiles'], ['rightQuarterTurn1Tile'], ['leftQuarterTurn1Tile'],
+            ['rightQuarterTurn3Tiles', 'rightQuarterTurn3Tiles'], ['rightQuarterTurn5Tiles', 'rightQuarterTurn5Tiles'],
+            ['rightQuarterTurn3Tiles', 'flat', 'rightQuarterTurn3Tiles'], ['rightQuarterTurn1Tile', 'flat', 'rightQuarterTurn1Tile']]);
         const topOptions = rng.chance(0.4) ? [[]].concat(topTurns) : topTurns.concat([[]]);
+        // After the drop the train is at its fastest: there must be room to run on or take a wide turn.
+        const roomAhead = () => {
+            for (const names of [['flat', 'flat', 'flat', 'flat'], ['flatToLeftBank', 'bankedLeftQuarterTurn5Tiles', 'leftBankToFlat'],
+                ['flatToRightBank', 'bankedRightQuarterTurn5Tiles', 'rightBankToFlat'], ['flat', 'leftQuarterTurn5Tiles'],
+                ['flat', 'rightQuarterTurn5Tiles'], ['flatToUp25', 'up25ToFlat', 'flatToDown25', 'down25ToFlat']]) {
+                if (sequenceSpeedLimit(names, draft.turnScale) < draft.head()) continue;
+                const mark = draft.els.length;
+                if (draft.add(names)) {
+                    draft.rewind(mark);
+                    return true;
+                }
+            }
+            return false;
+        };
         const firstDrop = () => {
             for (const turn of topOptions) {
                 const mark = draft.els.length;
                 if (turn.length > 0 && !draft.add(turn)) continue;
                 const top = draft.z;
                 for (let depth = top; depth >= Math.max(minDrop, top / 2); depth -= 16) {
+                    const beforeDrop = draft.els.length;
                     if (draft.add(dropPieces(draft, depth, steep)) || draft.add(dropPieces(draft, depth, false))) {
-                        draft.firstDrop = depth;
-                        return true;
+                        if (roomAhead()) {
+                            draft.firstDrop = depth;
+                            return true;
+                        }
+                        draft.rewind(beforeDrop);
                     }
                 }
                 draft.rewind(mark);
@@ -3592,40 +3626,63 @@
             return failed('lift and first drop');
         }
 
-        // Features while there is room, steered toward whatever the ride type's ratings still need.
+        // Features while there is room, steered toward whatever the ride type's ratings still need. Every option
+        // that fits is tried; the pick favours the ride's style, unmet requirements and open track ahead (so the
+        // layout spreads over the area instead of running into its edge), with some randomness for variety.
         const catalogue = coasterFeatureCatalogue(draft, opts.style).filter(f => f.weight > 0 && (opts.inversions || !f.inversion));
         const wanted = rng.int(style.features[0], style.features[1]);
         let placed = 0;
         const featureMarks = [];
         const needs = () => checkTargets(draft, targets);
-        for (let tries = 0; tries < wanted * 10; tries++) {
+        const runway = () => {
+            let n = 0;
+            const tx = Math.floor(draft.x / TILE_SIZE);
+            const ty = Math.floor(draft.y / TILE_SIZE);
+            for (let k = 0; k < 10; k++) {
+                const x = tx + DIR_DX[draft.rot] * k;
+                const y = ty + DIR_DY[draft.rot] * k;
+                if (x < bounds.minX || x > bounds.maxX || y < bounds.minY || y > bounds.maxY
+                    || spanOccupied(draft.occ, x, y, draft.z - 16, draft.z + 48)) break;
+                n++;
+            }
+            return n;
+        };
+        for (let step = 0; step < wanted + 8; step++) {
             const missing = needs();
             const longEnough = !targets.lengthTiles || draft.length >= targets.lengthTiles * 0.8;
             if (placed >= wanted && missing.length === 0 && longEnough) break;
             const head = draft.head();
-            const weighted = catalogue.map(f => {
+            let pick = null;
+            for (const f of catalogue) {
                 let w = f.weight;
                 if (f.descends) w *= draft.z >= 48 ? 3 : (draft.z < 16 ? 0 : 1);
                 if (f.descends && missing.includes('number of drops')) w *= 2;
                 if (f.airtime && missing.includes('airtime (negative G)') && head >= 40) w *= 4;
                 if (f.inversion && missing.includes('inversions')) w *= 5;
-                return Object.assign({}, f, { weight: w });
-            }).filter(f => f.weight > 0);
-            if (weighted.length === 0) break;
-            const feature = pickWeighted(rng, weighted);
-            const options = feature.options(rng).filter(names => sequenceSpeedLimit(names) >= head);
-            if (options.length === 0) continue;
-            const before = draft.els.length;
-            if (draft.add(rng.pick(options))) {
-                placed++;
-                featureMarks.push(before);
+                if (f.inversion && opts.style === 'intense' && draft.inversions < 2) w *= 3;
+                if (w <= 0) continue;
+                for (const names of f.options(rng)) {
+                    if (sequenceSpeedLimit(names, draft.turnScale) < head) continue;
+                    const mark = draft.els.length;
+                    if (!draft.add(names)) continue;
+                    const room = runway();
+                    draft.rewind(mark);
+                    const score = 2 * Math.log(w) + Math.min(room, 6) + 4 * rng.next();
+                    if (!pick || score > pick.score) pick = { names: names, score: score };
+                }
             }
+            if (!pick) break;
+            featureMarks.push(draft.els.length);
+            draft.add(pick.names);
+            placed++;
         }
 
         // Back to the station (through a brake run if the train is still fast). If there is no way home from
         // where the features ended, give up the last feature and try again from there.
+        if (opts.debug) why.placed = (why.placed || []).concat([placed]);
         bounds.maxX = 3;
         for (;;) {
+            if (Date.now() > opts.deadline) return failed('out of time');
             const mark = draft.els.length;
             let closing = closeCircuit(draft, 12000);
             if (!closing && draft.head() > speedHead(COASTER_BRAKE_SPEED) + 8 && draft.has(['brakes'])
@@ -3638,7 +3695,13 @@
                 return draft;
             }
             draft.rewind(mark);
-            if (featureMarks.length === 0) return failed('closing the circuit');
+            if (featureMarks.length === 0) {
+                if (opts.debug && !why.closingFrom) {
+                    why.closingFrom = { x: draft.x / TILE_SIZE, y: draft.y / TILE_SIZE, z: draft.z, rot: draft.rot, head: draft.head(),
+                        bounds: bounds, pieces: draft.els.map(e => TRACK_TYPE_NAMES[e.type]) };
+                }
+                return failed('closing the circuit');
+            }
             draft.rewind(featureMarks.pop());
             placed--;
         }
@@ -4788,17 +4851,31 @@
             debug: !!params.debug,
         };
         const baseSeed = isNumber(params.seed) ? Math.floor(params.seed) >>> 0 : Math.floor(Math.random() * 0x7FFFFFFF);
+        // Without a size from the caller, a ride type that needs a long lift or drop gets a bigger area if needed.
+        const sizes = isNumber(params.maxLength) || isNumber(params.maxWidth) ? [[opts.length, opts.width]]
+            : [[opts.length, opts.width], [opts.length + 6, opts.width + 4], [opts.length + 12, opts.width + 6]];
+        // Ride types that must be long to rate well (e.g. 370 m for the wooden coaster) start with more room.
+        if (sizes.length > 1 && opts.targets.lengthTiles > 60) sizes.shift();
         // Several attempts; keep the first that meets every rating requirement, else the one missing the fewest.
         let draft = null;
         let best = null;
         const why = {};
-        for (let attempt = 0; attempt < 40; attempt++) {
-            const attemptSeed = (baseSeed + attempt * 7919) >>> 0;
-            const d = draftCoaster(chosen.types, chosen.info, opts, makeRng(attemptSeed), why);
-            if (!d) continue;
-            const misses = checkTargets(d, opts.targets);
-            if (!best || misses.length < best.misses.length) best = { draft: d, misses: misses };
-            if (misses.length === 0) break;
+        // Generation runs on the game thread, so keep it short: stop early once something usable exists.
+        const started = Date.now();
+        opts.deadline = started + 4000;
+        for (const [length, width] of sizes) {
+            if (best || Date.now() > opts.deadline) break;
+            opts.length = length;
+            opts.width = width;
+            for (let attempt = 0; attempt < 40; attempt++) {
+                if (Date.now() > (best ? started + 1500 : opts.deadline)) break;
+                const attemptSeed = (baseSeed + attempt * 7919) >>> 0;
+                const d = draftCoaster(chosen.types, chosen.info, opts, makeRng(attemptSeed), why);
+                if (!d) continue;
+                const misses = checkTargets(d, opts.targets);
+                if (!best || misses.length < best.misses.length) best = { draft: d, misses: misses };
+                if (misses.length === 0) break;
+            }
         }
         if (best) draft = best.draft;
         if (!draft) {
@@ -4820,6 +4897,7 @@
             lengthTiles: Math.round(draft.length),
             features: draft.features,
         };
+        if (opts.debug) design.debug = why;
         if (best.misses.length > 0) {
             design.mayMissRequirements = best.misses;
             design.note = 'This ride type rates poorly without these; a larger area (maxLength/maxWidth) usually helps.';
