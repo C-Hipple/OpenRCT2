@@ -160,7 +160,10 @@ The route finder is an A* search over footpath pieces, using the game's own rule
   `config.ini`, and any folders in `OPENRCT2_TRACK_DIRS`. Designs replay piece by piece exactly like the game's
   own design placement (same rotation, height search and settings). If the design's vehicle isn't researched,
   another vehicle of the same ride type is used. Entrances go where the design has them if those spots are
-  usable, else beside the station on the side with room for paths.
+  usable, else beside the station on the side with room for paths. Like the game requires before a ride can
+  open, every station gets an entrance or an exit (a second station left without one gets an exit), and each
+  one gets its queue or exit path; the result reports the first station's as `paths.queue`/`paths.exit` and
+  the rest under `paths.otherStations`.
 * **Generated roller coasters** (`design_roller_coaster`): builds a complete circuit — station, chain lift,
   first drop, then a mix of hills, turns, banked turns, helixes, drops and (unless gentle) loops and
   corkscrews — and finds a way back into the station with a search over flat, turning and descending pieces.

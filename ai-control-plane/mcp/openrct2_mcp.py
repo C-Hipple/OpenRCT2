@@ -460,9 +460,10 @@ TOOLS = [
         "name": "build_custom_track",
         "description": (
             "Build a tracked ride from your own list of track pieces (see list_track_pieces and check_track_layout), "
-            "then its entrance, exit, queue and exit path. The layout is validated first: it must have a station, its "
-            "pieces must join and it must return to the start. To have a complete coaster designed for you, use "
-            "design_roller_coaster instead."
+            "then its entrance, exit, queue and exit path (with several stations, each gets an entrance or exit). The "
+            "layout is validated first: it must have a station, its pieces must join and it must return to the start. "
+            "Only roller coasters (and rides with lift hill track) can have chain lifts. To have a complete coaster "
+            "designed for you, use design_roller_coaster instead."
         ),
         "inputSchema": _schema(dict({
             "pieces": PIECES,

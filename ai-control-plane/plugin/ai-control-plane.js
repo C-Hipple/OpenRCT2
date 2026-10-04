@@ -2440,12 +2440,13 @@
 
     /**
      * Can the tile beside a stall's open side carry a footpath at height z (or does it already)? The game joins
-     * a stall to a path on exactly that tile (FootpathConnectEdges checks the shop's path-connecting side).
+     * a stall to a path on exactly that tile (FootpathConnectEdges checks the shop's path-connecting side). Another
+     * ride's queue line will not do: guests could not walk from it to the stall.
      */
     function stallSpotOk(tc, x, y, z) {
         const spot = tc.get(x, y);
         if (!spot || !spot.surface) return false;
-        if (spot.paths.some(p => !p.ghost && p.z === z && p.s < 0)) return true;
+        if (spot.paths.some(p => !p.ghost && !p.queue && p.z === z && p.s < 0)) return true;
         if (spot.paths.length || spot.entrances.length || spot.largeScenery) return false;
         const elevated = surfaceTop(spot) < z;
         if (!isSandbox() && !spot.surface.owned && !(spot.surface.rights && elevated)) return false;
@@ -2779,12 +2780,11 @@
             || (TRACK_SEQUENCE_FLAGS[p.el.type] && TRACK_SEQUENCE_FLAGS[p.el.type].some(f => f & 0x0F)));
     }
 
-    /** Entrance/exit spots along a placed layout's station platforms (used when a layout gives none). */
     /**
-     * Pieces of the layout's first station: the first run of station pieces in track order (joined with a run at
-     * the end of the circuit), or for rides without station pieces the first piece that takes entrances.
+     * The layout's stations, each a list of pieces: the runs of station pieces in track order (a run at the end of
+     * the circuit joins the first), or for rides without station pieces the first piece that takes entrances.
      */
-    function firstStationPieces(walked) {
+    function stationRuns(walked) {
         const runs = [];
         let current = null;
         for (const p of walked.pieces) {
@@ -2803,21 +2803,29 @@
             && STATION_TRACK_TYPES.includes(pieces[pieces.length - 1].el.type)) {
             runs[0] = runs.pop().concat(runs[0]);
         }
-        return runs.length > 0 ? runs[0] : portalPieces(walked).slice(0, 1);
+        if (runs.length > 0) return runs;
+        const base = portalPieces(walked).slice(0, 1);
+        return base.length > 0 ? [base] : [];
     }
 
-    /** Entrance/exit spots beside the layout's first station (used when a layout gives none), each with its z. */
+    /**
+     * Entrance/exit spots beside the layout's stations (used when a layout gives none), each with its z and the
+     * index of its station in stationRuns order.
+     */
     function stationAttachmentPoints(walked, ox, oy, baseZ) {
         const points = [];
-        for (const p of firstStationPieces(walked)) {
-            const fp = pieceFootprint(p.el.type);
-            const tx = ox + Math.floor(p.x / TILE_SIZE);
-            const ty = oy + Math.floor(p.y / TILE_SIZE);
-            for (const a of attachmentPoints(p.el.type, fp, tx, ty, p.direction)) {
-                a.z = baseZ + p.z;
-                points.push(a);
+        stationRuns(walked).forEach((run, station) => {
+            for (const p of run) {
+                const fp = pieceFootprint(p.el.type);
+                const tx = ox + Math.floor(p.x / TILE_SIZE);
+                const ty = oy + Math.floor(p.y / TILE_SIZE);
+                for (const a of attachmentPoints(p.el.type, fp, tx, ty, p.direction)) {
+                    a.z = baseZ + p.z;
+                    a.station = station;
+                    points.push(a);
+                }
             }
-        }
+        });
         return points;
     }
 
@@ -2832,38 +2840,92 @@
         return spots.filter(a => free(a, EXIT_CLEARANCE)).map(a => Object.assign({}, a, { canBeEntrance: free(a, ENTRANCE_CLEARANCE) }));
     }
 
+    /** Stations (indices into stationRuns) that already have one of the portals in `keep` beside them. */
+    function coveredStations(allSpots, keep) {
+        const stations = [...new Set(allSpots.map(a => a.station))];
+        // With a single station, any usable spot of the design's is beside it.
+        if (stations.length === 1) return new Set(keep.length > 0 ? stations : []);
+        const covered = new Set();
+        for (const p of keep) {
+            const spot = allSpots.find(a => a.x === p.x && a.y === p.y && a.direction === p.direction
+                && (p.z === null || p.z === undefined || a.z === p.z));
+            if (spot) covered.add(spot.station);
+        }
+        return covered;
+    }
+
+    /** Does `keep` give the ride an entrance, an exit, and every station one or the other? */
+    function portalsComplete(allSpots, keep) {
+        const covered = coveredStations(allSpots, keep);
+        return keep.some(p => !p.isExit) && keep.some(p => p.isExit) && allSpots.every(a => covered.has(a.station));
+    }
+
     /**
-     * Chooses the entrance and/or exit still missing (`keep` holds the design's own spots that will be used).
-     * Prefers the open side of the station, where paths have somewhere to go, but only while that still leaves a
-     * valid choice. Used both before building (to accept a placement) and after, so the two always agree.
+     * Chooses the entrances and exits still missing from the station-side spots of stationAttachmentPoints (`keep`
+     * holds the design's own spots that will be used). Like the game requires before a ride can open
+     * (RideCheckForEntranceExit), the ride gets an entrance and an exit, and every station at least one of them:
+     * stations left without one get an exit. Prefers the open side of a station, where paths have somewhere to go,
+     * but only while that still leaves a valid choice. Used both before building (to accept a placement) and
+     * after, so the two always agree. Returns null when there is no valid choice.
      */
-    function choosePortalSpots(tc, spots, field, keep, own) {
+    function choosePortalSpots(tc, allSpots, field, keep, own) {
+        const stations = [...new Set(allSpots.map(a => a.station))];
+        const covered = coveredStations(allSpots, keep);
         const needEntrance = !keep.some(p => !p.isExit);
         const needExit = !keep.some(p => p.isExit);
-        if (!needEntrance && !needExit) return {};
+        if (!needEntrance && !needExit && stations.every(st => covered.has(st))) return { extraExits: [] };
         const taken = new Set(keep.map(p => tileKey(p.x, p.y)));
-        const all = spots.filter(a => !taken.has(tileKey(a.x, a.y)));
+        const spots = usableStationSpots(tc, allSpots, own);
         const apart = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-        const pick = list => {
+        // `want` is 'pair', 'entrance' or 'exit'.
+        const pick = (list, want) => {
             if (list.length === 0) return null;
-            const z = list[0].z;
-            const ranked = rankAttachments(tc, list, field, z, EXIT_CLEARANCE);
-            if (needEntrance && needExit) return chooseEntranceAndExit(ranked);
-            if (needEntrance) {
+            const ranked = rankAttachments(tc, list, field, list[0].z, EXIT_CLEARANCE);
+            if (want === 'pair') return chooseEntranceAndExit(ranked);
+            if (want === 'entrance') {
                 const exit = keep.find(p => p.isExit);
                 const usable = p => !p.frontHasPath && p.canBeEntrance !== false;
                 const entrance = ranked.find(p => usable(p) && apart(p, exit) >= 2) || ranked.find(usable);
                 return entrance ? { entrance: entrance } : null;
             }
             const entrance = keep.find(p => !p.isExit);
-            const exit = ranked.find(p => apart(p, entrance) >= 2 && apart(p.front, entrance.front || entrance) >= 2) || ranked[0];
-            return exit ? { exit: exit } : null;
+            const exit = (entrance && ranked.find(p => apart(p, entrance) >= 2 && apart(p.front, entrance.front || entrance) >= 2))
+                || ranked[0];
+            return { exit: exit };
         };
-        for (const need of [3, 2]) {
-            const choice = pick(all.filter(a => pathExits(tc, a.front.x, a.front.y, a.z, a.x, a.y, own) >= need));
-            if (choice) return choice;
+        const pickOpen = (list, want) => {
+            for (const need of [3, 2]) {
+                const choice = pick(list.filter(a => pathExits(tc, a.front.x, a.front.y, a.z, a.x, a.y, own) >= need), want);
+                if (choice) return choice;
+            }
+            return pick(list, want);
+        };
+        const freeAt = st => spots.filter(a => a.station === st && !taken.has(tileKey(a.x, a.y)));
+        // The missing entrance and/or exit go to the first station with room for them.
+        let choice = { extraExits: [] };
+        if (needEntrance || needExit) {
+            const want = needEntrance && needExit ? 'pair' : (needEntrance ? 'entrance' : 'exit');
+            choice = null;
+            for (const st of stations) {
+                choice = pickOpen(freeAt(st), want);
+                if (choice) break;
+            }
+            if (!choice) return null;
+            choice.extraExits = [];
+            for (const a of [choice.entrance, choice.exit]) {
+                if (!a) continue;
+                taken.add(tileKey(a.x, a.y));
+                covered.add(a.station);
+            }
         }
-        return pick(all);
+        for (const st of stations) {
+            if (covered.has(st)) continue;
+            const extra = pickOpen(freeAt(st), 'exit');
+            if (!extra) return null;
+            taken.add(tileKey(extra.exit.x, extra.exit.y));
+            choice.extraExits.push(extra.exit);
+        }
+        return choice;
     }
 
     async function applyLayoutSettings(rideId, layout, option, flags, warnings) {
@@ -2924,16 +2986,20 @@
             const x = cand.ox + Math.floor(r.x / TILE_SIZE);
             const y = cand.oy + Math.floor(r.y / TILE_SIZE);
             const dir = (cand.direction + e.direction) & 3;
-            const ez = e.z === null || e.z === undefined ? z : e.z * 8 + z;
+            const known = e.z !== null && e.z !== undefined;
+            const ez = known ? e.z * 8 + z : z;
             const front = { x: x + DIR_DX[dir ^ 2], y: y + DIR_DY[dir ^ 2] };
-            return { x: x, y: y, front: front, ok: clear(x, y, ez, front.x, front.y, !!e.isExit), isExit: !!e.isExit };
+            return {
+                x: x, y: y, z: known ? ez : null, direction: dir, front: front, isExit: !!e.isExit,
+                ok: clear(x, y, ez, front.x, front.y, !!e.isExit),
+            };
         });
         const keep = ents.filter(e => e.ok);
-        if (keep.some(e => !e.isExit) && keep.some(e => e.isExit)) return true;
-        if (portalPieces(cand.walked).length === 0) return ents.length === 0 || ents.every(e => e.ok);
-        // Otherwise the same choice the build will make beside the first station must exist.
-        const spots = usableStationSpots(tc, stationAttachmentPoints(cand.walked, cand.ox, cand.oy, z), own);
-        return choosePortalSpots(tc, spots, null, keep, own) !== null;
+        if (portalPieces(cand.walked).length === 0) {
+            return (keep.some(e => !e.isExit) && keep.some(e => e.isExit)) || ents.length === 0 || ents.every(e => e.ok);
+        }
+        // Otherwise the same choice the build will make beside the stations must exist.
+        return choosePortalSpots(tc, stationAttachmentPoints(cand.walked, cand.ox, cand.oy, z), null, keep, own) !== null;
     }
 
     /** Origins for rides that must run on water: every track block over water, near the requested spot. */
@@ -3181,9 +3247,10 @@
                     .filter(p => portalSpotOk(tcNow, p.x, p.y, p.z === null ? chosen.z : p.z, p.front.x, p.front.y,
                         p.isExit ? EXIT_CLEARANCE : ENTRANCE_CLEARANCE));
             }
+            const stationSpots = stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy, chosen.z);
             if (isMaze && (!portals.some(p => !p.isExit) || !portals.some(p => p.isExit))) {
                 warnings.push('the maze design\'s entrance or exit spot was not usable; add it with execute_game_action');
-            } else if (!portals.some(p => !p.isExit) || !portals.some(p => p.isExit)) {
+            } else if (!isMaze && !portalsComplete(stationSpots, portals)) {
                 const keep = portals;
                 const entrances = await getParkEntrances();
                 const goalTiles = entrances.map(e => [e.x, e.y]);
@@ -3193,8 +3260,7 @@
                 }
                 const field = distanceField(tc, goalTiles);
                 // The same choice portalsPossible checked before building, now against the built track.
-                const spots = usableStationSpots(tcNow, stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy, chosen.z), null);
-                const choice = choosePortalSpots(tcNow, spots, field, keep, null);
+                const choice = choosePortalSpots(tcNow, stationSpots, field, keep, null);
                 if (!choice) fail('No room beside the station for an entrance and exit.');
                 const station = a => {
                     const index = stationIndexAt(rideId, a.rideTile.x, a.rideTile.y, a.z);
@@ -3205,12 +3271,14 @@
                     const a = choice.entrance;
                     portals.push({ x: a.x, y: a.y, direction: a.direction, station: station(a), isExit: false });
                 }
-                if (choice.exit) {
-                    const a = choice.exit;
+                for (const a of (choice.exit ? [choice.exit] : []).concat(choice.extraExits)) {
                     portals.push({ x: a.x, y: a.y, direction: a.direction, station: station(a), isExit: true });
                 }
-                if ((layout.entrances || []).length > 0) {
+                if ((layout.entrances || []).length > 0 && (choice.entrance || choice.exit)) {
                     warnings.push('placed ' + (keep.length ? 'some' : 'the') + ' entrance/exit beside the station instead of where the design had them');
+                }
+                if ((layout.entrances || []).length > 0 && choice.extraExits.length > 0) {
+                    warnings.push('added an exit to ' + choice.extraExits.length + ' station(s) the design left without an entrance or exit');
                 }
             }
             for (const p of portals) {
@@ -3248,22 +3316,33 @@
             log('Built ' + summary.name + ' (' + summary.pieces + ' pieces)');
 
             if (params.connectPaths !== false && summary.stations.some(s => s.entrance)) {
-                const pathParams = { rideId: rideId, allowWhilePaused: params.allowWhilePaused };
+                // A queue to every entrance and a path from every exit; the first station's are reported as
+                // paths.queue and paths.exit, any others under paths.otherStations.
                 summary.paths = {};
-                try {
-                    const r = await methods.build_ride_queue(pathParams);
-                    summary.paths.queue = { built: r.built, cost: r.costFormatted, reachesNetwork: r.queueReachesParkNetwork };
-                    spent += r.cost || 0;
-                } catch (e) {
-                    summary.paths.queue = 'failed: ' + e.message;
-                }
-                try {
-                    const r = await methods.connect_ride_exit(pathParams);
-                    summary.paths.exit = r.alreadyConnected ? 'already connected'
-                        : { built: r.built, cost: r.costFormatted, connected: r.exitConnected };
-                    spent += r.cost || 0;
-                } catch (e) {
-                    summary.paths.exit = 'failed: ' + e.message;
+                for (const st of summary.stations) {
+                    if (!st.entrance && !st.exit) continue;
+                    const pathParams = { rideId: rideId, station: st.index, allowWhilePaused: params.allowWhilePaused };
+                    const out = Object.keys(summary.paths).length === 0 ? summary.paths : { station: st.index };
+                    if (st.entrance) {
+                        try {
+                            const r = await methods.build_ride_queue(pathParams);
+                            out.queue = { built: r.built, cost: r.costFormatted, reachesNetwork: r.queueReachesParkNetwork };
+                            spent += r.cost || 0;
+                        } catch (e) {
+                            out.queue = 'failed: ' + e.message;
+                        }
+                    }
+                    if (st.exit) {
+                        try {
+                            const r = await methods.connect_ride_exit(pathParams);
+                            out.exit = r.alreadyConnected ? 'already connected'
+                                : { built: r.built, cost: r.costFormatted, connected: r.exitConnected };
+                            spent += r.cost || 0;
+                        } catch (e) {
+                            out.exit = 'failed: ' + e.message;
+                        }
+                    }
+                    if (out !== summary.paths) (summary.paths.otherStations = summary.paths.otherStations || []).push(out);
                 }
             }
             // Tracked rides start testing unless told otherwise, so the game measures their ratings.
@@ -3686,16 +3765,6 @@
         const b = draft.bounds;
         let expanded = 0;
         while (heap.length > 0 && expanded < maxNodes) {
-            // A shared, deterministic budget (so a seed always gives the same design) plus a time limit that only
-            // matters on a very slow machine.
-            if (budget) {
-                if (budget.used >= budget.max) return null;
-                if ((budget.used & 255) === 0 && Date.now() > budget.deadline) {
-                    budget.timedOut = true;
-                    return null;
-                }
-                budget.used++;
-            }
             const node = popHeap();
             if (node.x === 0 && node.y === 0 && node.z === 0 && node.rot === 0 && node.parent) {
                 const path = [];
@@ -3709,6 +3778,16 @@
             if (best.has(key) && best.get(key) <= node.g) continue;
             best.set(key, node.g);
             expanded++;
+            // A shared, deterministic budget of expansions (so a seed always gives the same design) plus a time limit
+            // that only matters on a very slow machine.
+            if (budget) {
+                if (budget.used >= budget.max) return null;
+                if ((budget.used & 255) === 0 && Date.now() > budget.deadline) {
+                    budget.timedOut = true;
+                    return null;
+                }
+                budget.used++;
+            }
             if (!node.pathOcc) {
                 // Space taken by the closing path so far, so it cannot cross itself.
                 node.pathOcc = new Map(node.parent.pathOcc);
@@ -4021,7 +4100,8 @@
             const allowed = allowedPieceTypes(option.rideType);
             const types = new Map();
             for (const t of allowed) types.set(TRACK_TYPE_NAMES[t], t);
-            const lift = ['flatToUp25', 'up25', 'up25ToFlat'].every(n => types.has(n) && trackSegment(types.get(n)).allowsChainLift);
+            const lift = rideHasChainLift(option.rideType)
+                && ['flatToUp25', 'up25', 'up25ToFlat'].every(n => types.has(n) && trackSegment(types.get(n)).allowsChainLift);
             if (!lift || !['beginStation', 'middleStation', 'endStation', 'flatToDown25', 'down25ToFlat'].every(n => types.has(n))) continue;
             // A circuit needs some way to turn round (Heartline Twisters and Impulse coasters have none).
             const turns = ['leftQuarterTurn3Tiles', 'leftQuarterTurn5Tiles', 'leftQuarterTurn1Tile', 'bankedLeftQuarterTurn5Tiles',
@@ -4767,7 +4847,7 @@
                 // The path goes on the tile right beside the open side; an existing path there is ideal.
                 const spots = candidates.filter(a => stallSpotOk(tc, a.x, a.y, p.z)).map(a => {
                     const d = field ? field(a.x, a.y) : 0;
-                    const hasPath = tc.get(a.x, a.y).paths.some(q => !q.ghost && q.z === p.z);
+                    const hasPath = tc.get(a.x, a.y).paths.some(q => !q.ghost && !q.queue && q.z === p.z);
                     return Object.assign({ distance: hasPath ? -1 : (d < 0 ? 999 : d), hasPath: hasPath }, a);
                 }).sort((a, b) => a.distance - b.distance);
                 if (spots.length > 0) plans.push(Object.assign({ pathFrom: spots[0] }, p));
@@ -4866,7 +4946,7 @@
                     summary.paths.access = r.alreadyConnected ? 'already connected' : { built: r.built, cost: r.costFormatted };
                     spent += r.cost || 0;
                     // A path that was already there joins the stall once re-placed (the game recomputes its edges).
-                    const existing = new TileCache().get(spot.x, spot.y).paths.find(q => !q.ghost && q.z === built.z);
+                    const existing = new TileCache().get(spot.x, spot.y).paths.find(q => !q.ghost && !q.queue && q.z === built.z);
                     if (spot.hasPath && existing) {
                         await executeAction('footpathplace', footpathArgs({ x: spot.x, y: spot.y, z: existing.z, s: existing.s, dir: null },
                             styleOfPiece(existing), buildFlags(params)));
@@ -5024,6 +5104,21 @@
     }
 
     /** Track pieces a ride type may use (its enabled track groups, as the construction window offers). */
+    /**
+     * Can this ride type have chain lifts? Roller coasters can (the game takes a chain on any piece that allows one,
+     * even for types whose lift is normally curved or on the inverted track); other rides only if their track has
+     * lift hills, as the construction window offers (not car rides, ghost trains, mini golf and the like).
+     */
+    function rideHasChainLift(rideType) {
+        const info = rideTypeInfo(rideType);
+        if (info && (info.category === 'rollercoaster' || info.groups.includes(TRACK_GROUPS.indexOf('liftHill')))) return true;
+        try {
+            return !!cheats.enableChainLiftOnAllTrack;
+        } catch (e) {
+            return false;
+        }
+    }
+
     function allowedPieceTypes(rideType) {
         const info = rideTypeInfo(rideType);
         if (!info) return new Set();
@@ -5048,7 +5143,7 @@
      * Geometry report for a layout: where it ends, whether it closes into a circuit and whether consecutive
      * pieces join (matching slope and banking).
      */
-    function checkLayout(elements, allowed) {
+    function checkLayout(elements, allowed, chainLift) {
         const walked = walkLayout(elements, 0);
         const problems = [];
         for (let i = 1; i < walked.pieces.length; i++) {
@@ -5059,6 +5154,11 @@
                     + a.endBank + ' vs ' + b.beginSlope + '/' + b.beginBank + ')');
             }
             if (walked.pieces[i].el.chain && !b.allowsChainLift) problems.push('piece ' + i + ' (' + b.name + ') cannot have a chain lift');
+        }
+        if (chainLift === false) {
+            walked.pieces.forEach((p, i) => {
+                if (p.el.chain) problems.push('piece ' + i + ' (' + p.seg.name + ') has a chain lift, which this ride type cannot have');
+            });
         }
         if (allowed) {
             walked.pieces.forEach((p, i) => {
@@ -5103,7 +5203,8 @@
         if (params.pieces) {
             // Custom layouts must form a proper circuit before anything is placed.
             option = resolveRideOption(params, ['tracked', 'tower']);
-            const report = checkLayout(layout.trackElements, params.allowAnyPiece ? null : allowedPieceTypes(option.rideType));
+            const report = params.allowAnyPiece ? checkLayout(layout.trackElements, null)
+                : checkLayout(layout.trackElements, allowedPieceTypes(option.rideType), rideHasChainLift(option.rideType));
             const kind = rideTypeInfo(option.rideType).kind;
             if (kind === 'tracked' && report.stationPieces === 0) report.problems.push('the layout has no station pieces');
             if (kind === 'tracked' && !report.closesCircuit && !params.allowOpenCircuit) {
@@ -5116,11 +5217,11 @@
 
     methods.check_track_layout = params => {
         const elements = normaliseLayoutPieces(params.pieces);
-        let allowed = null;
         if (params.ride !== undefined || params.object !== undefined || isNumber(params.rideType)) {
-            allowed = allowedPieceTypes(resolveRideOption(params, ['tracked', 'tower']).rideType);
+            const rideType = resolveRideOption(params, ['tracked', 'tower']).rideType;
+            return checkLayout(elements, allowedPieceTypes(rideType), rideHasChainLift(rideType));
         }
-        return checkLayout(elements, allowed);
+        return checkLayout(elements, null);
     };
 
     methods.list_track_pieces = params => {
@@ -5178,13 +5279,14 @@
         // Several attempts; keep the first that meets every rating requirement, else the one missing the fewest.
         let best = null;
         const why = {};
+        const outOfBudget = () => opts.budget.timedOut || opts.budget.used >= opts.budget.max;
         for (const [length, width] of sizes) {
-            if (best) break;
+            if (best || outOfBudget()) break;
             opts.length = length;
             opts.width = width;
             let drafted = 0;
             for (let attempt = 0; attempt < 40 && drafted < 12; attempt++) {
-                if (opts.budget.timedOut || opts.budget.used >= opts.budget.max) break;
+                if (outOfBudget()) break;
                 const d = draftCoaster(chosen.types, chosen.info, opts, makeRng((baseSeed + attempt * 7919) >>> 0), why);
                 if (!d) continue;
                 drafted++;
@@ -5230,6 +5332,12 @@
                 fail('Ran out of time designing ' + tried.join(', ') + ' (this machine is slow for it). Try a smaller area '
                     + '(maxLength/maxWidth) or a lower liftHeight.', o.debug ? { failedAt: generated.why } : undefined);
             }
+            if (o.budget.used >= o.budget.max) {
+                // The search gave up before trying every area, so do not blame the room.
+                fail('Could not find a complete circuit for ' + tried.join(' or ') + ' within the search limit (last tried '
+                    + o.length + 'x' + o.width + ' tiles). Try another seed, a lower liftHeight, or a different area '
+                    + '(maxLength/maxWidth).', o.debug ? { failedAt: generated.why } : undefined);
+            }
             fail('Could not fit a complete circuit for ' + tried.join(' or ') + ' in ' + o.length + 'x' + o.width
                 + ' tiles. Allow more room (maxLength/maxWidth) or a lower liftHeight.', o.debug ? { failedAt: generated.why } : undefined);
         }
@@ -5242,7 +5350,8 @@
             style: style,
             seed: baseSeed,
             pieces: draft.els.length,
-            size: report.size,
+            // Along the same axes as maxLength/maxWidth (the generator lays the length out along x).
+            size: { length: report.size.width, width: report.size.length },
             // In land steps, like the liftHeight option.
             liftHeight: draft.liftHeight / 16,
             firstDrop: draft.firstDrop / 16,
@@ -5264,7 +5373,8 @@
         });
         if (params.previewOnly) {
             return { design: design, pieces: pieces, note: 'Not built. Pass these pieces to build_custom_track (with the same '
-                + 'ride) to build them, or call design_roller_coaster again with the same seed and options.' };
+                + 'ride, and trains: 1 since the layout has no block brakes) to build them, or call design_roller_coaster '
+                + 'again with the same seed and options.' };
         }
         const layout = {
             name: typeof params.name === 'string' && params.name ? params.name : null,
