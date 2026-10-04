@@ -2,6 +2,7 @@
 """End-to-end ride building test against a running game with the AI Control Plane plugin.
 
     python3 e2e_rides.py [--port 8765] [--wait 300] [--keep]
+    python3 e2e_rides.py --all-coasters     # just preview a generated design for every coaster type
 
 Builds, through the same MCP tools an agent uses: a few flat rides by the water, the best buildable
 pre-built track design (when design files are installed; see OPENRCT2_TRACK_DIRS), and generated roller
@@ -24,14 +25,39 @@ def tool(client, name, args=None):
     return json.loads(run_tool(client, name, args or {}))
 
 
+def preview_all_coasters(client):
+    """design_roller_coaster previews for each roller coaster type and style; reports which cannot be generated."""
+    seen, failures = set(), 0
+    for option in tool(client, "list_buildable_rides", {"category": "rollercoaster"}):
+        if option["rideType"] in seen:
+            continue
+        seen.add(option["rideType"])
+        for style in ("gentle", "moderate", "intense"):
+            try:
+                d = tool(client, "design_roller_coaster", {"object": option["object"], "style": style, "seed": 7,
+                                                           "previewOnly": True})["design"]
+                misses = d.get("mayMissRequirements")
+                print(f"OK    {option['rideTypeName']:<26} {style:<8} {d['pieces']:>3} pieces, {d['features']} features, "
+                      f"{d['inversions']} inversions{', may miss ' + ', '.join(misses) if misses else ''}")
+            except GameError as e:
+                failures += 1
+                print(f"NO    {option['rideTypeName']:<26} {style:<8} {str(e)[:90]}")
+    print(f"\n{len(seen)} coaster types, {failures} type/style combinations could not be generated")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--wait", type=float, default=300, help="seconds to wait for test results (0 to skip)")
     ap.add_argument("--keep", action="store_true", help="keep the rides instead of demolishing them")
+    ap.add_argument("--all-coasters", action="store_true",
+                    help="only preview a generated design for every buildable roller coaster type (builds nothing)")
     args = ap.parse_args()
     client = GameClient(args.host, args.port)
+    if args.all_coasters:
+        return preview_all_coasters(client)
 
     park = tool(client, "get_park_info")
     print(f"Park: {park.get('name')}  cash {park.get('cashFormatted')}  paused {park.get('paused')}")

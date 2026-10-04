@@ -3131,16 +3131,6 @@
         return out;
     }
 
-    function pickWeighted(rng, items) {
-        const total = items.reduce((s, i) => s + i.weight, 0);
-        let r = rng.next() * total;
-        for (const item of items) {
-            r -= item.weight;
-            if (r <= 0) return item;
-        }
-        return items[items.length - 1];
-    }
-
     function mirrorPieceName(name) {
         return name.replace(/left|Left|right|Right/g, m => ({ left: 'right', Left: 'Right', right: 'left', Right: 'Left' })[m]);
     }
@@ -3148,12 +3138,17 @@
     const repeat = (name, n) => Array.from({ length: Math.max(0, n) }, () => name);
 
     // Energy model, in z units. A train's "energy" is the height it could still climb to: a chain lift sets it to
-    // the top of the lift, friction takes some away per tile, and crests must stay below it by a margin. Its
-    // speed head (energy minus current height) stands in for speed: measured top speeds follow about
-    // 3.2 * sqrt(head) mph. Calibrated against test runs in the game; deliberately on the safe side.
-    const COASTER_LOSS_PER_TILE = 1.5;
-    const COASTER_CREST_MARGIN = 16;
-    const COASTER_INVERSION_MARGIN = 40;
+    // the top of the lift, friction and drag take some away per tile, and crests must stay below it by a margin.
+    // Its speed head (energy minus current height) stands in for speed: measured top speeds follow about
+    // 3.2 * sqrt(head) mph. The game's drag grows with speed squared over the train's mass (Vehicle.cpp,
+    // GetAccelerationDecrease2), so losses grow with the head and are larger for light trains. Calibrated with
+    // test runs in the game: heavy trains (~4000 mass) cleared hills nearly as high as their lift after ~35 tiles
+    // (crawling over the top, which rates badly, hence the crest margin), a vertical loop after a 144 lift but not
+    // after 112, and corkscrews after an 80 lift; a constant loss of 0.5 per tile let long layouts stall, 1.5 never
+    // did. Inversion crests are the highest track block, which sits above the rails, so their margin is negative.
+    const COASTER_CREST_MARGIN = 8;
+    const COASTER_INVERSION_MARGIN = -12;
+    const coasterLoss = (head, tiles, massFactor) => (0.2 + 0.006 * Math.max(0, head) * massFactor) * tiles;
     const COASTER_LIFT_EXIT_ENERGY = 8;
     const COASTER_STATION_ENERGY = 8;
     const COASTER_BRAKE_SPEED = 12;
@@ -3166,8 +3161,9 @@
      * leave the bounds, go below the station or climb higher than the train could are refused.
      */
     class TrackDraft {
-        constructor(types, rideClearance, bounds, maxZ) {
+        constructor(types, rideClearance, bounds, maxZ, massFactor) {
             this.types = types;
+            this.massFactor = massFactor || 1;
             this.rideClearance = rideClearance;
             this.bounds = bounds;
             this.maxZ = maxZ;
@@ -3257,7 +3253,7 @@
                 return this.refuse(name, 'not enough speed');
             }
             const tiles = (seg.subLength || 32) / 32;
-            energy -= COASTER_LOSS_PER_TILE * tiles;
+            energy -= coasterLoss(this.energy - this.z, tiles, this.massFactor);
             if (STATION_TRACK_TYPES.includes(type)) energy = Math.max(energy, z + COASTER_STATION_ENERGY);
             if (name === 'brakes') energy = Math.min(energy, z + speedHead(COASTER_BRAKE_SPEED));
 
@@ -3520,7 +3516,7 @@
                     if (!ok) break;
                 }
                 if (!ok) continue;
-                let e = node.e - COASTER_LOSS_PER_TILE * mv.cost;
+                let e = node.e - coasterLoss(head, mv.cost, draft.massFactor);
                 if (mv.brakes) e = Math.min(e, node.z + brakeHead);
                 const next = { x: node.x + mv.dx, y: node.y + mv.dy, z: nz, rot: mv.rot, g: node.g + mv.cost + mv.penalty, e: e,
                     parent: node, move: mv };
@@ -3574,7 +3570,7 @@
         // Station along y = 0 heading -x; the track stays on the +y side, so the entrance and exit fit at y = -1.
         // The three columns behind the station (x 1-3) are kept free for the way back in.
         const bounds = { minX: -(opts.length - 4), maxX: 0, minY: 0, maxY: opts.width - 1 };
-        const draft = new TrackDraft(types, info.clearance, bounds, opts.maxZ);
+        const draft = new TrackDraft(types, info.clearance, bounds, opts.maxZ, opts.massFactor);
         if (!draft.add(['beginStation'].concat(repeat('middleStation', opts.stationLength - 2), ['endStation']))) return failed('station');
         if (rng.chance(0.5)) draft.add(['flat']);
 
@@ -3677,6 +3673,8 @@
                 if (f.airtime && missing.includes('airtime (negative G)') && head >= 40) w *= 4;
                 if (f.inversion && missing.includes('inversions')) w *= 5;
                 if (f.inversion && opts.style === 'intense' && draft.inversions < 2) w *= 3;
+                // Plenty of inversions get too intense for most guests.
+                if (f.inversion && draft.inversions >= (opts.style === 'intense' ? 4 : 2)) w = 0;
                 if (w <= 0) continue;
                 for (const names of f.options(rng)) {
                     if (sequenceSpeedLimit(names, draft.turnScale) < head) continue;
@@ -3722,6 +3720,24 @@
             draft.rewind(featureMarks.pop());
             placed--;
         }
+    }
+
+    /**
+     * How much more drag the ride's (empty, as in testing) train suffers than a ~4000 mass coaster train: drag
+     * deceleration is inversely proportional to train mass, so light single cars such as wild mice (~440) slow
+     * down much faster (a 440 mass car at 30 mph feels drag close to gravity on a 25 degree slope).
+     */
+    function coasterMassFactor(option) {
+        let mass = 0;
+        try {
+            const obj = objectManager.getObject('ride', option.object);
+            const carMass = Math.max(0, ...(obj.vehicles || []).map(v => v.carMass || 0));
+            const cars = Math.max(1, Math.min(7, obj.maxCarsInTrain || 1));
+            mass = carMass * cars;
+        } catch (e) {
+            mass = 0;
+        }
+        return mass > 0 ? Math.max(1, Math.min(10, 4000 / mass)) : 3;
     }
 
     /** Roller coasters this park can build with a chain lift, best suited to the style first. */
@@ -4866,6 +4882,7 @@
             inversions: params.inversions !== false,
             maxZ: maxZ,
             targets: coasterTargets(chosen.option.rideType),
+            massFactor: coasterMassFactor(chosen.option),
             debug: !!params.debug,
         };
         const baseSeed = isNumber(params.seed) ? Math.floor(params.seed) >>> 0 : Math.floor(Math.random() * 0x7FFFFFFF);
