@@ -444,7 +444,7 @@ TOOLS = [
             "banking at each end, and whether it can carry a chain lift. Use it to design a custom track."
         ),
         "inputSchema": _schema(dict(RIDE_REF, **{
-            "group": {"type": "string", "description": "Only one track group, e.g. 'flat', 'curve', 'slope', 'verticalLoop'."},
+            "group": {"type": "string", "description": "Only one track group, e.g. 'straight', 'curve', 'slope', 'verticalLoop'."},
             "namesOnly": {"type": "boolean", "description": "Just the piece names."},
         })),
     },
@@ -479,9 +479,10 @@ TOOLS = [
             "Design and build a brand-new roller coaster (no pre-built design needed): a station, chain lift, first "
             "drop, then hills, turns, helixes and (unless gentle) loops or corkscrews, closed back into the station. "
             "The layout respects the game's clearances, the train's momentum (so it makes it round), comfortable "
-            "turn speeds and the ride type's rating requirements. It then finds room, builds it with entrance, exit "
-            "and paths, and starts testing. Use previewOnly or dryRun first; pass the same seed to get the same "
-            "design again. Picks the best researched coaster unless 'ride' is given."
+            "turn speeds and the ride type's rating requirements (any it may still miss are listed in the design's "
+            "mayMissRequirements; the game divides the ratings of a ride that misses one). It then finds room, builds "
+            "it with entrance, exit and paths, and starts testing. Use previewOnly or dryRun first; pass the same seed "
+            "to get the same design again. Picks the best researched coaster unless 'ride' is given."
         ),
         "inputSchema": _schema(dict({
             "style": {"type": "string", "enum": ["gentle", "moderate", "intense"],

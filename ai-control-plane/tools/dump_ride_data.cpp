@@ -55,13 +55,13 @@ int main()
         std::printf(
             "%s{\"id\":%d,\"name\":\"%s\",\"category\":%d,\"start\":%d,\"flags\":[%s],\"groups\":[%s],\"extra\":[%s],"
             "\"maxHeight\":%d,\"liftMin\":%d,\"liftMax\":%d,\"special\":%d,\"clearance\":%d,\"requirements\":[%s],"
-            "\"relaxIfInversions\":%s,\"maxMass\":%d}\n",
+            "\"relaxIfInversions\":%s,\"maxMass\":%d,\"covered\":[%s]}\n",
             t ? "," : "", t, std::string(rtd.Name).c_str(), static_cast<int>(rtd.Category),
             static_cast<int>(rtd.StartTrackPiece), flags.c_str(), groupList(rtd.TrackPaintFunctions.Regular.enabledTrackGroups).c_str(),
             groupList(rtd.TrackPaintFunctions.Regular.extraTrackGroups).c_str(), rtd.Heights.MaxHeight,
             rtd.LiftData.minimum_speed, rtd.LiftData.maximum_speed, static_cast<int>(rtd.specialType),
             rtd.Heights.ClearanceHeight, requirements.c_str(), rtd.RatingsData.RelaxRequirementsIfInversions ? "true" : "false",
-            rtd.MaxMass);
+            rtd.MaxMass, groupList(rtd.TrackPaintFunctions.Covered.enabledTrackGroups).c_str());
     }
     std::printf("],\"sequenceFlags\":{");
     bool first = true;

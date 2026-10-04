@@ -75,7 +75,8 @@ def main():
         lo = sum(1 << f for f in r["flags"] if f < 32)
         hi = sum(1 << (f - 32) for f in r["flags"] if f >= 32)
         rows.append(json.dumps([r["name"], r["category"], r["start"], lo, hi, r["groups"], r["extra"],
-                                r["maxHeight"], r["liftMin"], r["liftMax"], r["special"], r["clearance"], r["maxMass"]],
+                                r["maxHeight"], r["liftMin"], r["liftMax"], r["special"], r["clearance"], r["maxMass"],
+                                r["covered"]],
                                separators=(",", ":")))
 
     lines = [BEGIN + " (tools/gen_ride_data.py; do not edit by hand)"]
@@ -89,7 +90,8 @@ def main():
         lines.append("        " + ", ".join(json.dumps(g) for g in groups[i:i + 6]) + ",")
     lines.append("    ];")
     lines.append("    // Index = ride type id: [name, category, startPiece, flagsLow, flagsHigh, trackGroups, extraTrackGroups,")
-    lines.append("    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType, clearanceHeight, maxMass]")
+    lines.append("    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType, clearanceHeight, maxMass,")
+    lines.append("    //                       coveredTrackGroups (groups whose pieces have a covered variant)]")
     lines.append("    const RIDE_TYPE_DATA = [")
     for row in rows:
         lines.append("        " + row + ",")

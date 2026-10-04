@@ -169,10 +169,14 @@ The route finder is an A* search over footpath pieces, using the game's own rule
   corkscrews — and finds a way back into the station with a search over flat, turning and descending pieces.
   Every piece is checked against the game's clearances and the area you allow, the train's momentum is
   tracked so it can make every climb, turns are only taken at speeds that keep lateral G sensible, and the
-  ride type's rating requirements (drop height, number of drops, airtime, length) are aimed for. Styles:
-  `gentle` (family coaster), `moderate`, `intense`. The same `seed` gives the same design; `previewOnly`
-  returns the piece list without building. It works for 27 of the 31 roller coaster types (not the ones
-  without a chain lift or without turns). In testing, every generated coaster completed its test run, with
+  ride type's rating requirements (drop height, number of drops, negative and lateral G, top speed, length)
+  are aimed for, from the train's estimated speed; water coasters get a water channel before the station for
+  their splashdown requirement. Requirements a design may still miss are listed in `mayMissRequirements`
+  (the game divides the ratings of a ride that misses one). Styles: `gentle` (family coaster), `moderate`,
+  `intense`. The same `seed` gives the same design; `previewOnly` returns the piece list without building.
+  It works for 27 of the 31 roller coaster types (not the ones without a chain lift or without turns); the
+  reverser coaster is only built when asked for by name, as it needs reverser pieces the generator doesn't
+  place and rates poorly without them. In testing, every generated coaster completed its test run, with
   excitement around 4–6.
 * **Your own layouts** (`list_track_pieces`, `check_track_layout`, `build_custom_track`): give pieces in order
   from the station; the layout must have a station, its pieces must join, and it must return to its start.
