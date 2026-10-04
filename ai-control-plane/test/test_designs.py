@@ -77,7 +77,7 @@ class Td6Test(unittest.TestCase):
         self.assertEqual([e["type"] for e in d["trackElements"]], [t for t, _ in COASTER])
         self.assertEqual([e["chain"] for e in d["trackElements"]][4:7], [True, True, True])
         self.assertEqual(d["entrances"][0], {"x": 32, "y": -32, "z": 0, "direction": 1, "isExit": False})
-        self.assertIsNone(d["entrances"][1]["z"])
+        self.assertEqual(d["entrances"][1]["z"], -1)  # -128 is stored as -1, as the game's importer does
         self.assertTrue(d["entrances"][1]["isExit"])
         self.assertEqual(d["spaceRequired"], {"x": 12, "y": 7})
 
@@ -95,6 +95,23 @@ class Td6Test(unittest.TestCase):
         with self.assertRaises(td6.TrackDesignError):
             td6.decode(b"\x01\x02", "x")
 
+    def test_truncated_lists_are_a_design_error(self):
+        # A track list with no 0xFF terminator (e.g. a half-downloaded file).
+        header = bytearray(td6.HEADER_SIZE)
+        header[0] = 15
+        header[7] = td6.VERSION_TD6 << 2
+        raw = add_checksum(encode_rle(bytes(header) + bytes([2, 0, 3, 0])))
+        with self.assertRaises(td6.TrackDesignError):
+            td6.decode(raw, "Truncated")
+
+    def test_mini_golf_holes_are_not_inversions(self):
+        raw = bytearray(make_td6(ride_type=td6.RIDE_TYPE_MINI_GOLF, vehicle="MGOLF", elements=STATION))
+        body = bytearray(td6.decode_rle(bytes(raw[:-4])))
+        body[0x58] = 9  # nine holes
+        d = td6.decode(add_checksum(encode_rle(bytes(body))), "Golf")
+        self.assertEqual(d["inversions"], 0)
+        self.assertEqual(d["holes"], 9)
+
     def test_to_layout(self):
         layout = td6.to_layout(td6.decode(make_td6(elements=COASTER), "Test"))
         self.assertEqual(layout["name"], "Test")
@@ -110,11 +127,17 @@ class DesignLibraryTest(unittest.TestCase):
         self.saved = {k: os.environ.get(k) for k in ("OPENRCT2_TRACK_DIRS", "OPENRCT2_USER_DIR")}
         os.environ["OPENRCT2_TRACK_DIRS"] = self.tmp.name
         os.environ["OPENRCT2_USER_DIR"] = os.path.join(self.tmp.name, "no-user-dir")
-        for name, kwargs in [("Loopy Lou", {}), ("Loopy Lou II", {}), ("Wild Wood", {"ride_type": 52, "vehicle": "PTCT1"})]:
+        for name, kwargs in [("Loopy Lou", {}), ("Loopy Lou II", {}), ("Wild Wood", {"ride_type": 52, "vehicle": "PTCT1"}),
+                             ("Mr. Bones", {}), ("Mr. Freeze", {})]:
             with open(os.path.join(self.tmp.name, name + ".td6"), "wb") as f:
                 f.write(make_td6(elements=COASTER, **kwargs))
         with open(os.path.join(self.tmp.name, "broken.td6"), "wb") as f:
             f.write(b"not a design")
+        header = bytearray(td6.HEADER_SIZE)
+        header[0] = 15
+        header[7] = td6.VERSION_TD6 << 2
+        with open(os.path.join(self.tmp.name, "truncated.td6"), "wb") as f:
+            f.write(add_checksum(encode_rle(bytes(header) + bytes([2, 0, 3, 0]))))
         self.library = designs.DesignLibrary()
 
     def tearDown(self):
@@ -127,7 +150,7 @@ class DesignLibraryTest(unittest.TestCase):
 
     def test_lists_valid_designs(self):
         names = sorted(d["name"] for d in self.library.all())
-        self.assertEqual(names, ["Loopy Lou", "Loopy Lou II", "Wild Wood"])
+        self.assertEqual(names, ["Loopy Lou", "Loopy Lou II", "Mr. Bones", "Mr. Freeze", "Wild Wood"])
 
     def test_find(self):
         self.assertEqual(self.library.find("loopy lou")["name"], "Loopy Lou")
@@ -137,6 +160,9 @@ class DesignLibraryTest(unittest.TestCase):
             self.library.find("Loopy")
         with self.assertRaisesRegex(ValueError, "No track design"):
             self.library.find("Nope")
+        # Names with dots are matched whole, with or without the file extension.
+        self.assertEqual(self.library.find("Mr. Bones")["name"], "Mr. Bones")
+        self.assertEqual(self.library.find("mr. freeze.TD6")["name"], "Mr. Freeze")
 
     def test_availability(self):
         design = self.library.find("Wild Wood")

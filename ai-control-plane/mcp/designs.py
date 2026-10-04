@@ -99,6 +99,9 @@ def design_dirs():
     if game_path:
         dirs.append(os.path.join(game_path, "Tracks"))
         dirs.append(os.path.join(game_path, "Assets"))  # RollerCoaster Tycoon Classic
+        # RollerCoaster Tycoon Classic on macOS keeps its data inside the app bundle.
+        for app in ("RCT Classic.app", "RCT Classic+.app"):
+            dirs.append(os.path.join(game_path, app, "Contents", "Resources"))
     seen = []
     for d in dirs:
         if os.path.isdir(d) and os.path.normcase(os.path.abspath(d)) not in [os.path.normcase(os.path.abspath(s)) for s in seen]:
@@ -123,8 +126,8 @@ class DesignLibrary:
             return hit[1]
         try:
             design = td6.load(path)
-        except (OSError, ValueError) as e:
-            design = {"path": path, "name": os.path.splitext(os.path.basename(path))[0], "error": str(e)}
+        except Exception as e:  # one unreadable file must not hide every other design
+            design = {"path": path, "name": os.path.splitext(os.path.basename(path))[0], "error": str(e) or repr(e)}
         self._cache[path] = (key, design)
         return design
 
@@ -146,7 +149,11 @@ class DesignLibrary:
             if design is None or design.get("error"):
                 raise ValueError(f"Could not read track design {ref}: {design and design.get('error')}")
             return design
-        needle = os.path.splitext(os.path.basename(ref))[0].lower()
+        # Names can contain dots ("Mr. Bones"), so only strip a design file extension.
+        needle = os.path.basename(ref).strip()
+        if needle.lower().endswith((".td6", ".td7", ".td4")):
+            needle = needle[:-4]
+        needle = needle.lower()
         designs = self.all()
         exact = [d for d in designs if d["name"].lower() == needle]
         if exact:

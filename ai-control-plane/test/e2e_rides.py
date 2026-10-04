@@ -78,49 +78,74 @@ def main():
             return None
         paths = r.get("paths") or {}
         print(f"BUILT {label}: ride #{r['rideId']} {r.get('name')} for {r.get('totalCostFormatted')} in {time.time() - t:.1f}s; "
-              f"queue {json.dumps(paths.get('queue'))}, exit {json.dumps(paths.get('exit'))}")
+              f"paths {json.dumps(paths)}")
         if r.get("warnings"):
             print(f"      warnings: {r['warnings']}")
         built.append((label, r["rideId"], tracked))
         return r
 
-    thrill = [o for o in tool(client, "list_buildable_rides", {"kind": "flat"}) if o["category"] == "thrill"]
-    print(f"Buildable thrill rides: {', '.join(o['name'] for o in thrill) or 'none'}")
-    for option in thrill[:3]:
-        attempt("flat ride " + option["name"], "build_flat_ride", {"object": option["object"], "near": "water", "radius": 30}, False)
-
-    designs = tool(client, "list_track_designs", {"ride": "coaster", "limit": 5})
-    if designs["designs"]:
-        best = designs["designs"][0]
-        attempt("design " + best["design"], "build_track_design", {"design": best["design"], "radius": 40}, True)
-    else:
-        print("No coaster track designs installed; skipping build_track_design.")
-
-    for style in ("gentle", "moderate", "intense"):
-        preview = tool(client, "design_roller_coaster", {"style": style, "seed": 1, "previewOnly": True})
-        print(f"PLAN  {style} coaster: {json.dumps(preview['design'])}")
-        attempt(style + " coaster", "design_roller_coaster", {"style": style, "seed": 1, "radius": 40}, True)
-
-    pending = {rid: label for label, rid, tracked in built if tracked}
-    deadline = time.time() + args.wait
+    pending = {}
     ratings = {}
-    while pending and time.time() < deadline:
-        time.sleep(5)
-        for rid in list(pending):
-            ride = tool(client, "get_ride", {"rideId": rid})
-            if ride.get("excitement", -1) > 0:
-                ratings[pending.pop(rid)] = (ride["excitement"], ride["intensity"], ride["nausea"])
-    for label, (e, i, n) in ratings.items():
-        print(f"RATED {label}: excitement {e}, intensity {i}, nausea {n}")
-    for label in pending.values():
-        print(f"UNRATED {label}: no test result within {args.wait:.0f}s")
+    try:
+        thrill = [o for o in tool(client, "list_buildable_rides", {"kind": "flat"}) if o["category"] == "thrill"]
+        print(f"Buildable thrill rides: {', '.join(o['name'] for o in thrill) or 'none'}")
+        for option in thrill[:3]:
+            attempt("flat ride " + option["name"], "build_flat_ride",
+                    {"object": option["object"], "near": "water", "radius": 30}, False)
 
-    if not args.keep:
-        for label, rid, _ in built:
+        # A stall joins the path on the tile beside its open side; check that tile really got a path.
+        stalls = tool(client, "list_buildable_rides", {"kind": "stall"})
+        if stalls:
+            r = attempt("stall " + stalls[0]["name"], "build_flat_ride", {"object": stalls[0]["object"], "radius": 30}, False)
+            if r and r.get("pathConnection"):
+                spot = r["pathConnection"]
+                tile = tool(client, "get_tile", spot)
+                if not any(e["type"] == "footpath" for e in tile["elements"]):
+                    failures.append("stall path")
+                    print(f"FAIL  stall {stalls[0]['name']}: no path on {spot}, the stall is unreachable")
+
+        try:
+            designs = tool(client, "list_track_designs", {"ride": "coaster", "limit": 5})
+        except GameError as e:
+            designs = {"designs": []}
+            print(f"FAIL  list_track_designs: {e}")
+            failures.append("list_track_designs")
+        if designs["designs"]:
+            best = designs["designs"][0]
+            attempt("design " + best["design"], "build_track_design", {"design": best["design"], "radius": 40}, True)
+        else:
+            print("No coaster track designs installed; skipping build_track_design.")
+
+        for style in ("gentle", "moderate", "intense"):
             try:
-                tool(client, "demolish_ride", {"rideId": rid})
+                preview = tool(client, "design_roller_coaster", {"style": style, "seed": 1, "previewOnly": True})
+                print(f"PLAN  {style} coaster: {json.dumps(preview['design'])}")
             except GameError as e:
-                print(f"could not demolish {label}: {e}")
+                failures.append(style + " coaster preview")
+                print(f"FAIL  {style} coaster preview: {e}")
+                continue
+            attempt(style + " coaster", "design_roller_coaster", {"style": style, "seed": 1, "radius": 40}, True)
+
+        pending = {rid: label for label, rid, tracked in built if tracked}
+        deadline = time.time() + args.wait
+        while pending and time.time() < deadline:
+            time.sleep(5)
+            for rid in list(pending):
+                ride = tool(client, "get_ride", {"rideId": rid})
+                if ride.get("excitement", -1) > 0:
+                    ratings[pending.pop(rid)] = (ride["excitement"], ride["intensity"], ride["nausea"])
+        for label, (e, i, n) in ratings.items():
+            print(f"RATED {label}: excitement {e}, intensity {i}, nausea {n}")
+        for label in pending.values():
+            print(f"UNRATED {label}: no test result within {args.wait:.0f}s")
+    finally:
+        # Never leave what the test built (and paid for) behind, even if it stopped half way.
+        if not args.keep:
+            for label, rid, _ in built:
+                try:
+                    tool(client, "demolish_ride", {"rideId": rid})
+                except GameError as e:
+                    print(f"could not demolish {label}: {e}")
 
     print(f"\n{len(built)} built, {len(failures)} failed, {len(ratings)} rated, {len(pending)} unrated")
     return 1 if failures or (args.wait and pending) else 0

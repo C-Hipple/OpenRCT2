@@ -75,7 +75,9 @@ class FakePlugin:
         self.listener.close()
 
 
-class McpServerTest(unittest.TestCase):
+class ServerHarness(unittest.TestCase):
+    """Starts the bridge against a fake plugin; the test classes below add the tests."""
+
     extra_env = {}
 
     def setUp(self):
@@ -115,6 +117,9 @@ class McpServerTest(unittest.TestCase):
 
     def call_tool(self, name, arguments=None):
         return self.send("tools/call", {"name": name, "arguments": arguments or {}})["result"]
+
+
+class McpServerTest(ServerHarness):
 
     def test_initialize(self):
         result = self.initialize()["result"]
@@ -178,7 +183,7 @@ class McpServerTest(unittest.TestCase):
         self.assertEqual(self.send("ping")["result"], {})
 
 
-class TrackDesignToolsTest(McpServerTest):
+class TrackDesignToolsTest(ServerHarness):
     """list_track_designs / build_track_design read design files in the bridge, then call the plugin."""
 
     @classmethod
@@ -188,6 +193,9 @@ class TrackDesignToolsTest(McpServerTest):
         for name, kwargs in [("Loopy Lou", {}), ("Timber Wolf", {"ride_type": 52, "vehicle": "PTCT1"})]:
             with open(os.path.join(cls.tmp.name, name + ".td6"), "wb") as f:
                 f.write(make_td6(elements=COASTER, **kwargs))
+        # A half-downloaded design must not break the tools for every other design.
+        with open(os.path.join(cls.tmp.name, "Half.td6"), "wb") as f:
+            f.write(make_td6(elements=COASTER)[:120])
         cls.extra_env = {"OPENRCT2_TRACK_DIRS": cls.tmp.name,
                          "OPENRCT2_USER_DIR": os.path.join(cls.tmp.name, "no-user-dir")}
 

@@ -210,9 +210,10 @@ AFTER_BUILD = {
 PIECES = {
     "type": "array",
     "description": (
-        "Track pieces in order from the start of the station, by name (list_track_pieces) or as objects "
-        "{type, chain, inverted, brakeSpeed}. Begin with the station: e.g. EndStation, then BeginStation/MiddleStation... "
-        "The circuit must end where it began, heading the same way, unless allowOpenCircuit."
+        "Track pieces in travel order, by name (list_track_pieces) or as objects {type, chain, inverted, brakeSpeed}. "
+        "Start with the station: beginStation, middleStation..., endStation, then the rest of the circuit, e.g. "
+        "flat, {type: 'flatToUp25', chain: true}, ... The circuit must end where it began, heading the same way, "
+        "unless allowOpenCircuit. brakeSpeed is in the game's unit (about 2.25 mph each, even numbers)."
     ),
     "items": {
         "anyOf": [
@@ -222,7 +223,7 @@ PIECES = {
                 "type": {"type": ["string", "integer"]},
                 "chain": {"type": "boolean", "description": "Chain lift on this piece."},
                 "inverted": {"type": "boolean"},
-                "brakeSpeed": {"type": "integer"},
+                "brakeSpeed": {"type": "integer", "description": "Brakes/boosters: game speed units (~2.25 mph each)."},
             }, "required": ["type"]},
         ],
     },
@@ -484,7 +485,8 @@ TOOLS = [
         "inputSchema": _schema(dict({
             "style": {"type": "string", "enum": ["gentle", "moderate", "intense"],
                       "description": "gentle: family coaster, no inversions; intense: tall, steep, with inversions. Default moderate."},
-            "liftHeight": {"type": "integer", "description": "Chain lift height in land steps (default by style)."},
+            "liftHeight": {"type": "integer", "description": "Chain lift height in land steps (default by style); the "
+                           "design summary reports liftHeight and firstDrop in the same unit."},
             "maxLength": {"type": "integer", "description": "Longest side of the area the layout may use, in tiles."},
             "maxWidth": {"type": "integer", "description": "Shorter side of the area, in tiles."},
             "stationLength": {"type": "integer", "description": "Station length in tiles (default 6)."},

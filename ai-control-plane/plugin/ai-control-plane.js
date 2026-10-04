@@ -160,111 +160,111 @@
         "diagBooster", "diagSlopeSteepLong", "diveLoop", "diagSlope", "diagSlopeSteepUp", "diagSlopeSteepDown",
     ];
     // Index = ride type id: [name, category, startPiece, flagsLow, flagsHigh, trackGroups, extraTrackGroups,
-    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType, clearanceHeight]
+    //                       maxHeight, liftSpeedMin, liftSpeedMax, specialType, clearanceHeight, maxMass]
     const RIDE_TYPE_DATA = [
-        ["spiral_rc",2,1,1309689527,5466,[1,2,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,46,68,87,88,89],[3,49],19,7,7,0,24],
-        ["stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],25,4,6,0,24],
-        ["suspended_swinging_rc",2,1,1309689527,136282,[1,2,3,8,9,11,13,15,16,17,26,27,28,41,68,87,88,89],[],24,4,6,0,40],
-        ["inverted_rc",2,1,1309689527,8525146,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,26,27,28,29,31,34,35,41,42,43,44,47,68,69,70,79,80,81,82,85,86,87,88,89],[10,32,49,71,72],42,5,7,0,40],
-        ["junior_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,10,11,13,15,16,17,22,23,28,41,49,81,82,87],[9,29,68,88,89],12,4,6,0,24],
-        ["miniature_railway",0,1,1241530932,68914,[1,2,8,13,15,16,17,87],[],7,5,5,0,32],
-        ["monorail",0,1,1241530935,3378,[1,2,8,13,15,16,17,87],[],8,5,5,0,32],
-        ["mini_suspended_rc",2,1,1309689525,136282,[1,2,3,8,13,15,16,17,87],[],10,4,5,0,24],
-        ["boat_hire",4,1,1308641349,18,[1,2,13,14,15,16,17],[],255,5,5,10,16],
-        ["wooden_wild_mouse",2,1,3457173173,5210,[1,2,3,4,8,9,10,14,15,68],[],14,4,5,0,24],
-        ["steeplechase",2,1,1309689527,5210,[1,2,3,8,13,15,16,17,26,27,28,41,81,82,87],[],14,4,5,0,24],
-        ["car_ride",1,1,3390063143,9266,[1,2,8,14,15,48],[9,56,68],6,5,5,0,24],
-        ["launched_freefall",3,66,1242841871,5138,[21],[],255,5,5,0,32],
-        ["bobsleigh_rc",2,1,1309689527,5466,[1,2,3,6,8,13,15,16,22,23,28,29,41],[],19,4,5,0,24],
-        ["observation_tower",1,66,1241792783,9234,[21],[],255,5,5,0,32],
-        ["looping_rc",2,1,1309689527,142611802,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,49,68,81,82,87,88,89],[10,18,19,20,31,32,34,44,47,69,70,71,72],35,4,6,0,24],
-        ["dinghy_slide",4,1,1309693623,5202,[1,2,3,8,9,13,15,16,68],[],15,4,5,0,24],
-        ["mine_train_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,43,68,81,82,87,88,89],[],21,4,6,0,24],
-        ["chairlift",0,1,1241530405,67251250,[1,2,8,14],[],40,5,5,0,32],
-        ["corkscrew_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,49,68,69,70,79,81,82,85,87,88,89],[10,18,31,32,44,47,71,72,86],28,4,6,0,24],
-        ["maze",1,101,138684428,1048592,[],[],6,5,5,1,24],
-        ["spiral_slide",1,258,796943,36882,[],[],15,5,5,3,128],
-        ["go_karts",3,1,1242826757,2101266,[1,2,8,11,13,14,15,16,17,79,87],[9,43,68,88,89],8,5,5,0,24],
-        ["log_flume",4,1,1242580535,5234,[1,2,8,9,13,15,29,36],[],10,5,5,0,24],
-        ["river_rapids",4,1,1242842677,5234,[1,2,8,14,29,56,60,61],[],9,5,5,0,32],
-        ["dodgems",1,259,34343183,33562643,[],[],9,5,5,0,48],
-        ["swinging_ship",3,261,34423053,37010,[],[],12,5,5,0,112],
-        ["swinging_inverter_ship",3,263,34423055,37010,[],[],15,5,5,0,176],
-        ["food_stall",5,262,9316617,32768,[],[],12,5,5,0,64],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["drink_stall",5,262,17705225,32768,[],[],12,5,5,0,64],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["shop",5,262,928009,32768,[],[],12,5,5,0,64],
-        ["merry_go_round",1,266,34423048,16814227,[],[],12,5,5,0,64],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["information_kiosk",5,264,928009,32768,[],[],12,5,5,0,48],
-        ["toilets",5,262,7219464,32768,[],[],12,5,5,4,32],
-        ["ferris_wheel",1,265,34406665,41106,[],[],16,5,5,0,176],
-        ["motion_simulator",3,258,34423048,41106,[],[],12,5,5,8,64],
-        ["3d_cinema",3,266,38617352,32914,[],[],12,5,5,0,128],
-        ["top_spin",3,266,34423055,37010,[],[],16,5,5,0,112],
-        ["space_rings",1,266,34343176,41106,[],[],16,5,5,9,48],
-        ["reverse_freefall_rc",2,1,1309722279,8393810,[1,2,4,29,39],[],255,5,5,0,32],
-        ["lift",0,66,1510228237,3090,[21],[],255,5,5,0,32],
-        ["vertical_drop_rc",2,1,1309689527,5210,[0,1,2,3,4,6,7,8,9,10,11,12,13,15,16,17,20,22,23,24,25,26,27,28,29,31,34,35,41,42,44,62,68,69,70,71,72,79,81,82,86,87,88,89],[18,19,32,33,34,43,47,49,85],55,4,5,0,24],
-        ["cash_machine",5,262,928008,32768,[],[],12,5,5,5,64],
-        ["twist",3,266,34423048,37010,[],[],12,5,5,0,64],
-        ["haunted_house",1,266,5062920,32914,[],[],16,5,5,0,160],
-        ["first_aid",5,262,7219464,32768,[],[],12,5,5,6,48],
-        ["circus",1,266,38617352,32913,[],[],12,5,5,0,128],
-        ["ghost_train",1,1,3390064295,267378,[1,2,8,14,15,28,48],[],8,5,5,0,24],
-        ["twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,81,82,85,86,87,88,89],[4,10,62],40,5,8,0,24],
-        ["wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,28,29,30,34,35,41,42,43,68,70,81,82,87,88,89],[49],41,5,7,0,24],
-        ["side_friction_rc",2,1,1309689527,8394074,[1,2,3,8,9,13,15,16,17,28,68,87,88,89],[],18,3,5,0,24],
-        ["steel_wild_mouse",2,1,3457173175,5210,[1,2,3,4,8,9,10,11,14,15,28,41,68],[67],16,4,6,0,24],
-        ["multi_dimension_rc",2,1,1309689527,12588382,[1,2,3,6,8,9,13,15,16,17,22,23,24,25,26,27,28,29,31,41,50,52,53,68,81,82,87,88,89],[],40,4,6,0,24],
-        ["multi_dimension_rc_alt",255,1,1309689527,541069314,[],[],40,4,6,0,24],
-        ["flying_rc",2,1,1309689527,21854,[1,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,50,52,57,68,73,79,81,82,87,88,89],[2,7,10,33,43,49,75,77,85],30,4,6,0,24],
-        ["flying_rc_alt",255,1,1309689527,536891394,[],[],30,4,6,0,24],
-        ["virginia_reel",2,1,1309689527,5210,[1,2,3,8,14,15],[],14,3,5,0,24],
-        ["splash_boats",4,1,1242580535,9330,[1,2,8,9,13,16,29],[],16,5,5,0,24],
-        ["mini_helicopters",1,1,3390063143,9266,[1,2,8,14,15],[48],7,5,5,0,24],
-        ["lay_down_rc",2,1,1309689527,5470,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,50,57,63,68,79,81,82,85,87,88,89],[10,49,77],26,4,6,0,24],
-        ["suspended_monorail",0,1,1241530935,134450,[1,2,8,13,15,16,17,87],[],12,5,5,0,40],
-        ["lay_down_rc_alt",255,1,1309689527,536875010,[],[],26,4,6,0,24],
-        ["reverser_rc",2,1,1846560439,5210,[1,2,3,8,13,15,16,28,38],[],18,3,5,0,24],
-        ["heartline_twister_rc",2,1,1309689527,8393818,[1,2,3,4,8,9,37,65,68],[],22,4,6,0,24],
-        ["mini_golf",1,1,1207961607,2105362,[1,2,8,14,66],[],7,5,5,2,32],
-        ["giga_rc",2,1,1309689527,8394586,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,45,68,79,81,82,85,87,88,89],[7,10,19,20,32,33,34,47,49,69,70,71,72,84,86],86,5,8,0,24],
-        ["roto_drop",3,66,1242841871,5266,[21],[],255,5,5,0,32],
-        ["flying_saucers",1,259,34343179,4243,[],[],9,5,5,0,48],
-        ["crooked_house",1,266,5062920,32914,[],[],16,5,5,0,96],
-        ["monorail_cycles",1,1,1242581543,8210,[1,2,13,15,16],[],5,5,5,0,24],
-        ["compact_inverted_rc",2,1,1309689527,268571994,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,28,29,31,41,68,81,82,87,88,89],[],27,4,6,0,40],
-        ["water_coaster",2,1,1309693623,5210,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,49,68,81,82,87,88,89],[10],18,4,6,0,24],
-        ["air_powered_vertical_rc",2,1,1309689511,5210,[1,2,4,5,6,16,28,29,39,40],[49],255,5,5,0,32],
-        ["inverted_hairpin_rc",2,1,1309689527,136282,[1,2,3,4,8,9,10,11,14,15,28,41,68],[],16,4,6,0,24],
-        ["magic_carpet",3,257,34423055,37010,[],[],15,5,5,0,176],
-        ["submarine_ride",4,1,1242579031,58,[1,2,14,15],[],255,5,5,0,16],
-        ["river_rafts",4,1,1242579511,9266,[1,2,13,16],[8,9,29],12,5,5,0,24],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["enterprise",3,259,35471624,37010,[],[],16,5,5,7,160],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["inverted_impulse_rc",2,1,1309689527,8525146,[1,2,8,9,31,44,68],[],45,4,7,0,40],
-        ["mini_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,68,87,88,89],[46,49],16,4,6,0,24],
-        ["mine_ride",2,1,1309689527,8394074,[1,2,6,8,13,15,16,17,22,23,24,25,26,27,29,87],[],13,5,5,0,24],
-        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64],
-        ["lim_launched_rc",2,1,1309689527,8394074,[1,2,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,43,44,47,68,69,70,71,72,87,88,89],[10],35,4,6,0,24],
-        ["hypercoaster",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,68,79,81,82,85,87,88,89],[7,10,18,19,20,31,32,34,44,47,49,69,70,71,72,86],55,4,6,0,24],
-        ["hyper_twister",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,68,79,81,82,85,87,88,89],[4,7,10,18,19,20,32,33,34,47,49,62,69,70,71,72,86],61,5,8,0,24],
-        ["monster_trucks",1,1,1242579495,9266,[1,2,8,9,14,15,56,68],[48],18,5,5,0,24],
-        ["spinning_wild_mouse",2,1,1309689527,5210,[1,2,3,8,10,14,15,28,41,67],[4,9,11,68],16,4,6,0,24],
-        ["classic_mini_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,9,10,11,13,15,16,17,22,23,28,41,49,68,81,82,87,88,89],[29],15,4,6,0,24],
-        ["hybrid_rc",2,1,1309689525,8394074,[0,1,2,3,4,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,32,33,35,41,42,43,44,47,68,71,72,79,81,82,83,87,88,89],[49],43,5,11,0,24],
-        ["single_rail_rc",2,1,1309689527,8394074,[0,1,2,3,4,6,8,9,10,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,44,47,68,69,70,71,72,79,81,82,83,86,87,88,89],[43,85],28,5,8,0,24],
-        ["alpine_rc",2,1,1309691429,528434,[0,1,2,3,6,8,10,11,13,15,16,17,23,25,27,87],[22,24,26],18,4,5,0,24],
-        ["classic_wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,13,15,16,17,28,29,30,34,41,43,68,70,81,82,87,88,89],[12,49],24,3,5,0,24],
-        ["classic_stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,26,27,28,29,34,41,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],30,4,6,0,24],
-        ["lsm_rc",2,1,1309689527,8394586,[1,2,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,80,81,82,84,85,86,87,88,89],[3,10,45],33,5,5,0,24],
-        ["classic_wooden_twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,28,29,35,41,43,68,81,82,87,88,89],[7,30,34,49,70],24,3,5,0,24],
+        ["spiral_rc",2,1,1309689527,5466,[1,2,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,46,68,87,88,89],[3,49],19,7,7,0,24,31],
+        ["stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],25,4,6,0,24,18],
+        ["suspended_swinging_rc",2,1,1309689527,136282,[1,2,3,8,9,11,13,15,16,17,26,27,28,41,68,87,88,89],[],24,4,6,0,40,26],
+        ["inverted_rc",2,1,1309689527,8525146,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,26,27,28,29,31,34,35,41,42,43,44,47,68,69,70,79,80,81,82,85,86,87,88,89],[10,32,49,71,72],42,5,7,0,40,27],
+        ["junior_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,10,11,13,15,16,17,22,23,28,41,49,81,82,87],[9,29,68,88,89],12,4,6,0,24,18],
+        ["miniature_railway",0,1,1241530932,68914,[1,2,8,13,15,16,17,87],[],7,5,5,0,32,39],
+        ["monorail",0,1,1241530935,3378,[1,2,8,13,15,16,17,87],[],8,5,5,0,32,78],
+        ["mini_suspended_rc",2,1,1309689525,136282,[1,2,3,8,13,15,16,17,87],[],10,4,5,0,24,3],
+        ["boat_hire",4,1,1308641349,18,[1,2,13,14,15,16,17],[],255,5,5,10,16,255],
+        ["wooden_wild_mouse",2,1,3457173173,5210,[1,2,3,4,8,9,10,14,15,68],[],14,4,5,0,24,4],
+        ["steeplechase",2,1,1309689527,5210,[1,2,3,8,13,15,16,17,26,27,28,41,81,82,87],[],14,4,5,0,24,4],
+        ["car_ride",1,1,3390063143,9266,[1,2,8,14,15,48],[9,56,68],6,5,5,0,24,2],
+        ["launched_freefall",3,66,1242841871,5138,[21],[],255,5,5,0,32,15],
+        ["bobsleigh_rc",2,1,1309689527,5466,[1,2,3,6,8,13,15,16,22,23,28,29,41],[],19,4,5,0,24,25],
+        ["observation_tower",1,66,1241792783,9234,[21],[],255,5,5,0,32,15],
+        ["looping_rc",2,1,1309689527,142611802,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,49,68,81,82,87,88,89],[10,18,19,20,31,32,34,44,47,69,70,71,72],35,4,6,0,24,18],
+        ["dinghy_slide",4,1,1309693623,5202,[1,2,3,8,9,13,15,16,68],[],15,4,5,0,24,5],
+        ["mine_train_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,43,68,81,82,87,88,89],[],21,4,6,0,24,15],
+        ["chairlift",0,1,1241530405,67251250,[1,2,8,14],[],40,5,5,0,32,18],
+        ["corkscrew_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,34,35,41,42,43,49,68,69,70,79,81,82,85,87,88,89],[10,18,31,32,44,47,71,72,86],28,4,6,0,24,18],
+        ["maze",1,101,138684428,1048592,[],[],6,5,5,1,24,18],
+        ["spiral_slide",1,258,796943,36882,[],[],15,5,5,3,128,255],
+        ["go_karts",3,1,1242826757,2101266,[1,2,8,11,13,14,15,16,17,79,87],[9,43,68,88,89],8,5,5,0,24,255],
+        ["log_flume",4,1,1242580535,5234,[1,2,8,9,13,15,29,36],[],10,5,5,0,24,255],
+        ["river_rapids",4,1,1242842677,5234,[1,2,8,14,29,56,60,61],[],9,5,5,0,32,255],
+        ["dodgems",1,259,34343183,33562643,[],[],9,5,5,0,48,255],
+        ["swinging_ship",3,261,34423053,37010,[],[],12,5,5,0,112,255],
+        ["swinging_inverter_ship",3,263,34423055,37010,[],[],15,5,5,0,176,255],
+        ["food_stall",5,262,9316617,32768,[],[],12,5,5,0,64,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["drink_stall",5,262,17705225,32768,[],[],12,5,5,0,64,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["shop",5,262,928009,32768,[],[],12,5,5,0,64,255],
+        ["merry_go_round",1,266,34423048,16814227,[],[],12,5,5,0,64,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["information_kiosk",5,264,928009,32768,[],[],12,5,5,0,48,255],
+        ["toilets",5,262,7219464,32768,[],[],12,5,5,4,32,255],
+        ["ferris_wheel",1,265,34406665,41106,[],[],16,5,5,0,176,255],
+        ["motion_simulator",3,258,34423048,41106,[],[],12,5,5,8,64,255],
+        ["3d_cinema",3,266,38617352,32914,[],[],12,5,5,0,128,255],
+        ["top_spin",3,266,34423055,37010,[],[],16,5,5,0,112,255],
+        ["space_rings",1,266,34343176,41106,[],[],16,5,5,9,48,255],
+        ["reverse_freefall_rc",2,1,1309722279,8393810,[1,2,4,29,39],[],255,5,5,0,32,255],
+        ["lift",0,66,1510228237,3090,[21],[],255,5,5,0,32,15],
+        ["vertical_drop_rc",2,1,1309689527,5210,[0,1,2,3,4,6,7,8,9,10,11,12,13,15,16,17,20,22,23,24,25,26,27,28,29,31,34,35,41,42,44,62,68,69,70,71,72,79,81,82,86,87,88,89],[18,19,32,33,34,43,47,49,85],55,4,5,0,24,25],
+        ["cash_machine",5,262,928008,32768,[],[],12,5,5,5,64,255],
+        ["twist",3,266,34423048,37010,[],[],12,5,5,0,64,255],
+        ["haunted_house",1,266,5062920,32914,[],[],16,5,5,0,160,255],
+        ["first_aid",5,262,7219464,32768,[],[],12,5,5,6,48,255],
+        ["circus",1,266,38617352,32913,[],[],12,5,5,0,128,255],
+        ["ghost_train",1,1,3390064295,267378,[1,2,8,14,15,28,48],[],8,5,5,0,24,2],
+        ["twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,81,82,85,86,87,88,89],[4,10,62],40,5,8,0,24,31],
+        ["wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,28,29,30,34,35,41,42,43,68,70,81,82,87,88,89],[49],41,5,7,0,24,19],
+        ["side_friction_rc",2,1,1309689527,8394074,[1,2,3,8,9,13,15,16,17,28,68,87,88,89],[],18,3,5,0,24,15],
+        ["steel_wild_mouse",2,1,3457173175,5210,[1,2,3,4,8,9,10,11,14,15,28,41,68],[67],16,4,6,0,24,4],
+        ["multi_dimension_rc",2,1,1309689527,12588382,[1,2,3,6,8,9,13,15,16,17,22,23,24,25,26,27,28,29,31,41,50,52,53,68,81,82,87,88,89],[],40,4,6,0,24,78],
+        ["multi_dimension_rc_alt",255,1,1309689527,541069314,[],[],40,4,6,0,24,78],
+        ["flying_rc",2,1,1309689527,21854,[1,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,50,52,57,68,73,79,81,82,87,88,89],[2,7,10,33,43,49,75,77,85],30,4,6,0,24,35],
+        ["flying_rc_alt",255,1,1309689527,536891394,[],[],30,4,6,0,24,35],
+        ["virginia_reel",2,1,1309689527,5210,[1,2,3,8,14,15],[],14,3,5,0,24,15],
+        ["splash_boats",4,1,1242580535,9330,[1,2,8,9,13,16,29],[],16,5,5,0,24,255],
+        ["mini_helicopters",1,1,3390063143,9266,[1,2,8,14,15],[48],7,5,5,0,24,2],
+        ["lay_down_rc",2,1,1309689527,5470,[1,2,3,6,7,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,50,57,63,68,79,81,82,85,87,88,89],[10,49,77],26,4,6,0,24,25],
+        ["suspended_monorail",0,1,1241530935,134450,[1,2,8,13,15,16,17,87],[],12,5,5,0,40,78],
+        ["lay_down_rc_alt",255,1,1309689527,536875010,[],[],26,4,6,0,24,25],
+        ["reverser_rc",2,1,1846560439,5210,[1,2,3,8,13,15,16,28,38],[],18,3,5,0,24,15],
+        ["heartline_twister_rc",2,1,1309689527,8393818,[1,2,3,4,8,9,37,65,68],[],22,4,6,0,24,18],
+        ["mini_golf",1,1,1207961607,2105362,[1,2,8,14,66],[],7,5,5,2,32,255],
+        ["giga_rc",2,1,1309689527,8394586,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,45,68,79,81,82,85,87,88,89],[7,10,19,20,32,33,34,47,49,69,70,71,72,84,86],86,5,8,0,24,31],
+        ["roto_drop",3,66,1242841871,5266,[21],[],255,5,5,0,32,15],
+        ["flying_saucers",1,259,34343179,4243,[],[],9,5,5,0,48,255],
+        ["crooked_house",1,266,5062920,32914,[],[],16,5,5,0,96,255],
+        ["monorail_cycles",1,1,1242581543,8210,[1,2,13,15,16],[],5,5,5,0,24,2],
+        ["compact_inverted_rc",2,1,1309689527,268571994,[1,2,3,6,7,8,9,11,12,13,15,16,17,18,19,20,24,25,28,29,31,41,68,81,82,87,88,89],[],27,4,6,0,40,18],
+        ["water_coaster",2,1,1309693623,5210,[1,2,3,6,8,9,11,13,15,16,17,22,23,28,29,41,49,68,81,82,87,88,89],[10],18,4,6,0,24,13],
+        ["air_powered_vertical_rc",2,1,1309689511,5210,[1,2,4,5,6,16,28,29,39,40],[49],255,5,5,0,32,255],
+        ["inverted_hairpin_rc",2,1,1309689527,136282,[1,2,3,4,8,9,10,11,14,15,28,41,68],[],16,4,6,0,24,4],
+        ["magic_carpet",3,257,34423055,37010,[],[],15,5,5,0,176,255],
+        ["submarine_ride",4,1,1242579031,58,[1,2,14,15],[],255,5,5,0,16,255],
+        ["river_rafts",4,1,1242579511,9266,[1,2,13,16],[8,9,29],12,5,5,0,24,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["enterprise",3,259,35471624,37010,[],[],16,5,5,7,160,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["inverted_impulse_rc",2,1,1309689527,8525146,[1,2,8,9,31,44,68],[],45,4,7,0,40,23],
+        ["mini_rc",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,41,42,68,87,88,89],[46,49],16,4,6,0,24,10],
+        ["mine_ride",2,1,1309689527,8394074,[1,2,6,8,13,15,16,17,22,23,24,25,26,27,29,87],[],13,5,5,0,24,27],
+        ["invalid",255,1,0,536870912,[],[],12,5,5,0,64,255],
+        ["lim_launched_rc",2,1,1309689527,8394074,[1,2,6,7,8,9,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,43,44,47,68,69,70,71,72,87,88,89],[10],35,4,6,0,24,18],
+        ["hypercoaster",2,1,1309689527,8394074,[1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,35,41,42,43,68,79,81,82,85,87,88,89],[7,10,18,19,20,31,32,34,44,47,49,69,70,71,72,86],55,4,6,0,24,18],
+        ["hyper_twister",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,35,41,42,43,44,68,79,81,82,85,87,88,89],[4,7,10,18,19,20,32,33,34,47,49,62,69,70,71,72,86],61,5,8,0,24,31],
+        ["monster_trucks",1,1,1242579495,9266,[1,2,8,9,14,15,56,68],[48],18,5,5,0,24,2],
+        ["spinning_wild_mouse",2,1,1309689527,5210,[1,2,3,8,10,14,15,28,41,67],[4,9,11,68],16,4,6,0,24,4],
+        ["classic_mini_rc",2,1,3457173175,8394074,[1,2,3,5,6,8,9,10,11,13,15,16,17,22,23,28,41,49,68,81,82,87,88,89],[29],15,4,6,0,24,18],
+        ["hybrid_rc",2,1,1309689525,8394074,[0,1,2,3,4,6,8,9,11,12,13,15,16,17,22,23,24,25,26,27,28,29,31,32,33,35,41,42,43,44,47,68,71,72,79,81,82,83,87,88,89],[49],43,5,11,0,24,18],
+        ["single_rail_rc",2,1,1309689527,8394074,[0,1,2,3,4,6,8,9,10,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,34,35,41,42,44,47,68,69,70,71,72,79,81,82,83,86,87,88,89],[43,85],28,5,8,0,24,18],
+        ["alpine_rc",2,1,1309691429,528434,[0,1,2,3,6,8,10,11,13,15,16,17,23,25,27,87],[22,24,26],18,4,5,0,24,4],
+        ["classic_wooden_rc",2,1,1309689527,8394074,[0,1,2,3,6,7,8,9,11,13,15,16,17,28,29,30,34,41,43,68,70,81,82,87,88,89],[12,49],24,3,5,0,24,19],
+        ["classic_stand_up_rc",2,1,1309689527,8394074,[1,2,3,6,7,8,9,11,13,15,16,17,19,20,26,27,28,29,34,41,43,68,69,70,79,81,82,87,88,89],[10,12,31,32,44,47,71,72],30,4,6,0,24,18],
+        ["lsm_rc",2,1,1309689527,8394586,[1,2,6,7,8,9,11,12,13,15,16,17,19,20,22,23,24,25,26,27,28,29,31,32,33,34,35,41,42,43,44,47,49,68,69,70,71,72,79,80,81,82,84,85,86,87,88,89],[3,10,45],33,5,5,0,24,31],
+        ["classic_wooden_twister_rc",2,1,1309689527,8394074,[0,1,2,3,6,8,9,11,12,13,15,16,17,22,23,28,29,35,41,43,68,81,82,87,88,89],[7,30,34,49,70],24,3,5,0,24,19],
     ];
     // Index = track type (TrackElemType) id
     const TRACK_TYPE_NAMES = [
@@ -1921,7 +1921,7 @@
         const row = RIDE_TYPE_DATA[rideType];
         if (!row) return null;
         const [name, category, startPiece, flagsLow, flagsHigh, groups, extraGroups, maxHeight, liftMin, liftMax, special,
-            clearance] = row;
+            clearance, maxMass] = row;
         const has = flag => {
             const i = RTD_FLAGS[flag];
             if (i === undefined) return false;
@@ -1935,7 +1935,7 @@
         return {
             id: rideType, name: name, category: RIDE_CATEGORIES[category] || null, startPiece: startPiece, has: has,
             groups: groups, extraGroups: extraGroups, maxHeight: maxHeight, liftMin: liftMin, liftMax: liftMax,
-            special: special, kind: kind, clearance: clearance,
+            special: special, kind: kind, clearance: clearance, maxMass: maxMass,
         };
     }
 
@@ -2384,7 +2384,7 @@
     }
 
     /** How many ways a path could leave tile (x, y) at height z, not counting the way back to (fromX, fromY). */
-    function pathExits(tc, x, y, z, fromX, fromY) {
+    function pathExits(tc, x, y, z, fromX, fromY, own) {
         let count = 0;
         for (let k = 0; k < 4; k++) {
             const nx = x + DIR_DX[k];
@@ -2395,9 +2395,25 @@
             if (!isSandbox() && !info.surface.owned && !info.surface.rights) continue;
             if (info.surface.water > z || surfaceTop(info) > z + LAND_STEP) continue;
             if (info.tracks.some(t => t.z < z + PATH_CLEARANCE + LAND_STEP && t.clearanceZ > z - LAND_STEP)) continue;
+            if (own && spanOccupied(own, nx, ny, z - LAND_STEP, z + PATH_CLEARANCE + LAND_STEP)) continue;
             count++;
         }
         return count;
+    }
+
+    /**
+     * Can the tile beside a stall's open side carry a footpath at height z (or does it already)? The game joins
+     * a stall to a path on exactly that tile (FootpathConnectEdges checks the shop's path-connecting side).
+     */
+    function stallSpotOk(tc, x, y, z) {
+        const spot = tc.get(x, y);
+        if (!spot || !spot.surface) return false;
+        if (spot.paths.some(p => !p.ghost && p.z === z && p.s < 0)) return true;
+        if (spot.paths.length || spot.entrances.length || spot.largeScenery) return false;
+        const elevated = surfaceTop(spot) < z;
+        if (!isSandbox() && !spot.surface.owned && !(spot.surface.rights && elevated)) return false;
+        if (spot.tracks.some(t => t.z < z + PATH_CLEARANCE && t.clearanceZ > z)) return false;
+        return spot.surface.water <= z && surfaceTop(spot) <= z;
     }
 
     function chooseEntranceAndExit(ranked) {
@@ -2458,6 +2474,7 @@
             isInversion: seg.isInversion,
             turnDirection: seg.turnDirection,
             startsHalfHeightUp: seg.startsHalfHeightUp,
+            isHelix: seg.isHelix,
             length: seg.length,
             subLength: seg.getSubpositionLength(0, 0),
             blocks: seg.elements.map(e => ({ x: e.x, y: e.y, z: e.z })),
@@ -2606,17 +2623,33 @@
         });
     }
 
-    /** executeAction whose callback ran synchronously (inside a tick); null if the action was queued instead. */
-    function executeActionNow(name, args) {
-        let result = null;
-        try {
-            context.executeAction(name, args, res => {
-                result = res;
-            });
-        } catch (e) {
-            return { error: -2, errorMessage: String(e && e.message ? e.message : e) };
-        }
-        return result;
+    /**
+     * Issues an action exactly once and returns a promise for its result. Inside a game tick (unpaused, single
+     * player) the game runs it immediately and the callback fires before this returns; otherwise (paused, a
+     * multiplayer server or client) the game queues it and the promise resolves when it has run. Never re-issue
+     * a queued action: the queued copy still runs.
+     */
+    function issueAction(name, args) {
+        return new Promise(resolve => {
+            let done = false;
+            let timer = null;
+            const finish = res => {
+                if (done) return;
+                done = true;
+                if (timer !== null) context.clearTimeout(timer);
+                resolve(res);
+            };
+            try {
+                context.executeAction(name, args, res => finish(res));
+            } catch (e) {
+                finish({ error: -2, errorMessage: String(e && e.message ? e.message : e) });
+            }
+            if (!done) {
+                timer = context.setTimeout(
+                    () => finish({ error: -1, errorMessage: 'Timed out waiting for the game to execute the action.' }),
+                    ACTION_TIMEOUT_MS);
+            }
+        });
     }
 
     /** Finds the ride object a layout needs: its own vehicle if buildable, else another of the same ride type. */
@@ -2650,9 +2683,23 @@
     }
 
     /** Places the entrances/exits a design specifies; returns problems instead of throwing. */
+    /**
+     * Station index of the ride's track on tile (x, y) at height z (any height if z is null), or null if there is
+     * none. The API only reads the station index of station pieces; other pieces that take entrances (tower and
+     * flat ride bases) are matched to the ride's stations by height (tower rides have a bottom and a top station).
+     */
+    function stationIndexAt(rideId, x, y, z) {
+        for (const el of map.getTile(x, y).elements) {
+            if (el.type !== 'track' || el.ride !== rideId || (z !== null && el.baseZ !== z)) continue;
+            if (STATION_TRACK_TYPES.includes(el.trackType) && isNumber(el.station)) return el.station;
+            const match = rideStations(map.getRide(rideId)).find(s => s.station.start && s.station.start.z === el.baseZ);
+            return match ? match.index : 0;
+        }
+        return null;
+    }
+
     function designEntrancePlacements(layout, rideId, ox, oy, baseZ, direction) {
         const out = [];
-        const stations = rideStations(map.getRide(rideId));
         for (const e of layout.entrances || []) {
             const r = rotate(e.x, e.y, direction);
             const x = ox + Math.floor(r.x / TILE_SIZE);
@@ -2661,17 +2708,7 @@
             const z = e.z === null || e.z === undefined ? null : e.z * 8 + baseZ;
             // The station is whatever station the track beside the entrance belongs to. Like the game
             // (TrackDesignPlaceEntrances), skip entrances with no track of the ride at their height beside them.
-            // The API only reads the station index of station pieces, so match the ride's stations by height
-            // (tower rides have a station at the bottom and the top).
-            let station = null;
-            const tile = map.getTile(x + DIR_DX[dir], y + DIR_DY[dir]);
-            for (const el of tile.elements) {
-                if (el.type === 'track' && el.ride === rideId && (z === null || el.baseZ === z)) {
-                    const match = stations.find(s => s.station.start && s.station.start.z === el.baseZ);
-                    station = match ? match.index : 0;
-                    break;
-                }
-            }
+            const station = stationIndexAt(rideId, x + DIR_DX[dir], y + DIR_DY[dir], z);
             if (station === null) continue;
             const away = dir ^ 2;
             out.push({
@@ -2706,18 +2743,90 @@
     }
 
     /** Entrance/exit spots along a placed layout's station platforms (used when a layout gives none). */
-    function stationAttachmentPoints(walked, ox, oy) {
+    /**
+     * Pieces of the layout's first station: the first run of station pieces in track order (joined with a run at
+     * the end of the circuit), or for rides without station pieces the first piece that takes entrances.
+     */
+    function firstStationPieces(walked) {
+        const runs = [];
+        let current = null;
+        for (const p of walked.pieces) {
+            if (STATION_TRACK_TYPES.includes(p.el.type)) {
+                if (!current) {
+                    current = [];
+                    runs.push(current);
+                }
+                current.push(p);
+            } else {
+                current = null;
+            }
+        }
+        const pieces = walked.pieces;
+        if (runs.length > 1 && STATION_TRACK_TYPES.includes(pieces[0].el.type)
+            && STATION_TRACK_TYPES.includes(pieces[pieces.length - 1].el.type)) {
+            runs[0] = runs.pop().concat(runs[0]);
+        }
+        return runs.length > 0 ? runs[0] : portalPieces(walked).slice(0, 1);
+    }
+
+    /** Entrance/exit spots beside the layout's first station (used when a layout gives none), each with its z. */
+    function stationAttachmentPoints(walked, ox, oy, baseZ) {
         const points = [];
-        for (const p of portalPieces(walked)) {
+        for (const p of firstStationPieces(walked)) {
             const fp = pieceFootprint(p.el.type);
             const tx = ox + Math.floor(p.x / TILE_SIZE);
             const ty = oy + Math.floor(p.y / TILE_SIZE);
             for (const a of attachmentPoints(p.el.type, fp, tx, ty, p.direction)) {
-                a.station = 0;
+                a.z = baseZ + p.z;
                 points.push(a);
             }
         }
         return points;
+    }
+
+    /**
+     * Station-side spots an exit could use (and whether an entrance could, being taller), checked against the map
+     * and, before building, against the space the ride's own track will take (`own`).
+     */
+    function usableStationSpots(tc, spots, own) {
+        const free = (a, height) => portalSpotOk(tc, a.x, a.y, a.z, a.front.x, a.front.y, height)
+            && !(own && (spanOccupied(own, a.x, a.y, a.z, a.z + height)
+                || spanOccupied(own, a.front.x, a.front.y, a.z, a.z + PATH_CLEARANCE)));
+        return spots.filter(a => free(a, EXIT_CLEARANCE)).map(a => Object.assign({}, a, { canBeEntrance: free(a, ENTRANCE_CLEARANCE) }));
+    }
+
+    /**
+     * Chooses the entrance and/or exit still missing (`keep` holds the design's own spots that will be used).
+     * Prefers the open side of the station, where paths have somewhere to go, but only while that still leaves a
+     * valid choice. Used both before building (to accept a placement) and after, so the two always agree.
+     */
+    function choosePortalSpots(tc, spots, field, keep, own) {
+        const needEntrance = !keep.some(p => !p.isExit);
+        const needExit = !keep.some(p => p.isExit);
+        if (!needEntrance && !needExit) return {};
+        const taken = new Set(keep.map(p => tileKey(p.x, p.y)));
+        const all = spots.filter(a => !taken.has(tileKey(a.x, a.y)));
+        const apart = (a, b) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+        const pick = list => {
+            if (list.length === 0) return null;
+            const z = list[0].z;
+            const ranked = rankAttachments(tc, list, field, z, EXIT_CLEARANCE);
+            if (needEntrance && needExit) return chooseEntranceAndExit(ranked);
+            if (needEntrance) {
+                const exit = keep.find(p => p.isExit);
+                const usable = p => !p.frontHasPath && p.canBeEntrance !== false;
+                const entrance = ranked.find(p => usable(p) && apart(p, exit) >= 2) || ranked.find(usable);
+                return entrance ? { entrance: entrance } : null;
+            }
+            const entrance = keep.find(p => !p.isExit);
+            const exit = ranked.find(p => apart(p, entrance) >= 2 && apart(p.front, entrance.front || entrance) >= 2) || ranked[0];
+            return exit ? { exit: exit } : null;
+        };
+        for (const need of [3, 2]) {
+            const choice = pick(all.filter(a => pathExits(tc, a.front.x, a.front.y, a.z, a.x, a.y, own) >= need));
+            if (choice) return choice;
+        }
+        return pick(all);
     }
 
     async function applyLayoutSettings(rideId, layout, option, flags, warnings) {
@@ -2726,7 +2835,6 @@
             if (res.error !== 0 && !quiet) warnings.push(what + ': ' + describeResult(res));
         };
         const s = layout.settings || {};
-        await run('ridesetvehicle', { type: 2, value: option.object, colour: 0 }, 'vehicle');
         if (isNumber(s.rideMode)) await run('ridesetsetting', { setting: 0, value: s.rideMode }, 'mode');
         if (isNumber(s.numberOfTrains) && s.numberOfTrains > 0) {
             await run('ridesetvehicle', { type: 0, value: s.numberOfTrains, colour: 0 }, 'trains');
@@ -2743,6 +2851,11 @@
             }
         }
         const c = layout.colours || {};
+        // The colour scheme first: changing it copies one train's colours to the others, which would overwrite
+        // the design's per-train colours if it came last.
+        if (isNumber(c.vehicleColourSettings)) {
+            await run('ridesetappearance', { type: 6, value: c.vehicleColourSettings, index: 0 }, 'vehicle colour scheme');
+        }
         const colourRuns = [];
         (c.track || []).forEach((tc, i) => {
             if (!tc) return;
@@ -2757,9 +2870,6 @@
             });
         });
         await Promise.all(colourRuns);
-        if (isNumber(c.vehicleColourSettings)) {
-            await run('ridesetappearance', { type: 6, value: c.vehicleColourSettings, index: 0 }, 'vehicle colour scheme');
-        }
     }
 
     /** Will this candidate have room for an entrance and an exit (the design's own, or beside the station)? */
@@ -2778,15 +2888,15 @@
             const y = cand.oy + Math.floor(r.y / TILE_SIZE);
             const dir = (cand.direction + e.direction) & 3;
             const ez = e.z === null || e.z === undefined ? z : e.z * 8 + z;
-            return { ok: clear(x, y, ez, x + DIR_DX[dir ^ 2], y + DIR_DY[dir ^ 2], !!e.isExit), isExit: !!e.isExit };
+            const front = { x: x + DIR_DX[dir ^ 2], y: y + DIR_DY[dir ^ 2] };
+            return { x: x, y: y, front: front, ok: clear(x, y, ez, front.x, front.y, !!e.isExit), isExit: !!e.isExit };
         });
-        if (ents.some(e => e.ok && !e.isExit) && ents.some(e => e.ok && e.isExit)) return true;
-        const stations = portalPieces(cand.walked);
-        if (stations.length === 0) return ents.length === 0 || ents.every(e => e.ok);
-        const stationZ = z + Math.min(...stations.map(p => p.z));
-        const spots = stationAttachmentPoints(cand.walked, cand.ox, cand.oy)
-            .filter(a => clear(a.x, a.y, stationZ, a.front.x, a.front.y, true));
-        return spots.length >= 2 && spots.some(a => clear(a.x, a.y, stationZ, a.front.x, a.front.y, false));
+        const keep = ents.filter(e => e.ok);
+        if (keep.some(e => !e.isExit) && keep.some(e => e.isExit)) return true;
+        if (portalPieces(cand.walked).length === 0) return ents.length === 0 || ents.every(e => e.ok);
+        // Otherwise the same choice the build will make beside the first station must exist.
+        const spots = usableStationSpots(tc, stationAttachmentPoints(cand.walked, cand.ox, cand.oy, z), own);
+        return choosePortalSpots(tc, spots, null, keep, own) !== null;
     }
 
     /** Origins for rides that must run on water: every track block over water, near the requested spot. */
@@ -2823,18 +2933,49 @@
         }
     }
 
-    async function placeMaze(tc, layout, rideId, ox, oy, z, direction, flags) {
+    /** mazeplacetrack arguments for every tile of a maze design placed at (ox, oy, z) facing `direction`. */
+    function mazeTileArgs(layout, rideId, ox, oy, z, direction, flags) {
         const rol16 = (v, n) => {
             n &= 15;
             return ((v << n) | (v >>> (16 - n))) & 0xFFFF;
         };
-        let cost = 0;
-        for (const m of layout.mazeElements) {
+        return layout.mazeElements.map(m => {
             const r = rotate(m.x * TILE_SIZE, m.y * TILE_SIZE, direction);
-            const res = await executeAction('mazeplacetrack', {
+            return {
                 x: ox * TILE_SIZE + r.x, y: oy * TILE_SIZE + r.y, z: z, ride: rideId,
                 mazeEntry: rol16(m.entry, direction * 4), flags: flags,
-            });
+            };
+        });
+    }
+
+    /** Lowest height (a multiple of 16, as mazes need) above the terrain under every maze tile. */
+    function mazeBaseZ(tc, layout, ox, oy, direction) {
+        let z = 0;
+        for (const args of mazeTileArgs(layout, -1, ox, oy, 0, direction, 0)) {
+            const info = tc.get(args.x / TILE_SIZE, args.y / TILE_SIZE);
+            if (!info || !info.surface) return null;
+            z = Math.max(z, surfaceTop(info), info.surface.water || 0);
+        }
+        return Math.ceil(z / 16) * 16;
+    }
+
+    /** Do a maze design's own entrance and exit spots work at this placement? (Mazes have no other spots.) */
+    function mazePortalsOk(tc, layout, ox, oy, z, direction) {
+        const spots = (layout.entrances || []).map(e => {
+            const r = rotate(e.x, e.y, direction);
+            const x = ox + Math.floor(r.x / TILE_SIZE);
+            const y = oy + Math.floor(r.y / TILE_SIZE);
+            const away = ((direction + e.direction) & 3) ^ 2;
+            return { isExit: !!e.isExit, ok: portalSpotOk(tc, x, y, z, x + DIR_DX[away], y + DIR_DY[away],
+                e.isExit ? EXIT_CLEARANCE : ENTRANCE_CLEARANCE) };
+        });
+        return spots.some(p => p.ok && !p.isExit) && spots.some(p => p.ok && p.isExit);
+    }
+
+    async function placeMaze(tc, layout, rideId, ox, oy, z, direction, flags) {
+        let cost = 0;
+        for (const args of mazeTileArgs(layout, rideId, ox, oy, z, direction, flags)) {
+            const res = await executeAction('mazeplacetrack', args);
             if (res.error !== 0) fail('Could not place maze tile: ' + describeResult(res));
             cost += res.cost || 0;
         }
@@ -2847,14 +2988,15 @@
      * layout: { name, trackElements[], entrances[], mazeElements[], settings{}, colours{}, entranceStyle,
      *           vehicleObject (DAT name), rct2RideType | rideType }
      */
-    async function buildLayout(layout, params) {
+    async function buildLayout(layout, params, resolvedOption) {
         ensureCanBuild(params);
         checkStatusParam(params);
         const isMaze = Array.isArray(layout.mazeElements) && layout.mazeElements.length > 0;
         const elements = layout.trackElements || [];
         if (!isMaze && elements.length === 0) fail('The layout has no track pieces.');
         if (elements.length > 3000) fail('The layout has too many pieces.');
-        const { option, substituted } = resolveLayoutRide(layout, params);
+        // Callers that already checked the layout against a ride pass it, so the same ride is built.
+        const { option, substituted } = resolvedOption ? { option: resolvedOption, substituted: false } : resolveLayoutRide(layout, params);
         const flags = buildFlags(params);
         const tc = new TileCache();
 
@@ -2906,14 +3048,29 @@
             const reasons = [];
             const debugInfo = [];
             for (const cand of candidates.slice(0, 16)) {
-                const z0 = isMaze ? null : layoutBaseZ(tc, cand.walked, cand.ox, cand.oy);
-                if (!isMaze && z0 === null) continue;
-                const startZ = isNumber(params.z) ? Math.floor(params.z) : z0;
-                for (let attempt = 0; attempt < (isNumber(params.z) ? 1 : 7) && !chosen; attempt++) {
-                    const z = isMaze ? (isNumber(params.z) ? params.z : surfaceTop(tc.get(cand.ox, cand.oy))) : startZ + attempt * 8;
+                const z0 = isMaze ? mazeBaseZ(tc, layout, cand.ox, cand.oy, cand.direction) : layoutBaseZ(tc, cand.walked, cand.ox, cand.oy);
+                if (z0 === null) continue;
+                const step = isMaze ? 16 : 8;
+                const startZ = isNumber(params.z) ? Math.ceil(Math.floor(params.z) / step) * step : z0;
+                for (let attempt = 0; attempt < (isNumber(params.z) ? 1 : (isMaze ? 2 : 7)) && !chosen; attempt++) {
+                    const z = startZ + attempt * step;
                     let ok = true;
                     let cost = 0;
-                    if (!isMaze) {
+                    if (isMaze) {
+                        for (const args of mazeTileArgs(layout, rideId, cand.ox, cand.oy, z, cand.direction, flags)) {
+                            const r = queryActionSync('mazeplacetrack', args);
+                            if (r.error !== 0) {
+                                ok = false;
+                                reasons.push(describeResult(r));
+                                break;
+                            }
+                            cost += r.cost || 0;
+                        }
+                        if (ok && !mazePortalsOk(tc, layout, cand.ox, cand.oy, z, cand.direction)) {
+                            ok = false;
+                            reasons.push('no usable spot for the entrance and exit');
+                        }
+                    } else {
                         for (const p of cand.walked.pieces) {
                             const r = queryActionSync('trackplace', trackPlaceArgs(rideId, option.rideType, p, cand.ox, cand.oy, z, flags));
                             if (r.error !== 0) {
@@ -2961,20 +3118,16 @@
                     note: 'The placement passed the game\'s checks; nothing was built.' }, summaryBase);
             }
 
-            // Build the track inside one game tick so it executes atomically and keeps isFromTrackDesign.
+            // Issue the track inside one game tick so it executes atomically and keeps isFromTrackDesign (which
+            // lets a design cross over its own track). When paused or in multiplayer the game queues the pieces
+            // instead (dropping that flag); either way each piece is issued once and its result awaited.
             let spent = 0;
             if (isMaze) {
                 spent += await placeMaze(tc, layout, rideId, chosen.ox, chosen.oy, chosen.z, chosen.direction, flags);
             } else {
-                const results = await inNextTick(() => chosen.walked.pieces.map(p =>
-                    executeActionNow('trackplace', trackPlaceArgs(rideId, option.rideType, p, chosen.ox, chosen.oy, chosen.z, flags))));
-                const queued = results.some(r => r === null);
-                if (queued) {
-                    // Paused: the actions were queued; wait for their results.
-                    const awaited = await Promise.all(chosen.walked.pieces.map(p =>
-                        executeAction('trackplace', trackPlaceArgs(rideId, option.rideType, p, chosen.ox, chosen.oy, chosen.z, flags))));
-                    results.splice(0, results.length, ...awaited);
-                }
+                const pending = await inNextTick(() => chosen.walked.pieces.map(p =>
+                    issueAction('trackplace', trackPlaceArgs(rideId, option.rideType, p, chosen.ox, chosen.oy, chosen.z, flags))));
+                const results = await Promise.all(pending);
                 const failed = results.findIndex(r => !r || r.error !== 0);
                 if (failed >= 0) {
                     fail('Track piece ' + (failed + 1) + ' (' + TRACK_TYPE_NAMES[elements[failed].type] + ') could not be built: '
@@ -2991,7 +3144,9 @@
                     .filter(p => portalSpotOk(tcNow, p.x, p.y, p.z === null ? chosen.z : p.z, p.front.x, p.front.y,
                         p.isExit ? EXIT_CLEARANCE : ENTRANCE_CLEARANCE));
             }
-            if (!portals.some(p => !p.isExit) || !portals.some(p => p.isExit)) {
+            if (isMaze && (!portals.some(p => !p.isExit) || !portals.some(p => p.isExit))) {
+                warnings.push('the maze design\'s entrance or exit spot was not usable; add it with execute_game_action');
+            } else if (!portals.some(p => !p.isExit) || !portals.some(p => p.isExit)) {
                 const keep = portals;
                 const entrances = await getParkEntrances();
                 const goalTiles = entrances.map(e => [e.x, e.y]);
@@ -3000,34 +3155,22 @@
                     goalTiles.push([+nx, +ny]);
                 }
                 const field = distanceField(tc, goalTiles);
-                const stationZ = chosen.z + Math.min(...portalPieces(chosen.walked).map(p => p.z));
-                const taken = new Set(keep.map(p => tileKey(p.x, p.y)));
-                let spots = stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy)
-                    .filter(a => !taken.has(tileKey(a.x, a.y))
-                        && portalSpotOk(tcNow, a.x, a.y, stationZ, a.front.x, a.front.y, EXIT_CLEARANCE));
-                // Exits are lower than entrances, so some spots under the ride's own track only suit an exit.
-                spots.forEach(a => {
-                    a.canBeEntrance = portalSpotOk(tcNow, a.x, a.y, stationZ, a.front.x, a.front.y, ENTRANCE_CLEARANCE);
-                });
-                // Prefer the open side of the station: a path in front of a spot hemmed in by the ride's own track
-                // has nowhere to go once the queue takes the only way out.
-                for (const need of [3, 2]) {
-                    const open = spots.filter(a => pathExits(tcNow, a.front.x, a.front.y, stationZ, a.x, a.y) >= need);
-                    if (open.length >= 2) {
-                        spots = open;
-                        break;
-                    }
-                }
-                const ranked = rankAttachments(tcNow, spots, field, stationZ, EXIT_CLEARANCE);
-                const pair = chooseEntranceAndExit(ranked);
-                if (!pair) fail('No room beside the station for an entrance and exit.');
+                // The same choice portalsPossible checked before building, now against the built track.
+                const spots = usableStationSpots(tcNow, stationAttachmentPoints(chosen.walked, chosen.ox, chosen.oy, chosen.z), null);
+                const choice = choosePortalSpots(tcNow, spots, field, keep, null);
+                if (!choice) fail('No room beside the station for an entrance and exit.');
+                const station = a => {
+                    const index = stationIndexAt(rideId, a.rideTile.x, a.rideTile.y, a.z);
+                    return index === null ? 0 : index;
+                };
                 portals = keep.slice();
-                if (!keep.some(p => !p.isExit)) {
-                    portals.push({ x: pair.entrance.x, y: pair.entrance.y, direction: pair.entrance.direction, station: 0, isExit: false });
+                if (choice.entrance) {
+                    const a = choice.entrance;
+                    portals.push({ x: a.x, y: a.y, direction: a.direction, station: station(a), isExit: false });
                 }
-                if (!keep.some(p => p.isExit)) {
-                    const exit = keep.some(p => !p.isExit) ? pair.entrance : pair.exit;
-                    portals.push({ x: exit.x, y: exit.y, direction: exit.direction, station: 0, isExit: true });
+                if (choice.exit) {
+                    const a = choice.exit;
+                    portals.push({ x: a.x, y: a.y, direction: a.direction, station: station(a), isExit: true });
                 }
                 if ((layout.entrances || []).length > 0) {
                     warnings.push('placed ' + (keep.length ? 'some' : 'the') + ' entrance/exit beside the station instead of where the design had them');
@@ -3151,7 +3294,9 @@
     const coasterLoss = (head, tiles, massFactor) => (0.2 + 0.006 * Math.max(0, head) * massFactor) * tiles;
     const COASTER_LIFT_EXIT_ENERGY = 8;
     const COASTER_STATION_ENERGY = 8;
-    const COASTER_BRAKE_SPEED = 12;
+    // Brake speed in the game's track speed unit (about 2.25 mph each; stored in steps of 2): 6 is about 13.5 mph.
+    const COASTER_BRAKE_SPEED = 6;
+    const GAME_SPEED_TO_MPH = 2.25;
     const COASTER_METRES_PER_TILE = 4.5;
     const speedHead = mph => Math.round((mph / 3.2) * (mph / 3.2));
 
@@ -3183,6 +3328,7 @@
             this.airtime = 0;
             this.firstDrop = 0;
             this.liftHeight = 0;
+            this.maxHead = 0;
             this.turnScale = this.has(['flatToLeftBank', 'bankedLeftQuarterTurn5Tiles']) ? 1 : 2.5;
             this.refusals = {};
         }
@@ -3255,12 +3401,12 @@
             const tiles = (seg.subLength || 32) / 32;
             energy -= coasterLoss(this.energy - this.z, tiles, this.massFactor);
             if (STATION_TRACK_TYPES.includes(type)) energy = Math.max(energy, z + COASTER_STATION_ENERGY);
-            if (name === 'brakes') energy = Math.min(energy, z + speedHead(COASTER_BRAKE_SPEED));
+            if (name === 'brakes') energy = Math.min(energy, z + speedHead(COASTER_BRAKE_SPEED * GAME_SPEED_TO_MPH));
 
             this.history.push({
                 x: this.x, y: this.y, z: this.z, rot: this.rot, energy: this.energy, peak: this.peak,
                 inversions: this.inversions, length: this.length, drops: this.drops, dropping: this.dropping,
-                airtime: this.airtime, spans: spans,
+                airtime: this.airtime, maxHead: this.maxHead, spans: spans,
             });
             for (const s of spans) {
                 if (!this.occ.has(s.key)) this.occ.set(s.key, []);
@@ -3270,8 +3416,9 @@
                 type: type, chain: !!chain, inverted: false, brakeSpeed: name === 'brakes' ? COASTER_BRAKE_SPEED : 2,
                 seatRotation: 4, colourScheme: 0, station: 0,
             });
-            // Drops as the game counts them (roughly): each new run of downhill track.
-            const descending = z < this.z || seg.beginSlope >= 6;
+            // Drops as the game counts them (roughly): each new run of downward-pitched track. Helixes descend
+            // while level, which the game does not count as a drop (or airtime).
+            const descending = !seg.isHelix && (z < this.z || seg.beginSlope === 6 || seg.beginSlope === 8);
             if (descending && !this.dropping) {
                 this.drops++;
                 // Going over a crest with speed to spare gives the negative G (airtime) some ride types need.
@@ -3284,6 +3431,7 @@
             this.rot = rot;
             this.energy = energy;
             this.peak = Math.max(this.peak, crest);
+            this.maxHead = Math.max(this.maxHead, energy - Math.min(z, placeZ + Math.min(...seg.blocks.map(b => b.z))));
             if (seg.endBank === 15 && seg.beginBank !== 15) this.inversions++;
             if (seg.isInversion && seg.beginBank !== 15 && seg.endBank !== 15) this.inversions++;
             this.length += tiles;
@@ -3301,7 +3449,7 @@
                 }
                 Object.assign(this, {
                     x: h.x, y: h.y, z: h.z, rot: h.rot, energy: h.energy, peak: h.peak, inversions: h.inversions,
-                    length: h.length, drops: h.drops, dropping: h.dropping, airtime: h.airtime,
+                    length: h.length, drops: h.drops, dropping: h.dropping, airtime: h.airtime, maxHead: h.maxHead,
                 });
             }
         }
@@ -3354,8 +3502,8 @@
             { kind: 'turning drop', weight: 3, descends: true, options: () => usable(both([
                 ['flatToDown25', 'leftQuarterTurn5TilesDown25', 'down25ToFlat'],
                 ['flatToDown25', 'leftQuarterTurn3TilesDown25', 'down25ToFlat'],
-                ['flatToDown25', 'leftBankedQuarterTurn5TileDown25', 'down25ToFlat'],
-                ['flatToDown25', 'leftBankedQuarterTurn3TileDown25', 'down25ToFlat']])) },
+                ['flatToDown25', 'down25ToLeftBankedDown25', 'leftBankedQuarterTurn5TileDown25', 'leftBankedDown25ToDown25', 'down25ToFlat'],
+                ['flatToDown25', 'down25ToLeftBankedDown25', 'leftBankedQuarterTurn3TileDown25', 'leftBankedDown25ToDown25', 'down25ToFlat']])) },
             { kind: 'helix', weight: 2, descends: true, options: () => usable(both([
                 ['flatToLeftBank', 'leftHalfBankedHelixDownLarge', 'leftBankToFlat'],
                 ['flatToLeftBank', 'leftHalfBankedHelixDownLarge', 'leftHalfBankedHelixDownLarge', 'leftBankToFlat'],
@@ -3363,7 +3511,7 @@
                 ['flatToLeftBank', 'leftQuarterBankedHelixLargeDown', 'leftBankToFlat']])) },
             { kind: 'climbing turn', weight: 1, options: () => usable(both([
                 ['flatToUp25', 'leftQuarterTurn3TilesUp25', 'up25ToFlat'],
-                ['flatToUp25', 'leftBankedQuarterTurn3TileUp25', 'up25ToFlat'],
+                ['flatToUp25', 'up25ToLeftBankedUp25', 'leftBankedQuarterTurn3TileUp25', 'leftBankedUp25ToUp25', 'up25ToFlat'],
                 ['flatToUp25', 'leftQuarterTurn5TilesUp25', 'up25ToFlat']])) },
             { kind: 'vertical loop', weight: gentle ? 0 : (intense ? 4 : 2), inversion: true, options: () => usable(both([
                 ['flatToUp25', 'leftVerticalLoop', 'down25ToFlat']])) },
@@ -3388,7 +3536,7 @@
      * Finds pieces that bring the draft back to the start of its station: A* over flat, turning and descending
      * moves, refusing turns taken too fast and anything that would hit the track already drafted.
      */
-    function closeCircuit(draft, maxNodes) {
+    function closeCircuit(draft, maxNodes, budget) {
         const macros = [];
         const addMacro = names => {
             if (draft.has(names)) macros.push(names);
@@ -3406,7 +3554,7 @@
             addMacro(['flatToDown25', mirrorPieceName(t), 'down25ToFlat']);
         }
         addMacro(['brakes']);
-        const brakeHead = speedHead(COASTER_BRAKE_SPEED);
+        const brakeHead = speedHead(COASTER_BRAKE_SPEED * GAME_SPEED_TO_MPH);
         // Each macro's footprint and end pose from each heading, starting at (0, 0, 0).
         const moves = macros.map(names => [0, 1, 2, 3].map(rot => {
             let x = 0;
@@ -3436,7 +3584,8 @@
             return { names: names, blocks: blocks, dx: x, dy: y, dz: z, rot: r, cost: cost, brakes: brakes,
                 limit: sequenceSpeedLimit(names, draft.turnScale), penalty: brakes ? 2 : 0 };
         }));
-        const start = { x: draft.x, y: draft.y, z: draft.z, rot: draft.rot, g: 0, e: draft.energy, parent: null, move: null };
+        const start = { x: draft.x, y: draft.y, z: draft.z, rot: draft.rot, g: 0, e: draft.energy, parent: null, move: null,
+            pathOcc: new Map() };
         const h = n => (Math.abs(n.x) + Math.abs(n.y)) / TILE_SIZE + n.z / 16 + (n.rot !== 0 ? 1 : 0);
         start.f = h(start);
         const heap = [start];
@@ -3473,6 +3622,16 @@
         const b = draft.bounds;
         let expanded = 0;
         while (heap.length > 0 && expanded < maxNodes) {
+            // A shared, deterministic budget (so a seed always gives the same design) plus a time limit that only
+            // matters on a very slow machine.
+            if (budget) {
+                if (budget.used >= budget.max) return null;
+                if ((budget.used & 255) === 0 && Date.now() > budget.deadline) {
+                    budget.timedOut = true;
+                    return null;
+                }
+                budget.used++;
+            }
             const node = popHeap();
             if (node.x === 0 && node.y === 0 && node.z === 0 && node.rot === 0 && node.parent) {
                 const path = [];
@@ -3486,6 +3645,16 @@
             if (best.has(key) && best.get(key) <= node.g) continue;
             best.set(key, node.g);
             expanded++;
+            if (!node.pathOcc) {
+                // Space taken by the closing path so far, so it cannot cross itself.
+                node.pathOcc = new Map(node.parent.pathOcc);
+                const pbx = Math.floor(node.parent.x / TILE_SIZE);
+                const pby = Math.floor(node.parent.y / TILE_SIZE);
+                for (const pb of node.move.blocks) {
+                    const k = tileKey(pbx + pb.dx, pby + pb.dy);
+                    node.pathOcc.set(k, (node.pathOcc.get(k) || []).concat([{ low: node.parent.z + pb.low, high: node.parent.z + pb.high }]));
+                }
+            }
             for (const m of moves) {
                 const mv = m[node.rot];
                 const nz = node.z + mv.dz;
@@ -3497,23 +3666,11 @@
                     const tx = bx + blk.dx;
                     const ty = by + blk.dy;
                     if (tx < b.minX || tx > b.maxX || ty < b.minY || ty > b.maxY || node.z + blk.z < 0
-                        || spanOccupied(draft.occ, tx, ty, node.z + blk.low, node.z + blk.high)) {
+                        || spanOccupied(draft.occ, tx, ty, node.z + blk.low, node.z + blk.high)
+                        || spanOccupied(node.pathOcc, tx, ty, node.z + blk.low, node.z + blk.high)) {
                         ok = false;
                         break;
                     }
-                    // The path found so far must not cross itself either.
-                    for (let n = node; n.parent && ok; n = n.parent) {
-                        const pbx = Math.floor(n.parent.x / TILE_SIZE);
-                        const pby = Math.floor(n.parent.y / TILE_SIZE);
-                        for (const pb of n.move.blocks) {
-                            if (pbx + pb.dx === tx && pby + pb.dy === ty && n.parent.z + pb.low < node.z + blk.high
-                                && n.parent.z + pb.high > node.z + blk.low) {
-                                ok = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (!ok) break;
                 }
                 if (!ok) continue;
                 let e = node.e - coasterLoss(head, mv.cost, draft.massFactor);
@@ -3542,7 +3699,8 @@
             airtime: req.requirementNegativeGs !== undefined && req.requirementNegativeGs <= 50,
             inversions: req.requirementInversions || 0,
             lengthTiles: req.requirementLength ? Math.ceil(req.requirementLength / 65536 / COASTER_METRES_PER_TILE) : 0,
-            speedZ: req.requirementMaxSpeed ? speedHead(req.requirementMaxSpeed / 65536) : 0,
+            // Max speed is in the game's speed unit (65536 per ~2.25 mph).
+            speedZ: req.requirementMaxSpeed ? speedHead(req.requirementMaxSpeed / 65536 * GAME_SPEED_TO_MPH) : 0,
             relaxIfInversions: !!req.relaxIfInversions,
         };
     }
@@ -3556,6 +3714,7 @@
         if (targets.airtime && !relaxed && draft.airtime === 0) misses.push('airtime (negative G)');
         if (targets.inversions && draft.inversions < targets.inversions) misses.push('inversions');
         if (targets.lengthTiles && draft.length < targets.lengthTiles) misses.push('length');
+        if (targets.speedZ && draft.maxHead < targets.speedZ) misses.push('max speed');
         return misses;
     }
 
@@ -3697,12 +3856,13 @@
         if (opts.debug) why.placed = (why.placed || []).concat([placed]);
         bounds.maxX = 3;
         for (;;) {
-            if (Date.now() > opts.deadline) return failed('out of time');
+            if (opts.budget.timedOut) return failed('out of time');
+            if (opts.budget.used >= opts.budget.max) return failed('search budget used up');
             const mark = draft.els.length;
-            let closing = closeCircuit(draft, 12000);
-            if (!closing && draft.head() > speedHead(COASTER_BRAKE_SPEED) + 8 && draft.has(['brakes'])
+            let closing = closeCircuit(draft, 8000, opts.budget);
+            if (!closing && draft.head() > speedHead(COASTER_BRAKE_SPEED * GAME_SPEED_TO_MPH) + 8 && draft.has(['brakes'])
                 && draft.add(['brakes', 'brakes'])) {
-                closing = closeCircuit(draft, 12000);
+                closing = closeCircuit(draft, 8000, opts.budget);
             }
             if (closing && closing.every(names => draft.add(names))
                 && draft.x === 0 && draft.y === 0 && draft.z === 0 && draft.rot === 0) {
@@ -3728,6 +3888,8 @@
      * train is one 440 mass car), so the cars must be added up rather than estimated.
      */
     function coasterTrainMass(option, stationTiles) {
+        const info = rideTypeInfo(option.rideType);
+        const maxMass = info && info.maxMass ? info.maxMass << 8 : Infinity;
         try {
             const obj = objectManager.getObject('ride', option.object);
             const vehicles = obj.vehicles || [];
@@ -3747,7 +3909,7 @@
                     length += car.spacing || 0;
                     mass += car.carMass || 0;
                 }
-                if (length <= stationLength || numCars === 1) return mass;
+                if ((length <= stationLength && mass <= maxMass) || numCars === 1) return mass;
             }
         } catch (e) {
             return 0;
@@ -3780,6 +3942,10 @@
             for (const t of allowed) types.set(TRACK_TYPE_NAMES[t], t);
             const lift = ['flatToUp25', 'up25', 'up25ToFlat'].every(n => types.has(n) && trackSegment(types.get(n)).allowsChainLift);
             if (!lift || !['beginStation', 'middleStation', 'endStation', 'flatToDown25', 'down25ToFlat'].every(n => types.has(n))) continue;
+            // A circuit needs some way to turn round (Heartline Twisters and Impulse coasters have none).
+            const turns = ['leftQuarterTurn3Tiles', 'leftQuarterTurn5Tiles', 'leftQuarterTurn1Tile', 'bankedLeftQuarterTurn5Tiles',
+                'leftBankedQuarterTurn3Tiles'];
+            if (!turns.some(n => types.has(n) && types.has(mirrorPieceName(n)))) continue;
             const info = rideTypeInfo(option.rideType);
             let score = 0;
             const inversions = ['leftVerticalLoop', 'leftCorkscrewUp', 'leftLargeCorkscrewUp'].filter(n => types.has(n)).length;
@@ -4515,10 +4681,17 @@
         // Work out entrances/exits for each placement before touching the game.
         const plans = [];
         for (const p of placements) {
-            const points = rankAttachments(tc, attachmentPoints(info.startPiece, fp, p.origin.x, p.origin.y, p.direction), field, p.z);
+            const candidates = attachmentPoints(info.startPiece, fp, p.origin.x, p.origin.y, p.direction);
             if (isStall) {
-                if (points.length > 0) plans.push(Object.assign({ pathFrom: points[0] }, p));
+                // The path goes on the tile right beside the open side; an existing path there is ideal.
+                const spots = candidates.filter(a => stallSpotOk(tc, a.x, a.y, p.z)).map(a => {
+                    const d = field ? field(a.x, a.y) : 0;
+                    const hasPath = tc.get(a.x, a.y).paths.some(q => !q.ghost && q.z === p.z);
+                    return Object.assign({ distance: hasPath ? -1 : (d < 0 ? 999 : d), hasPath: hasPath }, a);
+                }).sort((a, b) => a.distance - b.distance);
+                if (spots.length > 0) plans.push(Object.assign({ pathFrom: spots[0] }, p));
             } else {
+                const points = rankAttachments(tc, candidates, field, p.z);
                 const pair = chooseEntranceAndExit(points);
                 if (pair) plans.push(Object.assign({ entrance: pair.entrance, exit: pair.exit }, p));
             }
@@ -4538,7 +4711,7 @@
             };
             if (plan.entrance) out.entrance = { x: plan.entrance.x, y: plan.entrance.y };
             if (plan.exit) out.exit = { x: plan.exit.x, y: plan.exit.y };
-            if (plan.pathFrom) out.pathConnection = plan.pathFrom.front;
+            if (plan.pathFrom) out.pathConnection = { x: plan.pathFrom.x, y: plan.pathFrom.y };
             if (plan.site) out.site = { distanceToTarget: plan.site.distanceToTarget, distanceToPath: plan.site.distanceToPath };
             return out;
         };
@@ -4607,9 +4780,16 @@
             summary.paths = {};
             if (isStall) {
                 try {
-                    const r = await methods.build_path_route(Object.assign({ from: built.pathFrom.front }, pathParams));
+                    const spot = built.pathFrom;
+                    const r = await methods.build_path_route(Object.assign({ from: { x: spot.x, y: spot.y, z: built.z } }, pathParams));
                     summary.paths.access = r.alreadyConnected ? 'already connected' : { built: r.built, cost: r.costFormatted };
                     spent += r.cost || 0;
+                    // A path that was already there joins the stall once re-placed (the game recomputes its edges).
+                    const existing = new TileCache().get(spot.x, spot.y).paths.find(q => !q.ghost && q.z === built.z);
+                    if (spot.hasPath && existing) {
+                        await executeAction('footpathplace', footpathArgs({ x: spot.x, y: spot.y, z: existing.z, s: existing.s, dir: null },
+                            styleOfPiece(existing), buildFlags(params)));
+                    }
                 } catch (e) {
                     summary.paths.access = 'failed: ' + e.message;
                 }
@@ -4744,7 +4924,8 @@
             const spec = typeof p === 'object' && p !== null ? p : { type: p };
             let type = spec.type;
             if (typeof type === 'string') {
-                const idx = TRACK_TYPE_NAMES.indexOf(type);
+                let idx = TRACK_TYPE_NAMES.indexOf(type);
+                if (idx < 0) idx = TRACK_TYPE_NAMES.findIndex(n => n.toLowerCase() === type.toLowerCase());
                 if (idx < 0) fail('Unknown track piece "' + type + '" at position ' + i + '. list_track_pieces shows valid names.');
                 type = idx;
             }
@@ -4837,9 +5018,10 @@
             layout = { name: params.name, trackElements: normaliseLayoutPieces(params.pieces), entrances: [] };
         }
         if (!layout || typeof layout !== 'object') fail('Give "pieces" (a custom layout) or a decoded "layout".');
+        let option = null;
         if (params.pieces) {
             // Custom layouts must form a proper circuit before anything is placed.
-            const option = resolveRideOption(params, ['tracked', 'tower']);
+            option = resolveRideOption(params, ['tracked', 'tower']);
             const report = checkLayout(layout.trackElements, params.allowAnyPiece ? null : allowedPieceTypes(option.rideType));
             const kind = rideTypeInfo(option.rideType).kind;
             if (kind === 'tracked' && report.stationPieces === 0) report.problems.push('the layout has no station pieces');
@@ -4848,7 +5030,7 @@
             }
             if (report.problems.length > 0) fail('The layout is not buildable as given.', report);
         }
-        return buildLayout(layout, params);
+        return buildLayout(layout, params, option);
     };
 
     methods.check_track_layout = params => {
@@ -4884,64 +5066,93 @@
         return { ride: option.name, rideType: option.rideTypeName, count: pieces.length, pieces: params.namesOnly ? pieces.map(p => p.name) : pieces };
     };
 
-    methods.design_roller_coaster = async params => {
-        const style = params.style || 'moderate';
-        if (!COASTER_STYLES[style]) fail('"style" must be gentle, moderate or intense.');
-        checkStatusParam(params);
-        const candidates = coasterCandidates(params, style);
-        if (candidates.length === 0) {
-            fail(params.ride !== undefined || params.object !== undefined || isNumber(params.rideType)
-                ? 'That ride cannot be generated: it needs a chain lift on 25 degree slopes and normal station pieces. '
-                    + 'Build it piece by piece with build_custom_track instead.'
-                : 'This park has no roller coaster with a chain lift researched yet.');
-        }
-        const chosen = candidates[0];
+    /**
+     * Generates a coaster for one ride option. Deterministic for a given seed and options: the search stops after
+     * a fixed number of attempts or search steps, never because of the clock (the time limit is only a safety net
+     * for very slow machines, and is reported if it is ever hit).
+     */
+    function generateCoaster(chosen, params, style, baseSeed, deadline) {
         const s = COASTER_STYLES[style];
         const maxZ = Math.min(chosen.info.maxHeight * 16 - 32, 1500);
+        const stationLength = Math.max(3, Math.min(12, optInt(params, 'stationLength', 6)));
         const opts = {
             style: style,
             length: Math.max(12, Math.min(64, optInt(params, 'maxLength', s.size[0]))),
             width: Math.max(6, Math.min(64, optInt(params, 'maxWidth', s.size[1]))),
             liftHeight: Math.max(2, Math.min(optInt(params, 'liftHeight', s.lift), Math.floor(maxZ / 16) - 2)),
-            stationLength: Math.max(3, Math.min(12, optInt(params, 'stationLength', 6))),
+            stationLength: stationLength,
             inversions: params.inversions !== false,
             maxZ: maxZ,
             targets: coasterTargets(chosen.option.rideType),
-            massFactor: coasterMassFactor(chosen.option, Math.max(3, Math.min(12, optInt(params, 'stationLength', 6)))),
+            massFactor: coasterMassFactor(chosen.option, stationLength),
             debug: !!params.debug,
+            budget: { used: 0, max: 60000, deadline: deadline, timedOut: false },
         };
-        const baseSeed = isNumber(params.seed) ? Math.floor(params.seed) >>> 0 : Math.floor(Math.random() * 0x7FFFFFFF);
         // Without a size from the caller, a ride type that needs a long lift or drop gets a bigger area if needed.
         const sizes = isNumber(params.maxLength) || isNumber(params.maxWidth) ? [[opts.length, opts.width]]
             : [[opts.length, opts.width], [opts.length + 6, opts.width + 4], [opts.length + 12, opts.width + 6]];
         // Ride types that must be long to rate well (e.g. 370 m for the wooden coaster) start with more room.
         if (sizes.length > 1 && opts.targets.lengthTiles > 60) sizes.shift();
         // Several attempts; keep the first that meets every rating requirement, else the one missing the fewest.
-        let draft = null;
         let best = null;
         const why = {};
-        // Generation runs on the game thread, so keep it short: stop early once something usable exists.
-        const started = Date.now();
-        opts.deadline = started + 4000;
         for (const [length, width] of sizes) {
-            if (best || Date.now() > opts.deadline) break;
+            if (best) break;
             opts.length = length;
             opts.width = width;
-            for (let attempt = 0; attempt < 40; attempt++) {
-                if (Date.now() > (best ? started + 1500 : opts.deadline)) break;
-                const attemptSeed = (baseSeed + attempt * 7919) >>> 0;
-                const d = draftCoaster(chosen.types, chosen.info, opts, makeRng(attemptSeed), why);
+            let drafted = 0;
+            for (let attempt = 0; attempt < 40 && drafted < 12; attempt++) {
+                if (opts.budget.timedOut || opts.budget.used >= opts.budget.max) break;
+                const d = draftCoaster(chosen.types, chosen.info, opts, makeRng((baseSeed + attempt * 7919) >>> 0), why);
                 if (!d) continue;
+                drafted++;
                 const misses = checkTargets(d, opts.targets);
-                if (!best || misses.length < best.misses.length) best = { draft: d, misses: misses };
+                if (!best || misses.length < best.misses.length) best = { draft: d, misses: misses, length: length, width: width };
                 if (misses.length === 0) break;
             }
         }
-        if (best) draft = best.draft;
-        if (!draft) {
-            fail('Could not fit a complete circuit for ' + chosen.option.name + ' in ' + opts.length + 'x' + opts.width
-                + ' tiles. Allow more room (maxLength/maxWidth) or a lower liftHeight.', opts.debug ? { failedAt: why } : undefined);
+        return { best: best, opts: opts, why: why };
+    }
+
+    methods.design_roller_coaster = async params => {
+        const style = params.style || 'moderate';
+        if (!COASTER_STYLES[style]) fail('"style" must be gentle, moderate or intense.');
+        checkStatusParam(params);
+        const named = params.ride !== undefined || params.object !== undefined || isNumber(params.rideType);
+        const candidates = coasterCandidates(params, style);
+        if (candidates.length === 0) {
+            fail(named
+                ? 'That ride cannot be generated: it needs a chain lift on 25 degree slopes, normal station pieces and '
+                    + 'turns. Build it piece by piece with build_custom_track instead.'
+                : 'This park has no roller coaster with a chain lift researched yet.');
         }
+        const baseSeed = isNumber(params.seed) ? Math.floor(params.seed) >>> 0 : Math.floor(Math.random() * 0x7FFFFFFF);
+        // Generation runs on the game thread; the deadline only guards against a very slow machine.
+        const deadline = Date.now() + 10000;
+        let chosen = null;
+        let generated = null;
+        const tried = [];
+        // A named ride must work as asked; otherwise fall back to the next best coaster the park has.
+        for (const candidate of named ? candidates.slice(0, 1) : candidates.slice(0, 4)) {
+            generated = generateCoaster(candidate, params, style, baseSeed, deadline);
+            tried.push(candidate.option.name);
+            if (generated.best) {
+                chosen = candidate;
+                break;
+            }
+            if (generated.opts.budget.timedOut) break;
+        }
+        if (!chosen) {
+            const o = generated.opts;
+            if (o.budget.timedOut) {
+                fail('Ran out of time designing ' + tried.join(', ') + ' (this machine is slow for it). Try a smaller area '
+                    + '(maxLength/maxWidth) or a lower liftHeight.', o.debug ? { failedAt: generated.why } : undefined);
+            }
+            fail('Could not fit a complete circuit for ' + tried.join(' or ') + ' in ' + o.length + 'x' + o.width
+                + ' tiles. Allow more room (maxLength/maxWidth) or a lower liftHeight.', o.debug ? { failedAt: generated.why } : undefined);
+        }
+        const best = generated.best;
+        const draft = best.draft;
         const report = checkLayout(draft.els, allowedPieceTypes(chosen.option.rideType));
         if (report.problems.length > 0 || !report.closesCircuit) fail('The generated layout failed its own checks.', report);
         const design = {
@@ -4950,14 +5161,15 @@
             seed: baseSeed,
             pieces: draft.els.length,
             size: report.size,
-            liftHeight: draft.liftHeight,
-            firstDrop: draft.firstDrop,
+            // In land steps, like the liftHeight option.
+            liftHeight: draft.liftHeight / 16,
+            firstDrop: draft.firstDrop / 16,
             inversions: draft.inversions,
             drops: draft.drops,
             lengthTiles: Math.round(draft.length),
             features: draft.features,
         };
-        if (opts.debug) design.debug = why;
+        if (generated.opts.debug) design.debug = generated.why;
         if (best.misses.length > 0) {
             design.mayMissRequirements = best.misses;
             design.note = 'This ride type rates poorly without these; a larger area (maxLength/maxWidth) usually helps.';
@@ -4970,7 +5182,7 @@
         });
         if (params.previewOnly) {
             return { design: design, pieces: pieces, note: 'Not built. Pass these pieces to build_custom_track (with the same '
-                + 'ride) to build them, or call design_roller_coaster again with this seed.' };
+                + 'ride) to build them, or call design_roller_coaster again with the same seed and options.' };
         }
         const layout = {
             name: typeof params.name === 'string' && params.name ? params.name : null,
@@ -4978,8 +5190,7 @@
             entrances: [],
             settings: { numberOfTrains: 1 },
         };
-        const buildParams = Object.assign({}, params, { object: chosen.option.object, ride: undefined, rideType: undefined });
-        const result = await buildLayout(layout, buildParams);
+        const result = await buildLayout(layout, params, chosen.option);
         delete result.design;
         return Object.assign(result, { design: design }, params.dryRun ? { pieces: pieces } : {});
     };

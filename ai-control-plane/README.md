@@ -245,5 +245,8 @@ python3 ai-control-plane/tools/gen_ride_data.py ride_data.json
   arguments. Rides are not landscaped around: sites need free, owned land.
 * Generated coasters run one train (more trains need block brakes) and use chain lifts on 25° slopes, so
   launched coasters are built from designs or your own piece lists instead. They don't use diagonal track.
+* Track is normally placed within a single game tick, which lets designs cross over their own track. While the game
+  is paused (with `allowWhilePaused`) or in multiplayer, the game queues the pieces instead, and designs that cross
+  over themselves may then be refused.
 * Connectivity checks cover ride entrances and exits; stalls and facilities are not analysed.
 * Queue routes are the shortest valid line; use waypoints to make them longer.

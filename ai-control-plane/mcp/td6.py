@@ -131,7 +131,9 @@ def decode(raw, name=None):
         "maxSpeed": struct.unpack_from("<b", data, 0x51)[0],
         "averageSpeed": struct.unpack_from("<b", data, 0x52)[0],
         "rideLength": struct.unpack_from("<H", data, 0x53)[0],
-        "inversions": data[0x58] & 0x1F,
+        # Mini golf stores its hole count where coasters store inversions.
+        "inversions": 0 if rct2_ride_type == RIDE_TYPE_MINI_GOLF else data[0x58] & 0x1F,
+        "holes": data[0x58] & 0x1F if rct2_ride_type == RIDE_TYPE_MINI_GOLF else None,
         "drops": data[0x59] & 0x3F,
         "highestDropHeight": data[0x5A],
         # Ratings are stored divided by 10; OpenRCT2 keeps them * 100 (e.g. 652 = 6.52).
@@ -151,6 +153,15 @@ def decode(raw, name=None):
         "sceneryCount": 0,
     }
 
+    try:
+        _decode_lists(data, design, version, rct2_ride_type)
+    except (IndexError, struct.error):
+        raise TrackDesignError("track design data is truncated") from None
+    return design
+
+
+def _decode_lists(data, design, version, rct2_ride_type):
+    """Track, maze, entrance and scenery lists after the header (raises IndexError/struct.error if truncated)."""
     pos = HEADER_SIZE
     if design["isMaze"]:
         while True:
@@ -188,9 +199,10 @@ def decode(raw, name=None):
         while data[pos] != 0xFF:
             z, direction, x, y = struct.unpack_from("<bBhh", data, pos)
             design["entrances"].append({
-                # x/y are world units relative to the first track piece; z is in height units (or null).
+                # x/y are world units relative to the first track piece; z is in height units (8 world z) relative
+                # to the first piece. The importer stores -128 as -1 (T6Importer.cpp), so do the same.
                 "x": x, "y": y,
-                "z": None if z == -128 else z,
+                "z": -1 if z == -128 else z,
                 "direction": direction & 0x0F,
                 "isExit": bool(direction >> 7),
             })
@@ -200,7 +212,6 @@ def decode(raw, name=None):
     while pos < len(data) and data[pos] != 0xFF:
         design["sceneryCount"] += 1
         pos += 22
-    return design
 
 
 def load(path):
@@ -217,7 +228,7 @@ def summarise(design):
     """Short description used when listing designs."""
     s = {k: design.get(k) for k in (
         "name", "path", "version", "rct2RideType", "vehicleObject", "excitement", "intensity", "nausea",
-        "maxSpeed", "rideLength", "inversions", "drops", "spaceRequired", "isMaze", "isFlatRide")}
+        "maxSpeed", "rideLength", "inversions", "holes", "drops", "spaceRequired", "isMaze", "isFlatRide")}
     s["pieces"] = len(design["trackElements"]) or len(design["mazeElements"])
     return s
 
