@@ -7,6 +7,7 @@
  *****************************************************************************/
 
 #include <openrct2/ride/Ride.h>
+#include <openrct2/ride/Vehicle.h>
 #include <openrct2/ride/RideData.h>
 #include <openrct2/ride/TrackData.h>
 #include <openrct2/ride/ted/TrackElementDescriptor.h>
@@ -95,6 +96,27 @@ int main()
             std::printf("%s%d", s ? "," : "", c.clearanceZ + (c.flags.has(ClearanceFlag::isVertical) ? 256 : 0));
         }
         std::printf("]");
+    }
+    // Per track type: the smallest |vertical factor| among negative values (sharpest crest: negative G grows
+    // with speed / factor) and the smallest |lateral factor| (sharpest turn), over the piece's length
+    // (Vehicle::GetGForces). 0 = none. Used to keep cars without upstop wheels from derailing (upstopCheck).
+    std::printf("],\"gForceFactors\":[");
+    for (int t = 0; t < static_cast<int>(TrackElemType::count); t++)
+    {
+        const auto& ted = GetTrackElementDescriptor(static_cast<TrackElemType>(t));
+        const auto length = VehicleGetMoveInfoSize(VehicleTrackSubposition::standard, static_cast<TrackElemType>(t), 0);
+        int32_t crest = 0;
+        int32_t lateral = 0;
+        for (int32_t p = 0; p < std::max<int32_t>(length, 1); p++)
+        {
+            const int32_t v = ted.verticalFactor(static_cast<int16_t>(p));
+            const int32_t l = ted.lateralFactor(static_cast<int16_t>(p));
+            if (v < 0 && (crest == 0 || -v < crest))
+                crest = -v;
+            if (l != 0 && (lateral == 0 || std::abs(l) < lateral))
+                lateral = std::abs(l);
+        }
+        std::printf("%s[%d,%d]", t ? "," : "", crest, lateral);
     }
     std::printf("]}\n");
     return 0;

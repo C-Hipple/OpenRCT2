@@ -470,6 +470,43 @@
         [24,16,16,32,16],[0,0,0,0],[0,0,0,0],[16],[0,0,0,0],[0,16,16,32,40,40,64,88,88,104],[64,72,72,80,32,32,8,8,8,8],[8,8,8,8,32,32,80,72,72,64],[104,88,88,64,40,40,32,16,16,0],[64,88,88,80,48,24],[64,88,88,80,48,24],[24,48,80,88,88,64],
         [24,48,80,88,88,64],[16,16,16,16],
     ];
+    // Track type -> [sharpest crest |vertical factor| (negative G), sharpest |lateral factor|], 0 = none
+    // (Vehicle::GetGForces: G (hundredths) = speed * 980 / factor, speed in the game's unit).
+    const TRACK_G_FACTORS = [
+        [0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[82,0],[103,0],[0,0],[0,0],
+        [103,0],[82,0],[0,0],[0,0],[0,98],[0,98],[0,0],[0,0],[0,0],[0,0],[0,160],[0,160],
+        [0,0],[0,0],[103,0],[103,0],[103,0],[103,0],[0,0],[0,0],[0,0],[0,0],[0,98],[0,98],
+        [0,98],[0,98],[0,98],[0,98],[0,0],[0,0],[0,59],[0,59],[0,100],[0,100],[0,59],[0,59],
+        [0,59],[0,59],[0,45],[0,45],[0,98],[0,98],[0,98],[0,98],[0,0],[0,0],[0,70],[0,70],
+        [0,70],[0,70],[0,0],[56,0],[56,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],
+        [0,0],[82,0],[103,0],[0,0],[0,0],[103,0],[82,0],[0,0],[0,0],[0,98],[0,98],[0,98],
+        [0,98],[0,59],[0,59],[0,100],[0,100],[0,100],[0,100],[0,160],[0,160],[0,160],[0,160],[0,88],
+        [0,88],[0,88],[0,88],[0,0],[0,0],[0,0],[0,160],[0,160],[0,160],[0,160],[0,98],[0,98],
+        [0,98],[0,98],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[150,0],[0,0],[160,0],
+        [0,0],[0,0],[160,0],[103,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[110,0],[110,0],
+        [56,0],[0,137],[0,137],[0,137],[0,137],[0,200],[0,200],[0,200],[0,200],[0,0],[0,0],[0,0],
+        [0,0],[0,0],[95,0],[113,0],[0,0],[0,0],[113,0],[95,0],[0,0],[0,0],[0,0],[60,0],
+        [60,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[113,0],[113,0],[113,0],[113,0],
+        [0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,115],[0,115],[0,115],[0,115],[0,90],[0,90],
+        [0,90],[0,90],[0,0],[0,0],[0,0],[0,0],[0,0],[0,98],[0,98],[0,98],[0,98],[0,0],
+        [0,0],[0,70],[0,70],[0,70],[0,70],[103,0],[103,0],[0,98],[0,98],[0,0],[0,0],[0,0],
+        [0,0],[0,0],[0,0],[0,0],[0,0],[0,59],[0,59],[0,0],[0,0],[60,0],[0,0],[0,0],
+        [0,0],[0,100],[0,100],[0,100],[0,100],[0,160],[0,160],[0,160],[0,160],[0,0],[0,0],[0,0],
+        [0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[103,0],[103,0],[103,0],[103,0],[0,0],
+        [0,0],[0,0],[0,0],[103,0],[103,0],[103,0],[103,0],[0,0],[0,0],[0,0],[0,0],[0,0],
+        [0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],
+        [0,0],[0,0],[0,0],[0,117],[0,117],[0,117],[0,117],[0,0],[0,0],[0,0],[0,0],[0,73],
+        [0,73],[0,73],[0,73],[0,83],[0,83],[0,83],[0,83],[0,0],[0,0],[0,0],[0,0],[0,0],
+        [0,0],[0,0],[0,0],[0,0],[0,0],[0,137],[0,137],[0,137],[0,137],[0,137],[0,137],[0,137],
+        [0,137],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[113,0],
+        [113,0],[113,0],[113,0],[0,0],[0,0],[0,0],[0,0],[113,0],[113,0],[113,0],[113,0],[0,0],
+        [0,0],[0,0],[0,0],[0,0],[0,0],[0,200],[0,200],[0,200],[0,200],[0,200],[0,200],[0,200],
+        [0,200],[0,0],[0,0],[0,0],[0,0],[0,0],[180,0],[180,0],[0,0],[0,62],[0,62],[0,62],
+        [0,62],[0,0],
+    ];
+    // Car entry flag bits (CarEntryFlag)
+    const CAR_FLAG_NO_UPSTOPS = 1;
+    const CAR_FLAG_NO_UPSTOPS_BOBSLEIGH = 2;
     // </generated-ride-data>
 
     // ------------------------------------------------------------------
@@ -3292,6 +3329,21 @@
     const COASTER_CREST_MARGIN = 8;
     const COASTER_INVERSION_MARGIN = -12;
     const coasterLoss = (head, tiles, massFactor) => (0.2 + 0.006 * Math.max(0, head) * massFactor) * tiles;
+
+    /**
+     * Fastest a train without upstop wheels may take a piece (as a speed head), or Infinity. Such cars leave the
+     * track when vertical G drops below -0.45 on a climb (-0.40 for non-bobsleigh cars) or -0.80 otherwise, and
+     * non-bobsleigh ones also above 1.5 lateral G (Vehicle::upstopCheck); G = speed * 980 / factor, speed in game
+     * units (Vehicle::GetGForces). Kept well inside those limits (vertical G above -0.2, lateral below 1.2).
+     */
+    function derailHeadLimit(type, noUpstops) {
+        if (!noUpstops) return Infinity;
+        const factors = TRACK_G_FACTORS[type] || [0, 0];
+        let speed = Infinity;
+        if (factors[0]) speed = Math.min(speed, (90 + 20) * factors[0] / 980);
+        if (factors[1] && noUpstops === 1) speed = Math.min(speed, 120 * factors[1] / 980);
+        return speed === Infinity ? Infinity : speedHead(speed * GAME_SPEED_TO_MPH);
+    }
     const COASTER_LIFT_EXIT_ENERGY = 8;
     const COASTER_STATION_ENERGY = 8;
     // Brake speed in the game's track speed unit (about 2.25 mph each; stored in steps of 2): 6 is about 13.5 mph.
@@ -3306,9 +3358,10 @@
      * leave the bounds, go below the station or climb higher than the train could are refused.
      */
     class TrackDraft {
-        constructor(types, rideClearance, bounds, maxZ, massFactor) {
+        constructor(types, rideClearance, bounds, maxZ, massFactor, noUpstops) {
             this.types = types;
             this.massFactor = massFactor || 1;
+            this.noUpstops = noUpstops || 0;
             this.rideClearance = rideClearance;
             this.bounds = bounds;
             this.maxZ = maxZ;
@@ -3391,6 +3444,12 @@
             const y = this.y + off.y + DIR_DY[rot] * TILE_SIZE;
             const z = this.z - seg.beginZ + seg.endZ;
             const inverts = seg.beginBank === 15 || seg.endBank === 15 || seg.isInversion;
+            // Cars without upstop wheels fly off crests and tight turns taken too fast; judge by the fastest
+            // point of the piece (its lowest).
+            if (this.noUpstops) {
+                const lowest = Math.min(this.z, z, placeZ + Math.min(...seg.blocks.map(b => b.z)));
+                if (this.energy - lowest > derailHeadLimit(type, this.noUpstops)) return this.refuse(name, 'would derail');
+            }
             let energy = this.energy;
             const crest = Math.max(top, z);
             if (chain) {
@@ -3563,10 +3622,15 @@
             let r = rot;
             let cost = 0;
             const blocks = [];
+            const derail = [];
             for (const n of names) {
                 const type = draft.types.get(n);
                 const seg = trackSegment(type);
                 const placeZ = z - seg.beginZ;
+                if (draft.noUpstops) {
+                    derail.push({ zLow: Math.min(z, z - seg.beginZ + seg.endZ, placeZ + Math.min(...seg.blocks.map(b => b.z))),
+                        limit: derailHeadLimit(type, draft.noUpstops) });
+                }
                 seg.blocks.forEach((b, i) => {
                     const p = rotate(b.x, b.y, r);
                     const span = blockSpan(type, i, placeZ + b.z + 1024, draft.rideClearance);
@@ -3581,7 +3645,7 @@
                 cost += (seg.subLength || 32) / 32;
             }
             const brakes = names.length === 1 && names[0] === 'brakes';
-            return { names: names, blocks: blocks, dx: x, dy: y, dz: z, rot: r, cost: cost, brakes: brakes,
+            return { names: names, blocks: blocks, dx: x, dy: y, dz: z, rot: r, cost: cost, brakes: brakes, derail: derail,
                 limit: sequenceSpeedLimit(names, draft.turnScale), penalty: brakes ? 2 : 0 };
         }));
         const start = { x: draft.x, y: draft.y, z: draft.z, rot: draft.rot, g: 0, e: draft.energy, parent: null, move: null,
@@ -3659,6 +3723,7 @@
                 const mv = m[node.rot];
                 const nz = node.z + mv.dz;
                 if (nz < 0 || head > mv.limit || (mv.brakes && head <= brakeHead + 8)) continue;
+                if (mv.derail.some(c => node.e - (node.z + c.zLow) > c.limit)) continue;
                 const bx = Math.floor(node.x / TILE_SIZE);
                 const by = Math.floor(node.y / TILE_SIZE);
                 let ok = true;
@@ -3729,7 +3794,7 @@
         // Station along y = 0 heading -x; the track stays on the +y side, so the entrance and exit fit at y = -1.
         // The three columns behind the station (x 1-3) are kept free for the way back in.
         const bounds = { minX: -(opts.length - 4), maxX: 0, minY: 0, maxY: opts.width - 1 };
-        const draft = new TrackDraft(types, info.clearance, bounds, opts.maxZ, opts.massFactor);
+        const draft = new TrackDraft(types, info.clearance, bounds, opts.maxZ, opts.massFactor, opts.noUpstops);
         if (!draft.add(['beginStation'].concat(repeat('middleStation', opts.stationLength - 2), ['endStation']))) return failed('station');
         if (rng.chance(0.5)) draft.add(['flat']);
 
@@ -3925,6 +3990,22 @@
     function coasterMassFactor(option, stationTiles) {
         const mass = coasterTrainMass(option, stationTiles);
         return mass > 0 ? Math.max(1, Math.min(10, 4000 / mass)) : 3;
+    }
+
+    /** 2 if the ride's cars are bobsleighs without upstop wheels, 1 for other cars without them, else 0. */
+    function coasterNoUpstops(option) {
+        let result = 0;
+        try {
+            const bit = (flags, n) => Math.floor(flags / Math.pow(2, n)) % 2 === 1;
+            for (const car of objectManager.getObject('ride', option.object).vehicles || []) {
+                if (!car.carMass) continue;
+                if (bit(car.flags, CAR_FLAG_NO_UPSTOPS_BOBSLEIGH)) result = 2;
+                else if (bit(car.flags, CAR_FLAG_NO_UPSTOPS) && result === 0) result = 1;
+            }
+        } catch (e) {
+            result = 0;
+        }
+        return result;
     }
 
     /** Roller coasters this park can build with a chain lift, best suited to the style first. */
@@ -5085,6 +5166,7 @@
             maxZ: maxZ,
             targets: coasterTargets(chosen.option.rideType),
             massFactor: coasterMassFactor(chosen.option, stationLength),
+            noUpstops: coasterNoUpstops(chosen.option),
             debug: !!params.debug,
             budget: { used: 0, max: 60000, deadline: deadline, timedOut: false },
         };

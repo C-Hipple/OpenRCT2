@@ -28,6 +28,7 @@ CATEGORIES = ["transport", "gentle", "rollercoaster", "thrill", "water", "shop"]
 def enum_names(header, enum):
     text = open(os.path.join(REPO, header), encoding="utf-8").read()
     body = re.search(r"enum class " + enum + r"\s*:\s*\w+\s*\{(.*?)\};", text, re.S).group(1)
+    body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
     body = re.sub(r"//.*", "", body)
     names = []
     for item in body.split(","):
@@ -43,6 +44,7 @@ def enum_names(header, enum):
 def track_type_names(count):
     text = open(os.path.join(REPO, "src/openrct2/ride/ted/TrackElemType.h"), encoding="utf-8").read()
     body = re.search(r"enum class TrackElemType\s*:\s*\w+\s*\{(.*?)\};", text, re.S).group(1)
+    body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)
     body = re.sub(r"//.*", "", body)
     names = [None] * count
     for item in body.split(","):
@@ -116,6 +118,17 @@ def main():
     for i in range(0, len(blocks), 12):
         lines.append("        " + ",".join(blocks[i:i + 12]) + ",")
     lines.append("    ];")
+    lines.append("    // Track type -> [sharpest crest |vertical factor| (negative G), sharpest |lateral factor|], 0 = none")
+    lines.append("    // (Vehicle::GetGForces: G (hundredths) = speed * 980 / factor, speed in the game's unit).")
+    lines.append("    const TRACK_G_FACTORS = [")
+    factors = [json.dumps(f, separators=(",", ":")) for f in data["gForceFactors"]]
+    for i in range(0, len(factors), 12):
+        lines.append("        " + ",".join(factors[i:i + 12]) + ",")
+    lines.append("    ];")
+    flags = enum_names("src/openrct2/ride/CarEntry.h", "CarEntryFlag")
+    lines.append("    // Car entry flag bits (CarEntryFlag)")
+    lines.append(f"    const CAR_FLAG_NO_UPSTOPS = {flags.index('hasNoUpstopWheels')};")
+    lines.append(f"    const CAR_FLAG_NO_UPSTOPS_BOBSLEIGH = {flags.index('hasNoUpstopWheelsBobsleigh')};")
     lines.append(END)
 
     src = open(PLUGIN, encoding="utf-8").read()
