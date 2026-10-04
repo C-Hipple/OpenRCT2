@@ -3723,20 +3723,45 @@
     }
 
     /**
+     * The empty train's mass, composed like Ride::updateMaxVehicles: as many cars as fit the station, each car
+     * chosen by its position (RideEntryGetVehicleAtPosition). Some cars weigh nothing (a wild mouse's three-car
+     * train is one 440 mass car), so the cars must be added up rather than estimated.
+     */
+    function coasterTrainMass(option, stationTiles) {
+        try {
+            const obj = objectManager.getObject('ride', option.object);
+            const vehicles = obj.vehicles || [];
+            const at = (numCars, i) => {
+                if (i === 0 && obj.frontVehicle !== 255) return obj.frontVehicle;
+                if (i === 1 && obj.secondVehicle !== 255) return obj.secondVehicle;
+                if (i === 2 && obj.thirdVehicle !== 255) return obj.thirdVehicle;
+                if (i === numCars - 1 && obj.rearVehicle !== 255) return obj.rearVehicle;
+                return obj.defaultVehicle;
+            };
+            const stationLength = stationTiles * 0x44180;
+            for (let numCars = Math.max(1, obj.maxCarsInTrain || 1); numCars > 0; numCars--) {
+                let length = 0;
+                let mass = 0;
+                for (let i = 0; i < numCars; i++) {
+                    const car = vehicles[at(numCars, i)] || {};
+                    length += car.spacing || 0;
+                    mass += car.carMass || 0;
+                }
+                if (length <= stationLength || numCars === 1) return mass;
+            }
+        } catch (e) {
+            return 0;
+        }
+        return 0;
+    }
+
+    /**
      * How much more drag the ride's (empty, as in testing) train suffers than a ~4000 mass coaster train: drag
      * deceleration is inversely proportional to train mass, so light single cars such as wild mice (~440) slow
      * down much faster (a 440 mass car at 30 mph feels drag close to gravity on a 25 degree slope).
      */
-    function coasterMassFactor(option) {
-        let mass = 0;
-        try {
-            const obj = objectManager.getObject('ride', option.object);
-            const carMass = Math.max(0, ...(obj.vehicles || []).map(v => v.carMass || 0));
-            const cars = Math.max(1, Math.min(7, obj.maxCarsInTrain || 1));
-            mass = carMass * cars;
-        } catch (e) {
-            mass = 0;
-        }
+    function coasterMassFactor(option, stationTiles) {
+        const mass = coasterTrainMass(option, stationTiles);
         return mass > 0 ? Math.max(1, Math.min(10, 4000 / mass)) : 3;
     }
 
@@ -4882,7 +4907,7 @@
             inversions: params.inversions !== false,
             maxZ: maxZ,
             targets: coasterTargets(chosen.option.rideType),
-            massFactor: coasterMassFactor(chosen.option),
+            massFactor: coasterMassFactor(chosen.option, Math.max(3, Math.min(12, optInt(params, 'stationLength', 6)))),
             debug: !!params.debug,
         };
         const baseSeed = isNumber(params.seed) ? Math.floor(params.seed) >>> 0 : Math.floor(Math.random() * 0x7FFFFFFF);
